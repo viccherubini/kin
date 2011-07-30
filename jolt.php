@@ -4,23 +4,29 @@ declare(encoding='UTF-8');
 
 class jolt {
 
+	// Routes
 	private $route = array();
 	private $route_404 = array();
 	private $route_arguments = array();
 	private $routes = array();
-	
-	private $application_path = null;
-	private $http_accept_type = null;
 	private $path = null;
 	
+	// Content types
+	private $http_accept_type = null;
+	private $view_type = null;
+	private $default_view_type = 'html';
+	
+	// Timing
 	private $start_time = 0.0;
 	private $end_time = 0.0;
 	private $execution_time = 0.0;
 	
 	// Controllers
+	private $application_path = null;
 	private $controller = null;
 	private $controller_file_path = null;
 	private $controllers_path = null;
+	private $views_path = null;
 
 	
 	const alphanum_replacement = '([a-z0-9_\-/%\.\*]*)';
@@ -28,8 +34,9 @@ class jolt {
 
 	const controllers_path = 'controllers';
 	const views_path = 'views';
+	const ext = '.php';
 	
-
+	
 	public function __construct() {
 		
 	}
@@ -45,35 +52,57 @@ class jolt {
 		$this->start_timer();
 	
 		$this->parse_http_accept_type()
+			->parse_view_type()
+			->determine_default_view_type()
 			->parse_path()
 			->parse_route();
-		
-		try {
+
 			$this->build_controller_file_path()
 				->load_controller_file()
 				->build_controller()
 				->execute_controller();
 		
+			$response = new response;
+			$response->model($this->controller->get_payload());
+		
+			ob_start();
+				$view_file = $this->views_path.$this->controller->get_view().'.'.$this->view_type.self::ext;
+				if (is_file($view_file)) {
+					require($view_file);
+				}
+			$rendered_view = ob_get_clean();
 			
-		} catch (jolt_exception $e) {
+			
+			
+			//var_dump($view_file);
+			//var_dump(is_file($view_file));
+			//$rendered_view = ob_get_clean();
+		
+		// Determine what the view to render is
+		//echo $this->view_type;
+		
+		
+			
+		//} catch (jolt_exception $e) {
 			// Figure out how to add this exception to the payload correctly
 
-		} catch (redirect_exception $e) {
-			$this->controller->add_header('location', $e->get_location());
-		}
-		
-		print_r($this->controller->get_payload());
-		
+		//} catch (redirect_exception $e) {
+		//	$this->controller->add_header('location', $e->get_location());
+		//}
+		//print_r($this->controller->get_payload());
+		//header('Content-Type: '.$this->http_accept_type);
 		// Go through and add all of the headers to the response
 		
-		
 		$this->end_timer();
+		
+		return $rendered_view;
 	}
 	
 	
 	public function set_application_path($application_path) {
 		$this->application_path = trim(realpath($application_path).DIRECTORY_SEPARATOR);
 		$this->controllers_path = $this->application_path.self::controllers_path.DIRECTORY_SEPARATOR;
+		$this->views_path = $this->application_path.self::views_path.DIRECTORY_SEPARATOR;
 		
 		return $this;
 	}
@@ -153,6 +182,21 @@ class jolt {
 		return $this;
 	}
 	
+	private function parse_view_type() {
+		$type_bits = explode('/', $this->http_accept_type);
+		if (count($type_bits) > 0) {
+			$this->view_type = end($type_bits);
+		}
+		return $this;
+	}
+	
+	private function determine_default_view_type() {
+		if ('*' === $this->view_type || empty($this->view_type)) {
+			$this->view_type = $this->default_view_type;
+		}
+		return $this;
+	}
+	
 	
 	/* Controller Manipulation and Building */
 	private function build_controller_file_path() {
@@ -186,30 +230,21 @@ class jolt {
 			throw new jolt_exception($e->getMessage());
 		}
 		
-		$init_executed_successfully = true;
-		if (method_exists($this->controller, 'init')) {
-			$init_executed_successfully = $this->controller->init();
-		}
+		//$init_executed_successfully = true;
+		//if (method_exists($this->controller, 'init')) {
+		//	$init_executed_successfully = $this->controller->init();
+		//}
 
-		if ($init_executed_successfully && $action->isPublic()) {
-			if ($action->isStatic()) {
-				$action->invokeArgs(null, $this->route_arguments);
-			} else {
-				$action->invokeArgs($this->controller, $this->route_arguments);
-			}
+		if ($action->isPublic()) {
+			$action->invokeArgs($this->controller, $this->route_arguments);
 		}
-
-		if (method_exists($this->controller, 'shutdown')) {
-			$this->controller->shutdown();
-		}
+		
+		//if (method_exists($this->controller, 'shutdown')) {
+		//	$this->controller->shutdown();
+		//}
 		
 		return $this;
 	}
-	/*
-	
-			
-		$rendered_controller = ob_get_clean();*/
-	
 	
 }
 
@@ -221,6 +256,8 @@ abstract class controller {
 	
 	private $headers = array();
 	private $payload = array();
+	
+	private $view = null;
 	
 	public function __construct() {
 	
@@ -252,10 +289,17 @@ abstract class controller {
 		return $this->__set($k, $v);
 	}
 	
+	public function render($view) {
+		$this->view = trim($view);
+	}
+	
 	public function get_payload() {
 		return $this->payload;
 	}
 	
+	public function get_view() {
+		return $this->view;
+	}
 	
 }
 
@@ -287,7 +331,7 @@ class redirect_exception extends \Exception {
 
 
 
-abstract class response {
+class response {
 
 	private $response = array();
 
@@ -328,23 +372,13 @@ abstract class response {
 		}
 	}
 	
+	public function to_array() {
+		return $this->get_response();
+	}
+	
 	public function get_response() {
 		return $this->response;
 	}
-
-
-	abstract public function build();
-}
-
-
-class response_json extends response {
-	public function build() {
-		return json_encode($this->get_response());
-	}
 	
-}
-
-class response_html extends response {
 	
-
 }

@@ -1,0 +1,1 @@
+<h1><?php echo $response->model['hello_world']; ?></h1>

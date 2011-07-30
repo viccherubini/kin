@@ -16,4 +16,3 @@ $jolt->set_application_path(__DIR__.'/application/')
 	->set_route_404(array('GET', '/', 'error_controller.php', 'metrics\error_controller', 'action_error_404'));
 
 echo $jolt->execute();
-//var_dump($jolt->get_execution_time());
