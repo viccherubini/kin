@@ -10,6 +10,7 @@ class jolt {
 	private $route_arguments = array();
 	private $routes = array();
 	private $path = null;
+	private $request_method = null;
 	
 	// Content types
 	private $http_accept_type = null;
@@ -51,19 +52,24 @@ class jolt {
 	public function execute() {
 		$this->start_timer();
 	
-		$this->parse_http_accept_type()
+		$this->parse_request_method()
+			->parse_http_accept_type()
 			->parse_view_type()
 			->determine_default_view_type()
 			->parse_path()
 			->parse_route();
+
+
+
+
 
 			$this->build_controller_file_path()
 				->load_controller_file()
 				->build_controller()
 				->execute_controller();
 		
-			$response = new response;
-			$response->model($this->controller->get_payload());
+			$payload = new payload;
+			$payload->model($this->controller->get_payload());
 		
 			ob_start();
 				$view_file = $this->views_path.$this->controller->get_view().'.'.$this->view_type.self::ext;
@@ -148,29 +154,11 @@ class jolt {
 		return array_map($mapper, $routes);
 	}
 	
-	/* Route and Path Parsing */
-	private function parse_path() {
-		$this->path = filter_input(INPUT_SERVER, 'PATH_INFO');
-		if (empty($this->path)) {
-			$this->path = '/';
-		}
-		return $this;
-	}
 	
-	private function parse_route() {
-		$routes_count = count($this->routes);
-		for ($i=0; $i<$routes_count; $i++) {
-			$argv = array();
-			if (preg_match_all($this->routes[$i][1], $this->path, $argv, PREG_SET_ORDER) > 0) {
-				$this->route = $this->routes[$i];
-				$this->route_arguments = array_slice($argv[0], 1);
-				break;
-			}
-		}
-		
-		if (0 === count($this->route)) {
-			$this->route = $this->route_404;
-		}
+	
+	/* Route and Path Parsing */
+	private function parse_request_method() {
+		$this->request_method = strtoupper(filter_input(INPUT_SERVER, 'REQUEST_METHOD'));
 		return $this;
 	}
 	
@@ -196,6 +184,32 @@ class jolt {
 		}
 		return $this;
 	}
+	
+	private function parse_path() {
+		$this->path = filter_input(INPUT_SERVER, 'PATH_INFO');
+		if (empty($this->path)) {
+			$this->path = '/';
+		}
+		return $this;
+	}
+	
+	private function parse_route() {
+		$routes_count = count($this->routes);
+		for ($i=0; $i<$routes_count; $i++) {
+			$argv = array();
+			if ($this->routes[$i][0] === $this->request_method && preg_match_all($this->routes[$i][1], $this->path, $argv, PREG_SET_ORDER) > 0) {
+				$this->route = $this->routes[$i];
+				$this->route_arguments = array_slice($argv[0], 1);
+				break;
+			}
+		}
+		
+		if (0 === count($this->route)) {
+			$this->route = $this->route_404;
+		}
+		return $this;
+	}
+	
 	
 	
 	/* Controller Manipulation and Building */
@@ -331,12 +345,12 @@ class redirect_exception extends \Exception {
 
 
 
-class response {
+class payload {
 
-	private $response = array();
+	private $payload = array();
 
 	public function __construct() {
-		$this->response = array(
+		$this->payload = array(
 			'content' => '',
 			'errors' => array(),
 			'message' => '',
@@ -349,17 +363,17 @@ class response {
 	}
 	
 	public function __destruct() {
-		$this->response = array();
+		$this->payload = array();
 	}
 	
 	public function __set($k, $v) {
-		$this->response[$k] = $v;
+		$this->payload[$k] = $v;
 		return $this;
 	}
 
 	public function __get($k) {
-		if (array_key_exists($k, $this->response)) {
-			return $this->response[$k];
+		if (array_key_exists($k, $this->payload)) {
+			return $this->payload[$k];
 		}
 		return null;
 	}
@@ -373,12 +387,11 @@ class response {
 	}
 	
 	public function to_array() {
-		return $this->get_response();
+		return $this->get_payload();
 	}
 	
-	public function get_response() {
-		return $this->response;
+	public function get_payload() {
+		return $this->payload;
 	}
-	
 	
 }
