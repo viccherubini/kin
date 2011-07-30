@@ -11,16 +11,23 @@ $routes = array(
 	,array('GET', '/search/%s', 'search_controller.php', 'metrics\search_controller', 'action_search')
 );
 
+$route_404 = array('GET', '/', 'error_controller.php', 'metrics\error_controller', 'action_error_404');
+
+$paths = array(
+	'application' => __DIR__.'/application',
+	'asset' => 'public/'
+);
+
 $settings = array(
-	'application_path' => __DIR__.'/application/',
-	'asset_path' => 'public',
 	'allow_ssl' => true,
 	'force_ssl' => false
 );
 
 $jolt = new \jolt\jolt;
-$jolt->set_application_settings($settings)
-	->set_routes($routes)
-	->set_route_404(array('GET', '/', 'error_controller.php', 'metrics\error_controller', 'action_error_404'));
+$jolt->set_paths($paths)
+	->set_settings($settings)
+	->set_routes($routes, $route_404);
 
-echo $jolt->execute();
+$jolt->execute();
+
+print_r($jolt);

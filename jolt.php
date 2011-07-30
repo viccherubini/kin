@@ -7,49 +7,18 @@ require_once(__DIR__.'/view.php');
 
 class jolt {
 
+	private $request = array();
+	private $response = array();
+
 	// Application settings
 	private $settings = array();
+	private $paths = array();
 
-	// Routes
-	private $route = array();
-	private $route_404 = array();
-	private $route_arguments = array();
-	private $routes = array();
-	private $path = null;
-	private $request_method = null;
-	
-	// Content types
-	private $http_accept_type = null;
-	private $view_type = null;
-	private $default_view_type = 'html';
-	private $default_content_type = 'text/html';
-	
 	// Timing
 	private $start_time = 0.0;
 	private $end_time = 0.0;
 	private $execution_time = 0.0;
-	
-	// Controllers
-	private $application_paths = array();
-	private $asset_paths = array();
-	private $controller = null;
-	private $controller_file_path = null;
-	
-	// Paths and URLs
-	private $application_path = null;
-	private $asset_path = null;
-	
-	private $controller_path = null;
-	private $validator_path = null;
-	private $view_path = null;
-	
-	private $css_path = null;
-	private $image_path = null;
-	private $js_path = null;
-	
-	private $use_rewrite = false;
-	private $url = null;
-	private $secure_url = null;
+
 
 
 	
@@ -60,20 +29,47 @@ class jolt {
 	const https = 'https://';
 	const ext = '.php';
 	
-
+	const ds = DIRECTORY_SEPARATOR;
 	
 	public function __construct() {
-		$this->application_paths = array(
-			'controller_path' => 'controllers',
-			'validator_path' => 'validators',
-			'view_path' => 'views'
+		$this->paths = array(
+			'application' => '',
+			'asset' => '',
+			'controller' => '',
+			'css' => '',
+			'image' => '',
+			'js' => '',
+			'validator' => '',
+			'view' => ''
 		);
 		
-		$this->asset_paths = array(
-			'css_path' => 'css',
-			'image_path' => 'image',
-			'js_path' => 'js'
+		$this->settings = array(
+			'allow_ssl' => true,
+			'cookie_domain' => '',
+			'force_ssl' => false,
+			'secure_url' => '',
+			'url' => '',
+			'use_rewrite' => false
 		);
+		
+		$this->request = array(
+			'accept' => 'text/html',
+			'path' => '/',
+			'request_method' => 'GET',
+			'routes' => array(),
+			'route_404' => array(),
+			'route' => array(
+				'route' => array(),
+				'arguments' => array()
+			)
+		);
+		
+		$this->response = array(
+			'content_type' => 'text/html',
+			'response_code' => 405,
+			'headers' => array()
+		);
+		
 	}
 
 	public function __destruct() {
@@ -87,16 +83,11 @@ class jolt {
 	public function execute() {
 		$this->start_timer();
 
-		// Handle the incoming request
-		$this->parse_request_method()
-			->parse_http_accept_type()
-			->parse_view_type()
-			->determine_default_view_type()
-			->parse_path()
-			->parse_route();
+		$this->parse_request()
+			->route_request();
 
-
-		$view = new view;
+		
+		/*$view = new view;
 		$view->set_css_path($this->css_path)
 			->set_image_path($this->image_path)
 			->set_js_path($this->js_path)
@@ -135,7 +126,7 @@ class jolt {
 		
 		$this->end_timer();
 		
-		return $rendering;
+		return $rendering;*/
 	}
 	
 	
@@ -143,23 +134,51 @@ class jolt {
 	
 	
 	
-	
-	
-	public function set_application_settings(array $settings) {
-		$this->settings = $settings;
-		$this->parse_application_paths()
-			->parse_assets_paths()
-			->build_urls();
+	public function set_paths(array $paths) {
+		$this->paths = array_merge($this->paths, $paths);
+		foreach ($this->paths as $k => $path) {
+			$this->paths[$k] = (!empty($path) ? rtrim($path, self::ds).self::ds : $path);
+		}
+		
+		foreach (array('controller' => 'controllers', 'validator' => 'validators', 'view' => 'views') as $k => $path) {
+			$this->paths[$k] = (empty($this->paths[$k]) ? $this->paths['application'].$path.self::ds : $this->paths[$k]);
+		}
+		
+		foreach (array('css' => 'css', 'image' => 'images', 'js' => 'js') as $k => $path) {
+			$this->paths[$k] = (empty($this->paths[$k]) ? $this->paths['asset'].$path.self::ds : $this->paths[$k]);
+		}
 		return $this;
 	}
 	
-	public function set_routes(array $routes) {
-		$this->routes = $this->compile_routes_to_regular_expressions($routes);
+	public function set_settings(array $settings) {
+		$this->settings = array_merge($this->settings, $settings);
+		
+		$server_name = filter_input(INPUT_SERVER, 'SERVER_NAME');
+		$root_script_name = dirname(filter_input(INPUT_SERVER, 'SCRIPT_NAME'));
+
+		if (empty($root_script_name) || '/' === $root_script_name) {
+			$this->settings['use_rewrite'] = true;
+		}
+
+		$url_protocol = ((array_key_exists('force_ssl', $this->settings) && $this->settings['force_ssl']) ? self::https : self::http);
+		
+		$this->settings['cookie_domain'] = $server_name;
+		$this->settings['url'] = $url_protocol.$server_name.$root_script_name;
+		$this->settings['secure_url'] = self::https.$server_name.$root_script_name;
+		
 		return $this;
 	}
 	
-	public function set_route_404(array $route) {
-		$this->route_404 = $route;
+	
+	
+	public function set_routes(array $routes, array $route_404) {
+		$mapper = function($e) {
+			$e[1] = str_replace(array('%s', '%n'), array(jolt::alphanum_replacement, jolt::numeric_replacement), "#^{$e[1]}$#i");
+			return $e;
+		};
+		
+		$this->request['routes'] = array_map($mapper, $routes);
+		$this->request['route_404'] = $route_404;
 		return $this;
 	}
 	
@@ -186,60 +205,23 @@ class jolt {
 		return $this;
 	}
 
-	private function compile_routes_to_regular_expressions(array $routes) {
-		$mapper = function($e) {
-			$e[1] = str_replace(array('%s', '%n'), array(jolt::alphanum_replacement, jolt::numeric_replacement), "#^{$e[1]}$#i");
-			return $e;
-		};
-		return array_map($mapper, $routes);
+	private function compile_routes(array $routes) {
+		
 	}
 	
 	
 	
 	/* Application, Route and Path Parsing */
-	private function parse_application_paths() {
-		if (array_key_exists('application_path', $this->settings)) {
-			$this->application_path = trim(realpath($this->settings['application_path']).DIRECTORY_SEPARATOR);
-		}
-		
-		foreach ($this->application_paths as $k => $path) {
-			$this->$k = $this->application_path.$path.DIRECTORY_SEPARATOR;
-		}
-		return $this;
-	}
 	
-	private function parse_assets_paths() {
-		if (array_key_exists('asset_path', $this->settings)) {
-			$this->asset_path = rtrim($this->settings['asset_path'], '/').DIRECTORY_SEPARATOR;
-		}
-		
-		foreach ($this->asset_paths as $k => $path) {
-			$this->$k = $this->asset_path.$path.DIRECTORY_SEPARATOR;
-		}
-		return $this;
-	}
+	
 	
 	private function build_urls() {
-		$server_name = filter_input(INPUT_SERVER, 'SERVER_NAME');
-		$root_script_name = dirname(filter_input(INPUT_SERVER, 'SCRIPT_NAME'));
-
-		if (empty($root_script_name) || '/' === $root_script_name) {
-			$this->use_rewrite = true;
-		}
-
-		$cookie_domain = $server_name;
-		$url_protocol = ((array_key_exists('force_ssl', $this->settings) && $this->settings['force_ssl']) ? self::https : self::http);
 		
-		$this->url = $url_protocol.$server_name.$root_script_name;
-		$this->secure_url = self::https.$server_name.$root_script_name;
 		
 		return $this;
 	}
 	
-	private function parse_request_method() {
-		$this->request_method = strtoupper(filter_input(INPUT_SERVER, 'REQUEST_METHOD'));
-		return $this;
-	}
+	
 	
 	private function parse_http_accept_type() {
 		$http_accept_bits = explode(',', filter_input(INPUT_SERVER, 'HTTP_ACCEPT'));
@@ -264,30 +246,6 @@ class jolt {
 		return $this;
 	}
 	
-	private function parse_path() {
-		$this->path = filter_input(INPUT_SERVER, 'PATH_INFO');
-		if (empty($this->path)) {
-			$this->path = '/';
-		}
-		return $this;
-	}
-	
-	private function parse_route() {
-		$routes_count = count($this->routes);
-		for ($i=0; $i<$routes_count; $i++) {
-			$argv = array();
-			if ($this->routes[$i][0] === $this->request_method && preg_match_all($this->routes[$i][1], $this->path, $argv, PREG_SET_ORDER) > 0) {
-				$this->route = $this->routes[$i];
-				$this->route_arguments = array_slice($argv[0], 1);
-				break;
-			}
-		}
-		
-		if (0 === count($this->route)) {
-			$this->route = $this->route_404;
-		}
-		return $this;
-	}
 	
 	
 	
@@ -339,6 +297,85 @@ class jolt {
 		
 		return $this;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/* Methods to generate the request array */
+	private function parse_request() {
+		$this->parse_header_accept()
+			->parse_header_request_method()
+			->parse_path();
+			
+		return $this;
+	}
+	
+	private function parse_header_accept() {
+		// Ignore multiple accept types
+		$accept_bits = explode(',', filter_input(INPUT_SERVER, 'HTTP_ACCEPT'));
+		if (count($accept_bits) > 0) {
+			// Just get the first type, ignore the quality
+			$accept_type = current(explode(';', $accept_bits[0]));
+			
+			if (preg_match('#(.*)/(.*)#i', $accept_type)) {
+				$this->request['accept'] = $accept_type;
+				$this->response['content_type'] = $accept_type;
+			}
+		}
+		return $this;
+	}
+	
+	private function parse_header_request_method() {
+		$this->request['request_method'] = strtoupper(filter_input(INPUT_SERVER, 'REQUEST_METHOD'));
+		return $this;
+	}
+	
+	private function parse_path() {
+		$path = filter_input(INPUT_SERVER, 'PATH_INFO');
+		if (!empty($path)) {
+			$this->request['path'] = $path;
+		}
+		return $this;
+	}
+	
+	
+	
+	/* Methods to parse the path */
+	private function route_request() {
+		$routes_count = count($this->request['routes']);
+		$matched_route = false;
+		for ($i=0; $i<$routes_count; $i++) {
+			$argv = array();
+			
+			$request_methods_match = ($this->request['routes'][$i][0] === $this->request['request_method']);
+			$routes_match = (preg_match_all($this->request['routes'][$i][1], $this->request['path'], $argv, PREG_SET_ORDER) > 0);
+			
+			if ($request_methods_match && $routes_match) {
+				$this->request['route']['route'] = $this->request['routes'][$i];
+				$this->request['route']['arguments'] = array_slice($argv[0], 1);
+				
+				$matched_route = true;
+				break;
+			}
+		}
+		
+		if (!$matched_route) {
+			$this->request['route']['route'] = $this->request['route_404'];
+		}
+		return $this;
+	}
+	
+	
 	
 }
 

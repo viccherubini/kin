@@ -19,7 +19,7 @@ class view {
 	private $javascripts = array();
 
 	public function __construct() {
-
+		
 	}
 
 	public function __destruct() {
@@ -35,14 +35,14 @@ class view {
 		$view = "{$view}.{$this->view_type}".jolt::ext;
 
 		// Find the view file
-		$view_file = $this->view_path.$view;
-		if (!is_file($view_file)) {
-			throw new \Exception("The view file, {$view_file}, not found.");
+		$view_path = $this->view_path.$view;
+		if (!is_file($view_path)) {
+			throw new \Exception("The view was not found in the path specified: {$view_path}.");
 		}
 
 		$payload = $this->payload;
 		ob_start();
-			require($view_file);
+			require($view_path);
 		$this->rendering = ob_get_clean();
 
 		return $this;
@@ -54,9 +54,7 @@ class view {
 
 	public function css($css_file, $media='screen', $local_file=true) {
 		if ($local_file) {
-			$css_file = $this->append_extension($css_file, '.css');
-			$root_url = $this->get_root_url();
-			$css_file = $root_url.$this->css_path.$css_file;
+			$css_file = $this->get_root_url().$this->css_path.$this->append_extension($css_file, '.css');
 		}
 
 		$link_tag = sprintf('<link type="text/css" rel="stylesheet" href="%s" media="%s">%s', $css_file, $media, PHP_EOL);
@@ -75,8 +73,7 @@ class view {
 
 	public function img($img_src, $alt_text=null, $tag_attributes=null, $local_file=true) {
 		if ($local_file) {
-			$root_url = $this->get_root_url();
-			$img_src = $root_url.$this->image_path.$img_src;
+			$img_src = $this->get_root_url().$this->image_path.$img_src;
 		}
 
 		$img_tag = sprintf('<img src="%s" alt="%s" title="%s" %s>%s', $img_src, $alt_text, $alt_text, $tag_attributes, PHP_EOL);
@@ -87,8 +84,7 @@ class view {
 		$javascript_file = $this->append_extension($javascript_file, '.js');
 
 		if ($local_file) {
-			$root_url = $this->get_root_url();
-			$javascript_file = $root_url.$this->js_path.$javascript_file;
+			$javascript_file = $this->get_root_url().$this->js_path.$javascript_file;
 		}
 
 		$script_tag = sprintf('<script src="%s" type="text/javascript"></script>%s', $javascript_file, PHP_EOL);
@@ -202,19 +198,11 @@ class view {
 	}
 
 	private function append_directory_separator($path) {
-		$path_length = strlen(trim($path)) - 1;
-		if ($path_length >= 0 && $path[$path_length] != DIRECTORY_SEPARATOR) {
-			$path .= DIRECTORY_SEPARATOR;
-		}
-		return $path;
+		return(rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR);
 	}
 
 	private function append_url_slash($url) {
-		$url_last_char_index = strlen($url)-1;
-		if ($url[$url_last_char_index] != '/') {
-			$url .= '/';
-		}
-		return $url;
+		return(rtrim($url, '/').'/');
 	}
 
 	private function get_root_url() {
