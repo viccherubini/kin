@@ -1,8 +1,14 @@
 <?php namespace jolt;
 declare(encoding='UTF-8');
 
+require_once(__DIR__.'/controller.php');
+require_once(__DIR__.'/payload.php');
+require_once(__DIR__.'/view.php');
 
 class jolt {
+
+	// Application settings
+	private $settings = array();
 
 	// Routes
 	private $route = array();
@@ -16,6 +22,7 @@ class jolt {
 	private $http_accept_type = null;
 	private $view_type = null;
 	private $default_view_type = 'html';
+	private $default_content_type = 'text/html';
 	
 	// Timing
 	private $start_time = 0.0;
@@ -23,35 +30,64 @@ class jolt {
 	private $execution_time = 0.0;
 	
 	// Controllers
-	private $application_path = null;
+	private $application_paths = array();
+	private $asset_paths = array();
 	private $controller = null;
 	private $controller_file_path = null;
-	private $controllers_path = null;
-	private $views_path = null;
+	
+	// Paths and URLs
+	private $application_path = null;
+	private $asset_path = null;
+	
+	private $controller_path = null;
+	private $validator_path = null;
+	private $view_path = null;
+	
+	private $css_path = null;
+	private $image_path = null;
+	private $js_path = null;
+	
+	private $use_rewrite = false;
+	private $url = null;
+	private $secure_url = null;
+
 
 	
 	const alphanum_replacement = '([a-z0-9_\-/%\.\*]*)';
 	const numeric_replacement = '([\d]+)';
 
-	const controllers_path = 'controllers';
-	const views_path = 'views';
+	const http = 'http://';
+	const https = 'https://';
 	const ext = '.php';
 	
+
 	
 	public function __construct() {
+		$this->application_paths = array(
+			'controller_path' => 'controllers',
+			'validator_path' => 'validators',
+			'view_path' => 'views'
+		);
 		
+		$this->asset_paths = array(
+			'css_path' => 'css',
+			'image_path' => 'image',
+			'js_path' => 'js'
+		);
 	}
 
 	public function __destruct() {
 		$this->route = array();
 		$this->routes = array();
+		$this->controller = null;
 	}
 	
 	
 	
 	public function execute() {
 		$this->start_timer();
-	
+
+		// Handle the incoming request
 		$this->parse_request_method()
 			->parse_http_accept_type()
 			->parse_view_type()
@@ -60,56 +96,60 @@ class jolt {
 			->parse_route();
 
 
+		$view = new view;
+		$view->set_css_path($this->css_path)
+			->set_image_path($this->image_path)
+			->set_js_path($this->js_path)
+			->set_url($this->url)
+			->set_secure_url($this->secure_url)
+			->set_use_rewrite($this->use_rewrite)
+			->set_view_path($this->view_path)
+			->set_view_type($this->view_type);
 
-
-
+		$rendering = '';
+		//try {
+			
+			// Handle the outgoing response.
 			$this->build_controller_file_path()
 				->load_controller_file()
 				->build_controller()
 				->execute_controller();
-		
-			$payload = new payload;
-			$payload->model($this->controller->get_payload());
-		
-			ob_start();
-				$view_file = $this->views_path.$this->controller->get_view().'.'.$this->view_type.self::ext;
-				if (is_file($view_file)) {
-					require($view_file);
-				}
-			$rendered_view = ob_get_clean();
-			
-			
-			
-			//var_dump($view_file);
-			//var_dump(is_file($view_file));
-			//$rendered_view = ob_get_clean();
-		
-		// Determine what the view to render is
-		//echo $this->view_type;
-		
-		
-			
-		//} catch (jolt_exception $e) {
-			// Figure out how to add this exception to the payload correctly
 
+			$payload = new payload;
+			$payload->model($this->controller->payload);
+
+			$rendering = $view->attach_payload($payload)
+				->render($this->controller->view)
+				->get_rendering();
+			
+			
+			
 		//} catch (redirect_exception $e) {
-		//	$this->controller->add_header('location', $e->get_location());
+		// Add a location header
+		//} catch (\Exception $e) {
+		//	$rendering = $e->getMessage();
 		//}
-		//print_r($this->controller->get_payload());
-		//header('Content-Type: '.$this->http_accept_type);
-		// Go through and add all of the headers to the response
+		
+		header_remove('Content-Type');
+		header('Content-Type: '.$this->controller->content_type, true, $this->controller->response_code);
 		
 		$this->end_timer();
 		
-		return $rendered_view;
+		return $rendering;
 	}
 	
 	
-	public function set_application_path($application_path) {
-		$this->application_path = trim(realpath($application_path).DIRECTORY_SEPARATOR);
-		$this->controllers_path = $this->application_path.self::controllers_path.DIRECTORY_SEPARATOR;
-		$this->views_path = $this->application_path.self::views_path.DIRECTORY_SEPARATOR;
-		
+	
+	
+	
+	
+	
+	
+	public function set_application_settings(array $settings) {
+		$this->settings = $settings;
+		$this->parse_application_paths()
+			->parse_assets_paths()
+			->build_urls();
 		return $this;
 	}
 	
@@ -134,7 +174,7 @@ class jolt {
 	}
 	
 	
-
+	/* Internal Methods */
 	private function start_timer() {
 		$this->start_time = microtime(true);
 		return $this;
@@ -156,7 +196,46 @@ class jolt {
 	
 	
 	
-	/* Route and Path Parsing */
+	/* Application, Route and Path Parsing */
+	private function parse_application_paths() {
+		if (array_key_exists('application_path', $this->settings)) {
+			$this->application_path = trim(realpath($this->settings['application_path']).DIRECTORY_SEPARATOR);
+		}
+		
+		foreach ($this->application_paths as $k => $path) {
+			$this->$k = $this->application_path.$path.DIRECTORY_SEPARATOR;
+		}
+		return $this;
+	}
+	
+	private function parse_assets_paths() {
+		if (array_key_exists('asset_path', $this->settings)) {
+			$this->asset_path = rtrim($this->settings['asset_path'], '/').DIRECTORY_SEPARATOR;
+		}
+		
+		foreach ($this->asset_paths as $k => $path) {
+			$this->$k = $this->asset_path.$path.DIRECTORY_SEPARATOR;
+		}
+		return $this;
+	}
+	
+	private function build_urls() {
+		$server_name = filter_input(INPUT_SERVER, 'SERVER_NAME');
+		$root_script_name = dirname(filter_input(INPUT_SERVER, 'SCRIPT_NAME'));
+
+		if (empty($root_script_name) || '/' === $root_script_name) {
+			$this->use_rewrite = true;
+		}
+
+		$cookie_domain = $server_name;
+		$url_protocol = ((array_key_exists('force_ssl', $this->settings) && $this->settings['force_ssl']) ? self::https : self::http);
+		
+		$this->url = $url_protocol.$server_name.$root_script_name;
+		$this->secure_url = self::https.$server_name.$root_script_name;
+		
+		return $this;
+	}
+	
 	private function parse_request_method() {
 		$this->request_method = strtoupper(filter_input(INPUT_SERVER, 'REQUEST_METHOD'));
 		return $this;
@@ -214,13 +293,13 @@ class jolt {
 	
 	/* Controller Manipulation and Building */
 	private function build_controller_file_path() {
-		$this->controller_file_path = $this->controllers_path.$this->route[2];
+		$this->controller_file_path = $this->controller_path.$this->route[2];
 		return $this;		
 	}
 	
 	private function load_controller_file() {
 		if (!is_file($this->controller_file_path)) {
-			throw new jolt_exception('controller not found in path specified: '.$this->controller_file_path);
+			throw new \Exception("The Controller was not found in the path specified: {$this->controller_file_path}.");
 		}
 		
 		require_once($this->controller_file_path);
@@ -230,10 +309,11 @@ class jolt {
 	private function build_controller() {
 		$controller_class = $this->route[3];
 		if (!class_exists($controller_class, false)) {
-			throw new jolt_exception('controller class not found in global namespace.');
+			throw new \Exception("The Controller Class, {$controller_class}, was not found in the global namespace.");
 		}
 		
 		$this->controller = new $controller_class;
+		$this->controller->set_content_type($this->http_accept_type);
 		return $this;
 	}
 	
@@ -241,21 +321,21 @@ class jolt {
 		try {
 			$action = new \ReflectionMethod($this->controller, $this->route[4]);
 		} catch (\ReflectionException $e) {
-			throw new jolt_exception($e->getMessage());
+			throw new \Exception($e->getMessage());
 		}
 		
-		//$init_executed_successfully = true;
-		//if (method_exists($this->controller, 'init')) {
-		//	$init_executed_successfully = $this->controller->init();
-		//}
+		$init_executed_successfully = true;
+		if (method_exists($this->controller, 'init')) {
+			$init_executed_successfully = $this->controller->init();
+		}
 
-		if ($action->isPublic()) {
+		if ($init_executed_successfully && $action->isPublic()) {
 			$action->invokeArgs($this->controller, $this->route_arguments);
 		}
 		
-		//if (method_exists($this->controller, 'shutdown')) {
-		//	$this->controller->shutdown();
-		//}
+		if (method_exists($this->controller, 'shutdown')) {
+			$this->controller->shutdown();
+		}
 		
 		return $this;
 	}
@@ -266,64 +346,10 @@ class jolt {
 
 
 
-abstract class controller {
-	
-	private $headers = array();
-	private $payload = array();
-	
-	private $view = null;
-	
-	public function __construct() {
-	
-	}
-	
-	public function __destruct() {
-	
-	}
-	
-	
-	public function __set($k, $v) {
-		$this->payload[$k] = $v;
-		return $this;
-	}
-	
-	public function __get($k) {
-		if (array_key_exists($k, $this->payload)) {
-			return $this->payload[$k];
-		}
-		return null;
-	}
-	
-	public function add_header($header, $value) {
-		$this->headers[$header] = $value;
-		return $this;
-	}
-	
-	public function register($k, $v) {
-		return $this->__set($k, $v);
-	}
-	
-	public function render($view) {
-		$this->view = trim($view);
-	}
-	
-	public function get_payload() {
-		return $this->payload;
-	}
-	
-	public function get_view() {
-		return $this->view;
-	}
-	
-}
 
 
 
 
-
-class jolt_exception extends \Exception {
-
-}
 
 class redirect_exception extends \Exception {
 
@@ -338,60 +364,4 @@ class redirect_exception extends \Exception {
 		return $this->location;
 	}
 
-}
-
-
-
-
-
-
-class payload {
-
-	private $payload = array();
-
-	public function __construct() {
-		$this->payload = array(
-			'content' => '',
-			'errors' => array(),
-			'message' => '',
-			'model' => array(),
-			'name' => '',
-			'object' => NULL,
-			'redirect' => '',
-			'token' => ''
-		);
-	}
-	
-	public function __destruct() {
-		$this->payload = array();
-	}
-	
-	public function __set($k, $v) {
-		$this->payload[$k] = $v;
-		return $this;
-	}
-
-	public function __get($k) {
-		if (array_key_exists($k, $this->payload)) {
-			return $this->payload[$k];
-		}
-		return null;
-	}
-	
-	public function __call($method, $argv) {
-		if (0 === count($argv)) {
-			return $this->__get($method);
-		} else {
-			return $this->__set($method, current($argv));
-		}
-	}
-	
-	public function to_array() {
-		return $this->get_payload();
-	}
-	
-	public function get_payload() {
-		return $this->payload;
-	}
-	
 }
