@@ -56,12 +56,12 @@ class jolt {
 			'accept' => 'text/html',
 			'path' => '/',
 			'request_method' => 'GET',
-			'routes' => array(),
-			'route_404' => array(),
 			'route' => array(
 				'route' => array(),
 				'arguments' => array()
-			)
+			),
+			'route_404' => array(),
+			'routes' => array()
 		);
 		
 		$this->response = array(
@@ -123,10 +123,10 @@ class jolt {
 		
 		header_remove('Content-Type');
 		header('Content-Type: '.$this->controller->content_type, true, $this->controller->response_code);
-		
+		*/
 		$this->end_timer();
 		
-		return $rendering;*/
+		return '';
 	}
 	
 	
