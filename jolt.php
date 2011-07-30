@@ -69,7 +69,6 @@ class jolt {
 			'response_code' => 405,
 			'headers' => array()
 		);
-		
 	}
 
 	public function __destruct() {
