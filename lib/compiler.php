@@ -68,14 +68,14 @@ class compiler {
 	
 	private function check_class() {
 		if (empty($this->class)) {
-			throw new \jolt\exception\unrecoverable("The compiler must have a controller class before it can begin compilation.");
+			throw new \jolt\exception\unrecoverable("The compiler must have a controller class set before it can begin compilation.");
 		}
 		return $this;
 	}
 	
 	private function check_file() {
 		if (empty($this->file)) {
-			throw new \jolt\exception\unrecoverable("The compiler must have a controller file before it can begin compilation.");
+			throw new \jolt\exception\unrecoverable("The compiler must have a controller file set before it can begin compilation.");
 		}
 		return $this;
 	}
