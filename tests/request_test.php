@@ -54,6 +54,7 @@ class request_test extends testcase {
 	public function provider_accept_headers() {
 		return array(
 			array('', 'text/html'), // Default value
+			array('text/', 'text/html'), // Malformed header
 			array('*/*', '*/*'),
 			array('text/html', 'text/html'),
 			array('text/plain', 'text/plain'),
@@ -67,6 +68,7 @@ class request_test extends testcase {
 	public function provider_accept_headers_and_type() {
 		return array(
 			array('', 'html'),
+			array('text/', 'html'),
 			array('*/*', 'html'),
 			array('text/html', 'html'),
 			array('text/plain', 'plain'),
