@@ -10,22 +10,22 @@ class app_test extends testcase {
 	
 	public function test___construct__builds_compiler() {
 		$app = new app;
-		$this->assertInstanceOf('\jolt\compiler', $app->compiler);
+		$this->assertInstanceOf('jolt\compiler', $app->compiler);
 	}
 	
 	public function test___construct__builds_request() {
 		$app = new app;
-		$this->assertInstanceOf('\jolt\request', $app->request);
+		$this->assertInstanceOf('jolt\request', $app->request);
 	}
 	
 	public function test___construct__builds_response() {
 		$app = new app;
-		$this->assertInstanceOf('\jolt\response', $app->response);
+		$this->assertInstanceOf('jolt\response', $app->response);
 	}
 	
 	public function test___construct__builds_router() {
 		$app = new app;
-		$this->assertInstanceOf('\jolt\router', $app->router);
+		$this->assertInstanceOf('jolt\router', $app->router);
 	}
 	
 	
