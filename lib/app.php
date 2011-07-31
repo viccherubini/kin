@@ -8,28 +8,27 @@ require_once(__DIR__.'/router.php');
 
 class app {
 
-	public $compiler = null;
-	public $request = null;
-	public $response = null;
-	public $router = null;
+	private static $compiler = null;
+	private static $request = null;
+	private static $response = null;
+	private static $router = null;
 
-	public function __construct() {
-		$this->compiler = new compiler;
-		$this->request = new request;
-		$this->response = new response;
-		$this->router = new router;
-	}
+	private static $routes = array();
 	
-	public function __destruct() {
+	
+	public static function execute() {
+		self::build_objects();
 		
-	}
-
-
-	public function execute() {
-		$this->request
-			->set_accept(filter_input(INPUT_SERVER, 'HTTP_ACCEPT'))
-			->set_method(filter_input(INPUT_SERVER, 'REQUEST_METHOD'))
-			->set_path(filter_input(INPUT_SERVER, 'PATH_INFO'));
+		$http_headers = filter_input_array(INPUT_SERVER, array(
+			'HTTP_ACCEPT' => array(),
+			'REQUEST_METHOD' => array(),
+			'PATH_INFO' => array()
+		));
+		
+		self::request
+			->set_accept($http_headers['HTTP_ACCEPT'])
+			->set_method($http_headers['REQUEST_METHOD'])
+			->set_path($http_headers['PATH_INFO']);
 		
 		// Compile the settings
 		// Build the request object
@@ -45,8 +44,25 @@ class app {
 	}
 	
 	
+	public static function set_routes(array $routes) {
+		self::$routes = $routes;
+	}
+	
+	public static function set_paths(array $paths) {
+		self::$paths = $path;
+	}
+	
+	public static function set_settings(array $settings) {
+		self::$settings = $settings;
+	}
 	
 	
 	
+	private static function build_objects() {
+		self::$compiler = new compiler;
+		self::$request = new request;
+		self::$response = new response;
+		self::$router = new router;
+	}
 	
 }
