@@ -30,7 +30,8 @@ class app {
 			->set_accept(filter_input(INPUT_SERVER, 'HTTP_ACCEPT'))
 			->set_method(filter_input(INPUT_SERVER, 'REQUEST_METHOD'))
 			->set_path(filter_input(INPUT_SERVER, 'PATH_INFO'));
-			
+		
+		// Compile the settings
 		// Build the request object
 		// Build the router object and attach the routes and request data
 		// Route the data
