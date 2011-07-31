@@ -22,12 +22,10 @@ class request {
 		$accept_bits = $this->find_first_accept_type($accept);
 		if (count($accept_bits) > 0) {
 			$accept = $this->parse_out_accept_quality($accept_bits[0]);
+			$accept = $this->format_accept_type($accept);
+			$this->find_type_from_accept($accept);
 			
-			$mime_type = array();
-			if (preg_match('#(.*)/(.*)#i', $accept, $mime_type)) {
-				$this->accept = $accept;
-				$this->find_type_from_accept($mime_type);
-			}
+			$this->accept = $accept;
 		}
 		return $this;
 	}
@@ -80,9 +78,17 @@ class request {
 		return current(explode(';', $accept));
 	}
 	
-	private function find_type_from_accept($mime_type) {
-		if (isset($mime_type[2])) {
-			$this->set_type($mime_type[2]);
+	private function format_accept_type($accept) {
+		if (preg_match('#(.+)/(.+)#i', $accept)) {
+			return $accept;
+		}
+		return $this->accept;
+	}
+	
+	private function find_type_from_accept($accept) {
+		$accept_bits = explode('/', $accept);
+		if (isset($accept_bits[1])) {
+			$this->set_type($accept_bits[1]);
 		}
 		return $this;
 	}
