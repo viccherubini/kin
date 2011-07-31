@@ -18,6 +18,11 @@ class app_test extends testcase {
 		$this->assertInstanceOf('\jolt\response', $app->response);
 	}
 	
+	public function test___construct__builds_router() {
+		$app = new app;
+		$this->assertInstanceOf('\jolt\router', $app->router);
+	}
+	
 	
 	
 }
