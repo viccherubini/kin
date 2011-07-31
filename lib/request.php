@@ -19,16 +19,14 @@ class request {
 	
 
 	public function set_accept($accept) {
-		// Ignore multiple accept types
-		$accept_bits = explode(',', $accept);
+		$accept_bits = $this->find_first_accept_type($accept);
 		if (count($accept_bits) > 0) {
-			// Just get the first type, ignore the quality
-			$accept_type = current(explode(';', $accept_bits[0]));
+			$accept = $this->parse_out_accept_quality($accept_bits[0]);
 			
-			$mime_type_bits = array();
-			if (preg_match('#(.*)/(.*)#i', $accept_type, $mime_type_bits)) {
-				$this->accept = $accept_type;
-				$this->set_type($mime_type_bits[2]);
+			$mime_type = array();
+			if (preg_match('#(.*)/(.*)#i', $accept, $mime_type)) {
+				$this->accept = $accept;
+				$this->find_type_from_accept($mime_type);
 			}
 		}
 		return $this;
@@ -70,6 +68,23 @@ class request {
 	
 	public function get_type() {
 		return $this->type;
+	}
+	
+	
+	
+	private function find_first_accept_type($accept) {
+		return explode(',', $accept);
+	}
+	
+	private function parse_out_accept_quality($accept) {
+		return current(explode(';', $accept));
+	}
+	
+	private function find_type_from_accept($mime_type) {
+		if (isset($mime_type[2])) {
+			$this->set_type($mime_type[2]);
+		}
+		return $this;
 	}
 	
 }
