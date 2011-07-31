@@ -37,7 +37,7 @@ class view {
 		// Find the view file
 		$view_path = $this->view_path.$view;
 		if (!is_file($view_path)) {
-			throw new \Exception("The view was not found in the path specified: {$view_path}.");
+			throw new unrecoverable_exception("The view was not found in the path specified: {$view_path}.");
 		}
 
 		$payload = $this->payload;

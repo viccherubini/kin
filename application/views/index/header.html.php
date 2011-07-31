@@ -1,1 +1,1 @@
-<h1><?php echo $payload->model['hello_world']; ?></h1>
+<h1><?php echo $payload->contents['hello_world']; ?></h1>

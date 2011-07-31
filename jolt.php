@@ -7,6 +7,7 @@ require_once(__DIR__.'/view.php');
 
 class jolt {
 
+	// HTTP values
 	private $request = array();
 	private $response = array();
 
@@ -56,6 +57,7 @@ class jolt {
 			'accept' => 'text/html',
 			'path' => '/',
 			'request_method' => 'GET',
+			'type' => 'html',
 			'route' => array(
 				'route' => array(),
 				'arguments' => array()
@@ -82,57 +84,45 @@ class jolt {
 	public function execute() {
 		$this->start_timer();
 
+		// Ensure there is at least one route and a 404 route
+
 		$this->parse_request()
 			->route_request();
 
-		
-		/*$view = new view;
-		$view->set_css_path($this->css_path)
-			->set_image_path($this->image_path)
-			->set_js_path($this->js_path)
-			->set_url($this->url)
-			->set_secure_url($this->secure_url)
-			->set_use_rewrite($this->use_rewrite)
-			->set_view_path($this->view_path)
-			->set_view_type($this->view_type);
-
 		$rendering = '';
-		//try {
+		try {
+			$controller = $this->execute_controller();
 			
-			// Handle the outgoing response.
-			$this->build_controller_file_path()
-				->load_controller_file()
-				->build_controller()
-				->execute_controller();
+			$view = new view;
+			$view->set_view_path($this->paths['view'])
+				->set_view_type($this->request['type'])
+				->attach_payload($controller->payload)
+				->render($controller->view);
+			
+			$rendering = $view->get_rendering();
+			
+			$this->response['headers'] = $controller->headers;
+			$this->response['response_code'] = $controller->response_code;
+		} catch (\Exception $e) {
+			$rendering = $e->getMessage();
+		}
 
-			$payload = new payload;
-			$payload->model($this->controller->payload);
-
-			$rendering = $view->attach_payload($payload)
-				->render($this->controller->view)
-				->get_rendering();
-			
-			
-			
-		//} catch (redirect_exception $e) {
-		// Add a location header
-		//} catch (\Exception $e) {
-		//	$rendering = $e->getMessage();
-		//}
-		
 		header_remove('Content-Type');
-		header('Content-Type: '.$this->controller->content_type, true, $this->controller->response_code);
-		*/
+		header('Content-Type: '.$this->response['content_type'], true, $this->response['response_code']);
+
+		foreach ($this->response['headers'] as $header => $value) {
+			header("{$header}: {$value}");
+		}
+
 		$this->end_timer();
-		
-		return '';
+		return $rendering;
 	}
 	
 	
 	
 	
 	
-	
+	/* Public setters */
 	public function set_paths(array $paths) {
 		$this->paths = array_merge($this->paths, $paths);
 		foreach ($this->paths as $k => $path) {
@@ -168,8 +158,6 @@ class jolt {
 		return $this;
 	}
 	
-	
-	
 	public function set_routes(array $routes, array $route_404) {
 		$mapper = function($e) {
 			$e[1] = str_replace(array('%s', '%n'), array(jolt::alphanum_replacement, jolt::numeric_replacement), "#^{$e[1]}$#i");
@@ -183,6 +171,7 @@ class jolt {
 	
 	
 	
+	/* Public getters */
 	public function get_execution_time() {
 		return $this->execution_time;
 	}
@@ -190,6 +179,7 @@ class jolt {
 	public function get_routes() {
 		return $this->routes;
 	}
+	
 	
 	
 	/* Internal Methods */
@@ -203,99 +193,6 @@ class jolt {
 		$this->execution_time = ($this->end_time - $this->start_time);
 		return $this;
 	}
-
-	private function compile_routes(array $routes) {
-		
-	}
-	
-	
-	
-	/* Application, Route and Path Parsing */
-	
-	
-	
-	private function build_urls() {
-		
-		
-		return $this;
-	}
-	
-	
-	
-	private function parse_http_accept_type() {
-		$http_accept_bits = explode(',', filter_input(INPUT_SERVER, 'HTTP_ACCEPT'));
-		if (count($http_accept_bits) > 0) {
-			$this->http_accept_type = trim(strtolower($http_accept_bits[0]));
-		}
-		return $this;
-	}
-	
-	private function parse_view_type() {
-		$type_bits = explode('/', $this->http_accept_type);
-		if (count($type_bits) > 0) {
-			$this->view_type = end($type_bits);
-		}
-		return $this;
-	}
-	
-	private function determine_default_view_type() {
-		if ('*' === $this->view_type || empty($this->view_type)) {
-			$this->view_type = $this->default_view_type;
-		}
-		return $this;
-	}
-	
-	
-	
-	
-	/* Controller Manipulation and Building */
-	private function build_controller_file_path() {
-		$this->controller_file_path = $this->controller_path.$this->route[2];
-		return $this;		
-	}
-	
-	private function load_controller_file() {
-		if (!is_file($this->controller_file_path)) {
-			throw new \Exception("The Controller was not found in the path specified: {$this->controller_file_path}.");
-		}
-		
-		require_once($this->controller_file_path);
-		return $this;
-	}
-	
-	private function build_controller() {
-		$controller_class = $this->route[3];
-		if (!class_exists($controller_class, false)) {
-			throw new \Exception("The Controller Class, {$controller_class}, was not found in the global namespace.");
-		}
-		
-		$this->controller = new $controller_class;
-		$this->controller->set_content_type($this->http_accept_type);
-		return $this;
-	}
-	
-	private function execute_controller() {
-		try {
-			$action = new \ReflectionMethod($this->controller, $this->route[4]);
-		} catch (\ReflectionException $e) {
-			throw new \Exception($e->getMessage());
-		}
-		
-		$init_executed_successfully = true;
-		if (method_exists($this->controller, 'init')) {
-			$init_executed_successfully = $this->controller->init();
-		}
-
-		if ($init_executed_successfully && $action->isPublic()) {
-			$action->invokeArgs($this->controller, $this->route_arguments);
-		}
-		
-		if (method_exists($this->controller, 'shutdown')) {
-			$this->controller->shutdown();
-		}
-		
-		return $this;
-	}
 	
 	
 	
@@ -310,7 +207,8 @@ class jolt {
 	
 	
 	
-	/* Methods to generate the request array */
+	
+	/* Methods to generate the request array. */
 	private function parse_request() {
 		$this->parse_header_accept()
 			->parse_header_request_method()
@@ -326,9 +224,14 @@ class jolt {
 			// Just get the first type, ignore the quality
 			$accept_type = current(explode(';', $accept_bits[0]));
 			
-			if (preg_match('#(.*)/(.*)#i', $accept_type)) {
+			$mime_type_bits = array();
+			if (preg_match('#(.*)/(.*)#i', $accept_type, $mime_type_bits)) {
 				$this->request['accept'] = $accept_type;
 				$this->response['content_type'] = $accept_type;
+				
+				if ('*' !== $mime_type_bits[2]) {
+					$this->request['type'] = $mime_type_bits[2];
+				}
 			}
 		}
 		return $this;
@@ -349,7 +252,7 @@ class jolt {
 	
 	
 	
-	/* Methods to parse the path */
+	/* Methods to parse the path. */
 	private function route_request() {
 		$routes_count = count($this->request['routes']);
 		$matched_route = false;
@@ -375,6 +278,53 @@ class jolt {
 	}
 	
 	
+	/* Methods to find the right controller and to build it. */
+	private function execute_controller() {
+		$route = $this->request['route']['route'];
+		if (0 === count($route)) {
+			throw new unrecoverable_exception('A valid route is not available.');
+		}
+		
+		$controller_file = $this->paths['controller'].$route[2];
+		if (!is_file($controller_file)) {
+			throw new unrecoverable_exception("The controller was not found in the path specified: {$controller_file}.");
+		}
+		
+		require_once($controller_file);
+		
+		$controller_class = $route[3];
+		if (!class_exists($controller_class, false)) {
+			throw new unrecoverable_exception("The controller class, {$controller_class}, was not found in the global namespace.");
+		}
+		
+		$controller = new $controller_class;
+		$controller->attach_payload(new payload);
+		
+		$controller_action = $route[4];
+		try {
+			$action = new \ReflectionMethod($controller, $controller_action);
+		} catch (\ReflectionException $e) {
+			throw new unrecoverable_exception("The controller action, {$controller_action}, is not a public member of the controller class {$controller_class}.");
+		}
+		
+		$init_executed_successfully = true;
+		if (method_exists($controller, 'init')) {
+			$init_executed_successfully = $controller->init();
+		}
+
+		if ($init_executed_successfully && $action->isPublic()) {
+			$action->invokeArgs($controller, $this->request['route']['arguments']);
+		}
+		
+		if (method_exists($controller, 'shutdown')) {
+			$controller->shutdown();
+		}
+		
+		return $controller;
+	}
+	
+	
+	
 	
 }
 
@@ -382,7 +332,11 @@ class jolt {
 
 
 
-
+class unrecoverable_exception extends \Exception {
+	public function __construct($message) {
+		parent::__construct("[Unrecoverable Exception] {$message}");
+	}
+}
 
 
 

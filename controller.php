@@ -4,11 +4,10 @@ declare(encoding='UTF-8');
 abstract class controller {
 	
 	public $headers = array();
-	public $payload = array();
 	
-	public $content_type = null;
 	public $response_code = 200;
 	
+	public $payload = null;
 	public $view = null;
 	
 	public function __construct() {
@@ -19,23 +18,25 @@ abstract class controller {
 	
 	}
 	
-	
 	public function __set($k, $v) {
-		$this->payload[$k] = $v;
+		$this->payload->contents[$k] = $v;
 		return $this;
 	}
 	
 	public function __get($k) {
-		if (array_key_exists($k, $this->payload)) {
-			return $this->payload[$k];
+		if (array_key_exists($k, $this->payload->contents)) {
+			return $this->payload->contents[$k];
 		}
 		return null;
 	}
 	
+	public function attach_payload(payload $payload) {
+		$this->payload = $payload;
+		return $this;
+	}
+	
 	public function add_header($header, $value) {
-		if ('content-type' === strtolower($header)) {
-			$this->content_type = $value;
-		} else {
+		if ('content-type' !== strtolower($header)) {
 			$this->headers[$header] = $value;
 		}
 		return $this;
@@ -48,8 +49,6 @@ abstract class controller {
 	public function render($view) {
 		$this->view = trim($view);
 	}
-	
-	
 	
 	public function set_content_type($content_type) {
 		$this->content_type = trim($content_type);
