@@ -31,7 +31,16 @@ class app {
 			->set_method(filter_input(INPUT_SERVER, 'REQUEST_METHOD'))
 			->set_path(filter_input(INPUT_SERVER, 'PATH_INFO'));
 			
-		
+		// Build the request object
+		// Build the router object and attach the routes and request data
+		// Route the data
+		// Build the compiler and set the data from the route
+		// Build the dispatcher and set the controller and data from the route
+		// Dispatch the controller action
+		// Get the controller and grab it's data (the payload)
+		// Build a view object and attach the payload data from the controller, render it
+		// Set all of the headers in the response object, set the rendered view
+		// Execute the response object and return the final HTTP response
 	}
 	
 	
