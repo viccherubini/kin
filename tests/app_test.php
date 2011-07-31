@@ -8,6 +8,11 @@ require_once(__DIR__.'/../lib/app.php');
 
 class app_test extends testcase {
 	
+	public function test___construct__builds_compiler() {
+		$app = new app;
+		$this->assertInstanceOf('\jolt\compiler', $app->compiler);
+	}
+	
 	public function test___construct__builds_request() {
 		$app = new app;
 		$this->assertInstanceOf('\jolt\request', $app->request);
