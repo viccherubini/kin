@@ -89,7 +89,7 @@ class jolt {
 		$this->parse_request()
 			->route_request();
 
-		$rendering = '';
+		/*$rendering = '';
 		try {
 			$controller = $this->execute_controller();
 			
@@ -112,7 +112,7 @@ class jolt {
 
 		foreach ($this->response['headers'] as $header => $value) {
 			header("{$header}: {$value}");
-		}
+		}*/
 
 		$this->end_timer();
 		return $rendering;

@@ -28,4 +28,6 @@ $jolt->set_paths($paths)
 	->set_settings($settings)
 	->set_routes($routes, $route_404);
 
-echo $jolt->execute();
+$jolt->execute();
+
+print_r($jolt);
