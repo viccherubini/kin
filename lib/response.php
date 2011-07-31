@@ -11,7 +11,9 @@ class response {
 	private $payload = null;
 
 	public function __construct() {
-	
+		$this->headers = array(
+			'content-type' => $this->content_type
+		);
 	}
 	
 	public function __destruct() {
