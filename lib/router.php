@@ -94,6 +94,27 @@ class router {
 		return $this->arguments;
 	}
 	
+	public function get_action() {
+		if (isset($this->route[4])) {
+			return $this->route[4];
+		}
+		return null;
+	}
+	
+	public function get_class() {
+		if (isset($this->route[3])) {
+			return $this->route[3];
+		}
+		return null;
+	}
+	
+	public function get_file() {
+		if (isset($this->route[2])) {
+			return $this->route[2];
+		}
+		return null;
+	}
+	
 	public function get_route() {
 		return $this->route;
 	}

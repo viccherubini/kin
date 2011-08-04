@@ -101,4 +101,8 @@ class controller {
 		return $this->payload;
 	}
 	
+	public function get_view() {
+		return $this->view;
+	}
+	
 }

@@ -7,17 +7,43 @@ class response {
 	private $response_code = 405;
 	
 	private $headers = array();
-	
-	private $payload = null;
+	private $content = null;
 
 	public function __construct() {
-		$this->headers = array(
-			'content-type' => $this->content_type
-		);
+		
 	}
 	
 	public function __destruct() {
 	
+	}
+	
+	
+	
+	public function respond() {
+		foreach ($this->headers as $header => $value) {
+			header("{$header}: {$value}");
+		}
+		return true;
+	}
+	
+	public function set_content($content) {
+		$this->content = $content;
+		return $this;
+	}
+	
+	public function set_content_type($content_type) {
+		$this->content_type = $content_type;
+		return $this;
+	}
+	
+	public function set_response_code($response_code) {
+		$this->response_code = (int)$response_code;
+		return $this;
+	}
+	
+	public function set_headers(array $headers) {
+		$this->headers = $headers;
+		return $this;
 	}
 
 }
