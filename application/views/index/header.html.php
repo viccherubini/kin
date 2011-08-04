@@ -1,1 +1,0 @@
-<h1><?php echo $payload->contents['hello_world']; ?></h1>

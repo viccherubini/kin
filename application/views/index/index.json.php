@@ -1,1 +1,0 @@
-<?php echo(json_encode($payload->to_array())); ?>
