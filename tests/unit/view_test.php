@@ -6,7 +6,7 @@ use \jolt\view as view;
 require_once('vfsStream/vfsStream.php');
 
 require_once(__DIR__.'/testcase.php');
-require_once(__DIR__.'/../lib/view.php');
+require_once(__DIR__.'/../../kin/view.php');
 
 class view_test extends testcase {
 

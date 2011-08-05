@@ -4,7 +4,7 @@ declare(encoding='UTF-8');
 use \jolt\dispatcher as dispatcher;
 
 require_once(__DIR__.'/testcase.php');
-require_once(__DIR__.'/../lib/dispatcher.php');
+require_once(__DIR__.'/../../kin/dispatcher.php');
 
 class dispatcher_test extends testcase {
 	

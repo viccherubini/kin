@@ -4,7 +4,7 @@ declare(encoding='UTF-8');
 use \jolt\controller as controller;
 
 require_once(__DIR__.'/testcase.php');
-require_once(__DIR__.'/../lib/controller.php');
+require_once(__DIR__.'/../../kin/controller.php');
 
 class controller_test extends testcase {
 	

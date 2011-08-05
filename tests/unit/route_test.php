@@ -4,7 +4,7 @@ declare(encoding='UTF-8');
 use \jolt\route as route;
 
 require_once(__DIR__.'/testcase.php');
-require_once(__DIR__.'/../lib/route.php');
+require_once(__DIR__.'/../../kin/route.php');
 
 class route_test extends testcase {
 
