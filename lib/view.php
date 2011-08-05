@@ -5,22 +5,14 @@ require_once(__DIR__.'/exceptions/unrecoverable.php');
 
 class view {
 
-	//private $css_path = null;
-	//private $image_path = null;
-	//private $js_path = null;
-	//private $view_path = null;
-	
-	//private $secure_url = null;
-	//private $url = null;
-	//private $use_rewrite = false;
 	private $file = '';
 	private $path = '';
 	private $type = '';
 	private $rendering = '';
 	
 	private $payload = array();
-
-	//private $javascripts = array();
+	
+	const ext = 'php';
 
 	public function __construct() {
 		
@@ -30,14 +22,8 @@ class view {
 
 	}
 	
-	//public function attach_payload(payload $payload) {
-	//	$this->payload = $payload;
-	//	return $this;
-	//}
-
 	public function render() {
-		$view = $this->file.'.'.$this->type.'.php';
-		$file_path = $this->path.$view;
+		$file_path = $this->path.$this->compile_view_name();
 		if (!is_file($file_path)) {
 			throw new \jolt\exception\unrecoverable("The renderer can not find the view file, {$file_path}. Compilation can not continue.");
 		}
@@ -50,9 +36,6 @@ class view {
 		return $this;
 	}
 
-	public function safe($v) {
-		return htmlentities($v, ENT_COMPAT, 'UTF-8');
-	}
 
 	
 	
@@ -62,7 +45,7 @@ class view {
 	}
 	
 	public function set_path($path) {
-		$this->path = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+		$this->path = rtrim($path, '/').'/';
 		return $this;
 	}
 	
@@ -78,8 +61,27 @@ class view {
 	
 	
 	
+	public function get_path() {
+		return $this->path;
+	}
+	
 	public function get_rendering() {
 		return $this->rendering;
 	}
 
+
+
+	private function compile_view_name() {
+		$view_bits = array($this->file);
+		if (!empty($this->type)) {
+			$view_bits[] = $view;
+		}
+		
+		if (false === strripos($this->file, self::ext)) {
+			$view_bits[] = self::ext;
+		}
+		
+		return(implode('.', $view_bits));
+	}
+	
 }
