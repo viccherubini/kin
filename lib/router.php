@@ -10,17 +10,14 @@ class router {
 	private $request_method = '';
 	
 	// All of the routes
-	private $compiled_routes = array();
-	private $uncompiled_routes = array();
-	private $error_route = array();
+	private $routes = array();
+	private $exception_routes = array();
 	
-	// The matched route and arguments
-	private $arguments = array();
-	private $route = array();
+	// The matched route
+	private $route = null;
 	
-	const alphanum_replacement = '([a-z0-9_\-/%\.\*\+]*)';
-	const numeric_replacement = '([\d]+)';
-
+	const route_404 = 404;
+	
 	public function __construct() {
 	
 	}
@@ -32,60 +29,50 @@ class router {
 
 
 	public function route() {
-		$this->check_compiled_routes()
-			->check_error_route();
+		$this->check_routes()
+			->check_exception_routes()
+			->check_exception_route_404_exists();
 		
-		$matched_route = false;
+		// Set the route as the error route by default
+		$this->route = $this->exception_routes[self::route_404];
+		
+		// Don't bother to do anything else if the path or method are empty
 		if (empty($this->path) || empty($this->request_method)) {
-			$this->route = $this->error_route;
-			return true;
+			return(true);
 		}
 		
-		$routes_count = count($this->compiled_routes);
-		for ($i=0; $i<$routes_count; $i++) {
-			$arguments = array();
-			
-			$request_methods_match = ($this->compiled_routes[$i][0] === $this->request_method);
-			$routes_match = (preg_match_all($this->compiled_routes[$i][1], $this->path, $arguments, PREG_SET_ORDER) > 0);
-			
-			if ($request_methods_match && $routes_match) {
-				$this->route = $this->uncompiled_routes[$i];
-				$this->arguments = array_slice($arguments[0], 1);
-				
-				$matched_route = true;
+		foreach ($this->routes as $r) {
+			if ($this->check_route_matches_path($r->get_method(), $r->get_compiled_route())) {
+				$this->format_route_arguments();
+				$this->route = $r;
 				break;
 			}
 		}
 		
-		if (!$matched_route) {
-			$this->route = $this->error_route;
-		}
-		
-		return true;
+		return(true);
 	}
 
 
 	
+	public function set_routes(array $routes) {
+		$this->routes = $this->filter_out_invalid_routes($routes);
+		return($this->check_routes());
+	}
+	
+	public function set_exception_routes(array $exception_routes) {
+		$this->exception_routes = $this->filter_out_invalid_routes($exception_routes);
+		return($this->check_exception_routes()
+			->check_exception_route_404_exists());
+	}
 	
 	public function set_path($path) {
 		$this->path = trim($path);
-		return $this;
+		return($this);
 	}
 	
 	public function set_request_method($request_method) {
 		$this->request_method = strtoupper($request_method);
-		return $this;
-	}
-	
-	public function set_error_route(array $error_route) {
-		$this->error_route = $error_route;
-		return $this;
-	}
-	
-	public function set_routes(array $routes) {
-		$this->uncompiled_routes = $routes;
-		$this->compiled_routes = $this->compile_routes($routes);
-		return $this;
+		return($this);
 	}
 	
 	
@@ -94,61 +81,62 @@ class router {
 		return $this->arguments;
 	}
 	
-	public function get_action() {
-		if (isset($this->route[4])) {
-			return $this->route[4];
-		}
-		return null;
-	}
-	
-	public function get_class() {
-		if (isset($this->route[3])) {
-			return $this->route[3];
-		}
-		return null;
-	}
-	
-	public function get_file() {
-		if (isset($this->route[2])) {
-			return $this->route[2];
-		}
-		return null;
+	public function get_routes() {
+		return($this->routes);
 	}
 	
 	public function get_route() {
-		return $this->route;
-	}
-	
-	public function get_compiled_routes() {
-		return $this->compiled_routes;
+		return($this->route);
 	}
 	
 	
 	
-	private function check_compiled_routes() {
-		if (0 === count($this->compiled_routes)) {
-			throw new \jolt\exception\unrecoverable("The router must have at least one compiled route before it can route a request.");
+	private function filter_out_invalid_routes($routes) {
+		return array_filter($routes, function($r) {
+			return($r instanceof \jolt\route);
+		});
+	}
+	
+	private function check_routes() {
+		if (0 === count($this->routes)) {
+			throw new \jolt\exception\unrecoverable("The router requires at least one \jolt\\route object set before it can route properly.");
 		}
-		return $this;
+		return($this);
 	}
 	
-	private function check_error_route() {
-		if (0 === count($this->error_route)) {
-			throw new \jolt\exception\unrecoverable("The router must have an error route defined before it can route a request.");
+	private function check_exception_routes() {
+		if (0 === count($this->exception_routes)) {
+			throw new \jolt\exception\unrecoverable("The router requires at least one \jolt\\route object set as an exception route before it can route properly.");
 		}
-		return $this;
+		return($this);
 	}
 	
-	private function compile_routes($routes) {
-		$search = array('%s', '%n');
-		$replace = array(self::alphanum_replacement, self::numeric_replacement);
-		
-		$routes = array_map(function($e) use ($search, $replace) {
-			$e[1] = str_replace($search, $replace, "#^{$e[1]}$#i");
-			return $e;
-		}, $routes);
-		
-		return $routes;
+	private function check_exception_route_404_exists() {
+		if (!array_key_exists(self::route_404, $this->exception_routes)) {
+			throw new \jolt\exception\unrecoverable("The router requires at least one \jolt\\route object set as a 404 exception route before it can route properly.");
+		}
+		return($this);
 	}
 	
+	private function check_request_methods_match($route_request_method) {
+		return($route_request_method === $this->request_method);
+	}
+
+	private function check_routes_match($compiled_route) {
+		$this->arguments = array();
+		return(preg_match_all($compiled_route, $this->path, $this->arguments, PREG_SET_ORDER) > 0);
+	}
+	
+	private function check_route_matches_path($route_request_method, $compiled_route) {
+		return($this->check_request_methods_match($route_request_method) && $this->check_routes_match($compiled_route));
+	}
+	
+	private function format_route_arguments() {
+		if (isset($this->arguments[0])) {
+			$this->arguments = $this->arguments[0];
+			array_shift($this->arguments);
+			$this->arguments = array_values($this->arguments);
+		}
+		return($this);
+	}
 }
