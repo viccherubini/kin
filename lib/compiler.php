@@ -54,7 +54,7 @@ class compiler {
 	}
 	
 	public function set_path($path) {
-		$this->path = rtrim($path, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+		$this->path = rtrim($path, '/').'/';
 		return $this;
 	}
 
