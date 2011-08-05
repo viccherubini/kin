@@ -90,4 +90,5 @@ class compiler_test extends testcase {
 	private function get_file() {
 		return uniqid(true).'_'.$this->class.'.php';
 	}
+	
 }
