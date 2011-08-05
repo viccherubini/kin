@@ -13,10 +13,6 @@ class response {
 		
 	}
 	
-	public function __destruct() {
-	
-	}
-	
 	
 	
 	public function respond() {
@@ -34,27 +30,29 @@ class response {
 			header($full_header, true, $this->response_code);
 		}
 		
-		return $this->content;
+		return($this->content);
 	}
+	
+	
 	
 	public function set_content($content) {
 		$this->content = $content;
-		return $this;
+		return($this);
 	}
 	
 	public function set_content_type($content_type) {
 		$this->content_type = $content_type;
-		return $this;
+		return($this);
 	}
 	
 	public function set_response_code($response_code) {
 		$this->response_code = (int)$response_code;
-		return $this;
+		return($this);
 	}
 	
 	public function set_headers(array $headers) {
 		$this->headers = $headers;
-		return $this;
+		return($this);
 	}
 
 }

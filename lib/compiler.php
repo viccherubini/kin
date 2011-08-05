@@ -14,10 +14,6 @@ class compiler {
 	public function __construct() {
 	
 	}
-	
-	public function __destruct() {
-	
-	}
 
 
 
@@ -38,30 +34,30 @@ class compiler {
 		$ref = new \ReflectionClass($this->class);
 		$this->controller = $ref->newInstance();
 		
-		return true;
+		return(true);
 	}
 	
 	
 	
 	public function set_class($class) {
 		$this->class = trim($class);
-		return $this;
+		return($this);
 	}
 	
 	public function set_file($file) {
 		$this->file = trim($file);
-		return $this;
+		return($this);
 	}
 	
 	public function set_path($path) {
 		$this->path = rtrim($path, '/').'/';
-		return $this;
+		return($this);
 	}
 
 
 
 	public function get_controller() {
-		return $this->controller;
+		return($this->controller);
 	}
 	
 	
@@ -70,14 +66,14 @@ class compiler {
 		if (empty($this->class)) {
 			throw new \jolt\exception\unrecoverable("The compiler must have a controller class set before it can begin compilation.");
 		}
-		return $this;
+		return($this);
 	}
 	
 	private function check_file() {
 		if (empty($this->file)) {
 			throw new \jolt\exception\unrecoverable("The compiler must have a controller file set before it can begin compilation.");
 		}
-		return $this;
+		return($this);
 	}
 	
 }

@@ -15,19 +15,13 @@ class dispatcher {
 		
 	}
 	
-	public function __destruct() {
-		
-	}
-	
 	
 	
 	public function attach_controller(controller $controller) {
 		$this->controller = $controller;
 		$this->class = get_class($controller);
-		return $this;
+		return($this);
 	}
-	
-	
 	
 	public function dispatch() {
 		$this->check_controller()
@@ -42,18 +36,18 @@ class dispatcher {
 	
 	public function set_action($action) {
 		$this->action = trim($action);
-		return $this;
+		return($this);
 	}
 
 	public function set_arguments(array $arguments) {
 		$this->arguments = $arguments;
-		return $this;
+		return($this);
 	}
 	
 	
 	
 	public function get_controller() {
-		return $this->controller;
+		return($this->controller);
 	}
 	
 	
@@ -62,21 +56,21 @@ class dispatcher {
 		if (is_null($this->controller)) {
 			throw new \jolt\exception\unrecoverable("The dispatcher must have a controller object attached before it can begin dispatching.");
 		}
-		return $this;
+		return($this);
 	}
 	
 	private function check_action() {
 		if (empty($this->action)) {
 			throw new \jolt\exception\unrecoverable("The dispatcher must have a controller action set before it can begin dispatching.");
 		}
-		return $this;
+		return($this);
 	}
 	
 	private function check_action_is_public($action) {
 		if (!$action->isPublic()) {
 			throw new \jolt\exception\unrecoverable("The controller action, {$this->action}, is not a public member of the controller class {$this->class}.");
 		}
-		return $this;
+		return($this);
 	}
 	
 	private function build_action() {
@@ -85,7 +79,7 @@ class dispatcher {
 		} catch (\ReflectionException $e) {
 			throw new \jolt\exception\unrecoverable("The controller action, {$this->action}, is not a member of the controller class {$this->class}.");
 		}
-		return $action;
+		return($action);
 	}
 	
 	private function dispatch_action($action) {

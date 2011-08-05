@@ -12,10 +12,6 @@ class request {
 	
 	}
 	
-	public function __destruct() {
-	
-	}
-	
 	
 
 	public function set_accept($accept) {
@@ -27,19 +23,19 @@ class request {
 			
 			$this->accept = $accept;
 		}
-		return $this;
+		return($this);
 	}
 	
 	public function set_method($method) {
 		$this->method = strtoupper($method);
-		return $this;
+		return($this);
 	}
 	
 	public function set_path($path) {
 		if (!empty($path)) {
 			$this->path = $path;
 		}
-		return $this;
+		return($this);
 	}
 	
 	public function set_type($type) {
@@ -47,42 +43,42 @@ class request {
 		if ('*' !== $type) {
 			$this->type = $type;
 		}
-		return $this;
+		return($this);
 	}
 
 
 
 	public function get_accept() {
-		return $this->accept;
+		return($this->accept);
 	}
 	
 	public function get_method() {
-		return $this->method;
+		return($this->method);
 	}
 	
 	public function get_path() {
-		return $this->path;
+		return($this->path);
 	}
 	
 	public function get_type() {
-		return $this->type;
+		return($this->type);
 	}
 	
 	
 	
 	private function find_first_accept_type($accept) {
-		return explode(',', $accept);
+		return(explode(',', $accept));
 	}
 	
 	private function parse_out_accept_quality($accept) {
-		return current(explode(';', $accept));
+		return(current(explode(';', $accept)));
 	}
 	
 	private function format_accept_type($accept) {
 		if (preg_match('#(.+)/(.+)#i', $accept)) {
-			return $accept;
+			return($accept);
 		}
-		return $this->accept;
+		return($this->accept);
 	}
 	
 	private function find_type_from_accept($accept) {
@@ -90,7 +86,7 @@ class request {
 		if (isset($accept_bits[1])) {
 			$this->set_type($accept_bits[1]);
 		}
-		return $this;
+		return($this);
 	}
 	
 }

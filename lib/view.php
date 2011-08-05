@@ -18,9 +18,7 @@ class view {
 		
 	}
 
-	public function __destruct() {
 
-	}
 	
 	public function render() {
 		$file_path = $this->path.$this->compile_view_name();
@@ -33,30 +31,29 @@ class view {
 			require($file_path);
 		$this->rendering = ob_get_clean();
 
-		return $this;
+		return($this);
 	}
 
 
-	
-	
+
 	public function set_file($file) {
 		$this->file = trim($file);
-		return $this;
+		return($this);
 	}
 	
 	public function set_path($path) {
 		$this->path = rtrim($path, '/').'/';
-		return $this;
+		return($this);
 	}
 	
 	public function set_type($type) {
 		$this->type = strtolower(trim($type));
-		return $this;
+		return($this);
 	}
 	
 	public function set_payload(array $payload) {
 		$this->payload = $payload;
-		return $this;
+		return($this);
 	}
 	
 	
