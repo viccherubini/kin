@@ -7,15 +7,14 @@ class controller {
 	private $payload = array();
 	
 	private $response_code = 200;
-	private $view = null;
+	private $view = '';
 	
 	public function __construct() {
 		$this->payload = array(
 			'contents' => array(),
 			'errors' => array(),
 			'models' => array(),
-			'message' => '',
-			'redirect' => ''
+			'message' => ''
 		);
 	}
 	
