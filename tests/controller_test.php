@@ -82,6 +82,7 @@ class controller_test extends testcase {
 	}
 	
 	public function test_add_model__adds_model_values() {
+		$model_class = 'jolt\model';
 		$model_values = array('id' => mt_rand(1, 1000), 'password' => uniqid());
 		
 		$model = $this->getMock($model_class, array('get_values'));
