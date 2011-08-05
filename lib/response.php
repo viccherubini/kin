@@ -4,7 +4,7 @@ declare(encoding='UTF-8');
 class response {
 
 	private $content_type = 'text/html';
-	private $response_code = 405;
+	private $response_code = 200;
 	
 	private $headers = array();
 	private $content = null;
@@ -20,10 +20,21 @@ class response {
 	
 	
 	public function respond() {
-		foreach ($this->headers as $header => $value) {
-			header("{$header}: {$value}");
+		if (0 === count($this->headers)) {
+			$this->headers = headers_list();
 		}
-		return true;
+		
+		header_remove('content-type');
+		header('content-type: '.$this->content_type, true, $this->response_code);
+		
+		foreach ($this->headers as $header => $value) {
+			$full_header = implode(': ', array($header, $value));
+			
+			header_remove($header);
+			header($full_header, true, $this->response_code);
+		}
+		
+		return $this->content;
 	}
 	
 	public function set_content($content) {
