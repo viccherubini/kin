@@ -5,6 +5,8 @@ require_once(__DIR__.'/exceptions/unrecoverable.php');
 
 class route {
 	
+	private $arguments = array();
+	
 	private $method = '';
 	private $route = '';
 	private $controller = '';
@@ -33,6 +35,15 @@ class route {
 		$this->action = $action;
 		
 		$this->compile();
+	}
+	
+	public function set_arguments(array $arguments) {
+		$this->arguments = $arguments;
+		return $this;
+	}
+	
+	public function get_arguments() {
+		return $this->arguments;
 	}
 	
 	public function get_route() {
