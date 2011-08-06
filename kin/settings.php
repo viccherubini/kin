@@ -1,0 +1,125 @@
+<?php namespace kin;
+declare(encoding='UTF-8');
+
+require_once(__DIR__.'/exceptions/unrecoverable.php');
+
+class settings {
+
+	private $settings = array();
+	private $custom = array();
+	
+	private $paths = array();
+
+	public function __construct() {
+		$this->paths = array(
+			'app_path' => true,
+			'controllers_path' => true,
+			'validators_path' => true,
+			'views_path' => true,
+			'assets_path' => true,
+			'css_path' => true,
+			'js_path' => true,
+			'images_path' => true
+		);
+		
+		$this->settings = array(
+			'app_path' => '',
+			'controllers_path' => '',
+			'validators_path' => '',
+			'views_path' => '',
+			'assets_path' => 'assets/',
+			'css_path' => '',
+			'js_path' => '',
+			'images_path' => '',
+			'type' => 'json',
+			'content_type' => 'application/json; encoding=utf-8',
+			'server_name' => '',
+			'allow_ssl' => true,
+			'force_ssl' => false,
+			'url' => '',
+			'secure_url' => ''
+		);
+	}
+	
+	public function __set($k, $v) {
+		if (array_key_exists($k, $this->settings) && gettype($v) === gettype($this->settings[$k])) {
+			if (array_key_exists($k, $this->paths)) {
+				$v = $this->append_ending_slash($v);
+			}
+			$this->settings[$k] = $v;
+		}
+		return(true);
+	}
+	
+	public function __get($k) {
+		if (array_key_exists($k, $this->settings)) {
+			return($this->settings[$k]);
+		}
+		return(null);
+	}
+	
+	
+	
+	public function compile() {
+		if (empty($this->settings['app_path'])) {
+			throw new \kin\exception\unrecoverable("The settings can not begin compilation, an app_path is not set.");
+		}
+		
+		$app_path = $this->settings['app_path'];
+		$this->compile_app_subpath('controllers_path', 'controllers')
+			->compile_app_subpath('validators_path', 'validators')
+			->compile_app_subpath('views_path', 'views');
+		
+		$this->compile_assets_subpath('css_path', 'css')
+			->compile_assets_subpath('js_path', 'js')
+			->compile_assets_subpath('images_path', 'images');
+			
+		if (empty($this->settings['server_name'])) {
+			$default_options = array('options' => array('default' => 'localhost'));
+			$this->server_name = filter_input(INPUT_SERVER, 'SERVER_NAME', FILTER_SANITIZE_URL, $default_options);
+		}
+		
+		if (empty($this->settings['url'])) {
+			$url_protocol = ($this->allow_ssl && $this->force_ssl ? 'https://' : 'http://');
+			$this->url = rtrim($url_protocol.$this->server_name, '/').'/';
+		}
+		
+	}
+	
+	
+	
+	public function add_custom($k, $v) {
+		$this->custom[$k] = $v;
+		return($this);
+	}
+	
+	
+	
+	public function get_settings() {
+		return($this->settings);
+	}
+	
+	public function get_custom() {
+		return($this->custom);
+	}
+	
+	
+	
+	private function append_ending_slash($v) {
+		return(rtrim($v, '/').'/');
+	}
+	
+	private function compile_app_subpath($key, $path) {
+		if (empty($this->settings[$key])) {
+			$this->$key = $this->settings['app_path'].$path;
+		}
+		return($this);
+	}
+	
+	private function compile_assets_subpath($key, $path) {
+		if (empty($this->settings[$key])) {
+			$this->$key = $this->settings['assets_path'].$path;
+		}
+		return($this);
+	}
+}
