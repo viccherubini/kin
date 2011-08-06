@@ -1,4 +1,4 @@
-<?php namespace jolt;
+<?php namespace kin;
 declare(encoding='UTF-8');
 
 require_once(__DIR__.'/exceptions/unrecoverable.php');
@@ -65,7 +65,7 @@ class route {
 	private function check_method_is_valid($method) {
 		$method = strtoupper($method);
 		if (!in_array($method, array(self::get, self::post, self::put, self::delete))) {
-			throw new \jolt\exception\unrecoverable("The route can not be properly constructed. The method {$method} is not one of GET, POST, PUT, or DELETE.");
+			throw new \kin\exception\unrecoverable("The route can not be properly constructed. The method {$method} is not one of GET, POST, PUT, or DELETE.");
 		}
 		return($this);
 	}
@@ -83,21 +83,21 @@ class route {
 	private function check_route_is_nonempty($route) {
 		$route_length = strlen($route);
 		if (0 === $route_length) {
-			throw new \jolt\exception\unrecoverable("The route can not be empty.");
+			throw new \kin\exception\unrecoverable("The route can not be empty.");
 		}
 		return($this);
 	}
 	
 	private function check_route_starts_with_slash($route) {
 		if ('/' !== $route[0]) {
-			throw new \jolt\exception\unrecoverable("The route must begin with a forward slash: /.");
+			throw new \kin\exception\unrecoverable("The route must begin with a forward slash: /.");
 		}
 		return($this);
 	}
 	
 	private function check_route_matches_regex($route) {
 		if (0 === preg_match('#^/([a-z]+)([a-z0-9_\-/%\.\*]*)$#i', $route)) {
-			throw new \jolt\exception\unrecoverable("The route {$route} is not valid.");
+			throw new \kin\exception\unrecoverable("The route {$route} is not valid.");
 		}
 		return($this);
 	}

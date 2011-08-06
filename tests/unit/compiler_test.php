@@ -1,7 +1,7 @@
-<?php namespace jolt_test;
+<?php namespace kintest;
 declare(encoding='UTF-8');
 
-use \jolt\compiler as compiler;
+use \kin\compiler as compiler;
 
 require_once('vfsStream/vfsStream.php');
 
@@ -14,7 +14,7 @@ class compiler_test extends testcase {
 	private $path = 'controllers';
 
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_compile__requires_class() {
 		$compiler = new compiler;
@@ -23,7 +23,7 @@ class compiler_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_compile__requires_file() {
 		$compiler = new compiler;
@@ -33,7 +33,7 @@ class compiler_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_compile__requires_file_to_exist() {
 		$compiler = new compiler;
@@ -45,7 +45,7 @@ class compiler_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_compile__requires_class_to_exist() {
 		$file = $this->get_file();

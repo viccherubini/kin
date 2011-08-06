@@ -1,4 +1,4 @@
-<?php namespace jolt;
+<?php namespace kin;
 declare(encoding='UTF-8');
 
 require_once(__DIR__.'/exceptions/unrecoverable.php');
@@ -23,12 +23,12 @@ class compiler {
 		
 		$file_path = $this->path.$this->file;
 		if (!is_file($file_path)) {
-			throw new \jolt\exception\unrecoverable("The compiler can not find the controller file, {$file_path}. Compilation can not continue.");
+			throw new \kin\exception\unrecoverable("The compiler can not find the controller file, {$file_path}. Compilation can not continue.");
 		}
 		
 		require_once($file_path);
 		if (!class_exists($this->class, false)) {
-			throw new \jolt\exception\unrecoverable("The compiler can not find the controller class, {$this->class} in the controller file, {$file_path}. Compilation can not continue.");
+			throw new \kin\exception\unrecoverable("The compiler can not find the controller class, {$this->class} in the controller file, {$file_path}. Compilation can not continue.");
 		}
 		
 		$ref = new \ReflectionClass($this->class);
@@ -64,14 +64,14 @@ class compiler {
 	
 	private function check_class() {
 		if (empty($this->class)) {
-			throw new \jolt\exception\unrecoverable("The compiler must have a controller class set before it can begin compilation.");
+			throw new \kin\exception\unrecoverable("The compiler must have a controller class set before it can begin compilation.");
 		}
 		return($this);
 	}
 	
 	private function check_file() {
 		if (empty($this->file)) {
-			throw new \jolt\exception\unrecoverable("The compiler must have a controller file set before it can begin compilation.");
+			throw new \kin\exception\unrecoverable("The compiler must have a controller file set before it can begin compilation.");
 		}
 		return($this);
 	}

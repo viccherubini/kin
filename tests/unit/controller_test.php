@@ -1,7 +1,7 @@
-<?php namespace jolt_test;
+<?php namespace kintest;
 declare(encoding='UTF-8');
 
-use \jolt\controller as controller;
+use \kin\controller as controller;
 
 require_once(__DIR__.'/testcase.php');
 require_once(__DIR__.'/../../kin/controller.php');
@@ -67,7 +67,7 @@ class controller_test extends testcase {
 	}
 	
 	public function test_add_model__adds_model_name() {
-		$model_class = 'jolt\model';
+		$model_class = 'kin\model';
 		
 		$model = $this->getMock($model_class, array('get_values'));
 		$model->expects($this->once())
@@ -82,7 +82,7 @@ class controller_test extends testcase {
 	}
 	
 	public function test_add_model__adds_model_values() {
-		$model_class = 'jolt\model';
+		$model_class = 'kin\model';
 		$model_values = array('id' => mt_rand(1, 1000), 'password' => uniqid());
 		
 		$model = $this->getMock($model_class, array('get_values'));

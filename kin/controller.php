@@ -1,4 +1,4 @@
-<?php namespace jolt;
+<?php namespace kin;
 declare(encoding='UTF-8');
 
 class controller {

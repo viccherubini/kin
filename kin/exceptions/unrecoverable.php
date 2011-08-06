@@ -1,4 +1,4 @@
-<?php namespace jolt\exception;
+<?php namespace kin\exception;
 declare(encoding='UTF-8');
 
 class unrecoverable extends \Exception {

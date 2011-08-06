@@ -1,4 +1,4 @@
-<?php namespace jolt;
+<?php namespace kin;
 declare(encoding='UTF-8');
 
 require_once(__DIR__.'/exceptions/unrecoverable.php');
@@ -23,7 +23,7 @@ class view {
 	public function render() {
 		$file_path = $this->path.$this->compile_view_name();
 		if (!is_file($file_path)) {
-			throw new \jolt\exception\unrecoverable("The renderer can not find the view file, {$file_path}. Compilation can not continue.");
+			throw new \kin\exception\unrecoverable("The renderer can not find the view file, {$file_path}. Compilation can not continue.");
 		}
 
 		$payload = $this->payload;

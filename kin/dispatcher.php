@@ -1,4 +1,4 @@
-<?php namespace jolt;
+<?php namespace kin;
 declare(encoding='UTF-8');
 
 require_once(__DIR__.'/exceptions/unrecoverable.php');
@@ -54,21 +54,21 @@ class dispatcher {
 	
 	private function check_controller() {
 		if (is_null($this->controller)) {
-			throw new \jolt\exception\unrecoverable("The dispatcher must have a controller object attached before it can begin dispatching.");
+			throw new \kin\exception\unrecoverable("The dispatcher must have a controller object attached before it can begin dispatching.");
 		}
 		return($this);
 	}
 	
 	private function check_action() {
 		if (empty($this->action)) {
-			throw new \jolt\exception\unrecoverable("The dispatcher must have a controller action set before it can begin dispatching.");
+			throw new \kin\exception\unrecoverable("The dispatcher must have a controller action set before it can begin dispatching.");
 		}
 		return($this);
 	}
 	
 	private function check_action_is_public($action) {
 		if (!$action->isPublic()) {
-			throw new \jolt\exception\unrecoverable("The controller action, {$this->action}, is not a public member of the controller class {$this->class}.");
+			throw new \kin\exception\unrecoverable("The controller action, {$this->action}, is not a public member of the controller class {$this->class}.");
 		}
 		return($this);
 	}
@@ -77,7 +77,7 @@ class dispatcher {
 		try {
 			$action = new \ReflectionMethod($this->controller, $this->action);
 		} catch (\ReflectionException $e) {
-			throw new \jolt\exception\unrecoverable("The controller action, {$this->action}, is not a member of the controller class {$this->class}.");
+			throw new \kin\exception\unrecoverable("The controller action, {$this->action}, is not a member of the controller class {$this->class}.");
 		}
 		return($action);
 	}
@@ -86,7 +86,7 @@ class dispatcher {
 		try {
 			return($action->invokeArgs($this->controller, $this->arguments));
 		} catch (\Exception $e) {
-			throw new \jolt\exception\unrecoverable("The controller action, {$this->action}, threw an exception that was not caught: ".$e->getMessage());
+			throw new \kin\exception\unrecoverable("The controller action, {$this->action}, threw an exception that was not caught: ".$e->getMessage());
 		}
 	}
 	

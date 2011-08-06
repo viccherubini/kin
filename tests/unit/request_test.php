@@ -1,7 +1,7 @@
-<?php namespace jolt_test;
+<?php namespace kintest;
 declare(encoding='UTF-8');
 
-use \jolt\request as request;
+use \kin\request as request;
 
 require_once(__DIR__.'/testcase.php');
 require_once(__DIR__.'/../../kin/request.php');

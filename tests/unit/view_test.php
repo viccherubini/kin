@@ -1,7 +1,7 @@
-<?php namespace jolt_test;
+<?php namespace kintest;
 declare(encoding='UTF-8');
 
-use \jolt\view as view;
+use \kin\view as view;
 
 require_once('vfsStream/vfsStream.php');
 
@@ -14,7 +14,7 @@ class view_test extends testcase {
 	private $path = 'views';
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_render__requires_file_to_exist() {
 		$view = new view;

@@ -1,7 +1,7 @@
-<?php namespace jolt_test;
+<?php namespace kintest;
 declare(encoding='UTF-8');
 
-use \jolt\dispatcher as dispatcher;
+use \kin\dispatcher as dispatcher;
 
 require_once(__DIR__.'/testcase.php');
 require_once(__DIR__.'/../../kin/dispatcher.php');
@@ -17,7 +17,7 @@ class dispatcher_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_dispatch__requires_controller() {
 		$dispatcher = new dispatcher;
@@ -27,10 +27,10 @@ class dispatcher_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_dispatch__requires_action() {
-		$controller = $this->getMock('jolt\controller');
+		$controller = $this->getMock('kin\controller');
 		
 		$dispatcher = new dispatcher;
 		$dispatcher->attach_controller($controller);
@@ -39,10 +39,10 @@ class dispatcher_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_dispatch__requires_action_to_exist_in_controller() {
-		$controller = $this->getMock('jolt\controller');
+		$controller = $this->getMock('kin\controller');
 		
 		$dispatcher = new dispatcher;
 		$dispatcher->attach_controller($controller)
@@ -52,12 +52,12 @@ class dispatcher_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function _test_dispatch__requires_action_to_be_public() {
 		$action = 'action_process';
 		
-		$controller = $this->getMock('jolt\controller', array($action));
+		$controller = $this->getMock('kin\controller', array($action));
 		$controller->expects($this->once())
 			->method($action)
 			->will($this->returnValue(true));
@@ -73,12 +73,12 @@ class dispatcher_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_dispatch__catches_all_uncaught_controller_exceptions() {
 		$action = 'action_process';
 		
-		$controller = $this->getMock('jolt\controller', array($action));
+		$controller = $this->getMock('kin\controller', array($action));
 		$controller->expects($this->once())
 			->method($action)
 			->will($this->throwException(new \Exception('Unit Testing Exception')));
@@ -94,7 +94,7 @@ class dispatcher_test extends testcase {
 		$action = 'action_process';
 		$arguments = array(15);
 		
-		$controller = $this->getMock('jolt\controller', array($action));
+		$controller = $this->getMock('kin\controller', array($action));
 		$controller->expects($this->once())
 			->method($action)
 			->will($this->returnArgument(0));

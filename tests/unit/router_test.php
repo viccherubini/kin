@@ -1,7 +1,7 @@
-<?php namespace jolt_test;
+<?php namespace kintest;
 declare(encoding='UTF-8');
 
-use \jolt\router as router;
+use \kin\router as router;
 
 require_once(__DIR__.'/testcase.php');
 require_once(__DIR__.'/../../kin/router.php');
@@ -9,7 +9,7 @@ require_once(__DIR__.'/../../kin/router.php');
 class router_test extends testcase {
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_set_routes__requires_at_least_one_route() {
 		$router = new router;
@@ -31,7 +31,7 @@ class router_test extends testcase {
 	
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_set_exception_routes__requires_at_least_one_route() {
 		$router = new router;
@@ -39,7 +39,7 @@ class router_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_set_exception_routes__requires_at_least_one_404_route() {
 		$router = new router;
@@ -49,7 +49,7 @@ class router_test extends testcase {
 	
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_route__requires_at_least_one_route() {
 		$router = new router;
@@ -59,7 +59,7 @@ class router_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_route__requires_at_least_one_exception_route() {
 		$router = new router;
@@ -69,7 +69,7 @@ class router_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \jolt\exception\unrecoverable
+	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_route__requires_at_least_one_exception_404_route() {
 		$router = new router;
