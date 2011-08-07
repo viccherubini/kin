@@ -16,10 +16,6 @@ class response {
 	
 	
 	public function respond() {
-		if (0 === count($this->headers)) {
-			$this->headers = headers_list();
-		}
-		
 		header_remove('content-type');
 		header('content-type: '.$this->content_type, true, $this->response_code);
 		
