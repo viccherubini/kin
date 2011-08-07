@@ -88,6 +88,7 @@ class dispatcher {
 		} catch (\Exception $e) {
 			throw new \kin\exception\unrecoverable("The controller action, {$this->action}, threw an exception that was not caught: ".$e->getMessage());
 		}
+		return(true);
 	}
 	
 }
