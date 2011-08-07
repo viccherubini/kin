@@ -1,8 +1,6 @@
 <?php namespace kin\app;
 declare(encoding='UTF-8');
 
-use \kin\db\model as model;
-
 class controller {
 	
 	private $headers = array();
@@ -62,7 +60,7 @@ class controller {
 		return($this);
 	}
 
-	public function add_model(model $model) {
+	public function add_model(\kin\db\model $model) {
 		if (is_object($model)) {
 			$this->payload['models'][] = array(get_class($model), $model->get_values());
 		}

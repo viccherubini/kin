@@ -1,7 +1,7 @@
-<?php namespace kin;
+<?php namespace kin\app;
 declare(encoding='UTF-8');
 
-require_once(__DIR__.'/exceptions/unrecoverable.php');
+require_once(__DIR__.'/../exceptions/unrecoverable.php');
 
 class settings {
 

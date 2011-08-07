@@ -23,7 +23,7 @@ class app_test extends testcase {
 	
 	
 	public function test_attach_settings__compiles_settings() {
-		$settings = new \kin\settings;
+		$settings = new \kin\app\settings;
 		$settings->app_path = __DIR__;
 		
 		$app = new app;

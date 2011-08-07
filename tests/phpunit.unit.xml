@@ -7,10 +7,10 @@
 			<file>./unit/app/dispatcher_test.php</file>
 			<file>./unit/app/router_test.php</file>
 			<file>./unit/app/route_test.php</file>
+			<file>./unit/app/settings_test.php</file>
 			
 			<file>./unit/http/request_test.php</file>
 			
-			<file>./unit/settings_test.php</file>
 			<file>./unit/view_test.php</file>
 		</testsuite>
 	</testsuites>

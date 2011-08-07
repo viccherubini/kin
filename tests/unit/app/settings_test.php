@@ -1,10 +1,11 @@
-<?php namespace kintest;
+<?php namespace kintest\app;
 declare(encoding='UTF-8');
 
-use \kin\settings as settings;
+use \kin\app\settings as settings,
+	\kintest\testcase as testcase;
 
-require_once(__DIR__.'/../testcase.php');
-require_once(__DIR__.'/../../kin/lib/settings.php');
+require_once(__DIR__.'/../../testcase.php');
+require_once(__DIR__.'/../../../kin/lib/app/settings.php');
 
 class settings_test extends testcase {
 

@@ -8,8 +8,8 @@ require_once(__DIR__.'/app/compiler.php');
 require_once(__DIR__.'/app/dispatcher.php');
 require_once(__DIR__.'/app/route.php');
 require_once(__DIR__.'/app/router.php');
+require_once(__DIR__.'/app/settings.php');
 
-require_once(__DIR__.'/settings.php');
 require_once(__DIR__.'/view.php');
 
 class app {
@@ -36,7 +36,7 @@ class app {
 		return($this);
 	}
 	
-	public function attach_settings(settings $settings) {
+	public function attach_settings(app\settings $settings) {
 		$this->settings = $settings;
 		$this->settings->compile();
 		return($this);
