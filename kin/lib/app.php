@@ -25,7 +25,7 @@ class app {
 	private $exception_routes = array();
 	
 	public function __construct() {
-		
+		$this->build_response();
 	}
 	
 	
@@ -46,8 +46,7 @@ class app {
 	
 	public function run() {
 		try {
-			$this->compile_request()
-				->build_response();
+			$this->compile_request();
 			
 			$content_type = $this->settings->content_type;
 			if (empty($content_type)) {
