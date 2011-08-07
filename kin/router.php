@@ -21,10 +21,6 @@ class router {
 	public function __construct() {
 	
 	}
-	
-	public function __destruct() {
-	
-	}
 
 
 
@@ -93,27 +89,27 @@ class router {
 	
 	private function filter_out_invalid_routes($routes) {
 		return array_filter($routes, function($r) {
-			return($r instanceof \jolt\route);
+			return($r instanceof \kin\route);
 		});
 	}
 	
 	private function check_routes() {
 		if (0 === count($this->routes)) {
-			throw new \kin\exception\unrecoverable("The router requires at least one \jolt\\route object set before it can route properly.");
+			throw new \kin\exception\unrecoverable("The router requires at least one \kin\\route object set before it can route properly.");
 		}
 		return($this);
 	}
 	
 	private function check_exception_routes() {
 		if (0 === count($this->exception_routes)) {
-			throw new \kin\exception\unrecoverable("The router requires at least one \jolt\\route object set as an exception route before it can route properly.");
+			throw new \kin\exception\unrecoverable("The router requires at least one \kin\\route object set as an exception route before it can route properly.");
 		}
 		return($this);
 	}
 	
 	private function check_exception_route_404_exists() {
 		if (!array_key_exists(self::route_404, $this->exception_routes)) {
-			throw new \kin\exception\unrecoverable("The router requires at least one \jolt\\route object set as a 404 exception route before it can route properly.");
+			throw new \kin\exception\unrecoverable("The router requires at least one \kin\\route object set as a 404 exception route before it can route properly.");
 		}
 		return($this);
 	}
@@ -139,4 +135,5 @@ class router {
 		}
 		return($this);
 	}
+	
 }
