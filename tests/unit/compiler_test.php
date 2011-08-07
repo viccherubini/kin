@@ -5,8 +5,8 @@ use \kin\compiler as compiler;
 
 require_once('vfsStream/vfsStream.php');
 
-require_once(__DIR__.'/testcase.php');
-require_once(__DIR__.'/../../kin/compiler.php');
+require_once(__DIR__.'/../testcase.php');
+require_once(__DIR__.'/../../kin/lib/compiler.php');
 
 class compiler_test extends testcase {
 	

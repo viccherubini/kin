@@ -3,8 +3,8 @@ declare(encoding='UTF-8');
 
 use \kin\dispatcher as dispatcher;
 
-require_once(__DIR__.'/testcase.php');
-require_once(__DIR__.'/../../kin/dispatcher.php');
+require_once(__DIR__.'/../testcase.php');
+require_once(__DIR__.'/../../kin/lib/dispatcher.php');
 
 class dispatcher_test extends testcase {
 	

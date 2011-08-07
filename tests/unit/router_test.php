@@ -3,8 +3,8 @@ declare(encoding='UTF-8');
 
 use \kin\router as router;
 
-require_once(__DIR__.'/testcase.php');
-require_once(__DIR__.'/../../kin/router.php');
+require_once(__DIR__.'/../testcase.php');
+require_once(__DIR__.'/../../kin/lib/router.php');
 
 class router_test extends testcase {
 	

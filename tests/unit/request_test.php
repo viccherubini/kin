@@ -3,8 +3,8 @@ declare(encoding='UTF-8');
 
 use \kin\request as request;
 
-require_once(__DIR__.'/testcase.php');
-require_once(__DIR__.'/../../kin/request.php');
+require_once(__DIR__.'/../testcase.php');
+require_once(__DIR__.'/../../kin/lib/request.php');
 
 class request_test extends testcase {
 	

@@ -3,8 +3,8 @@ declare(encoding='UTF-8');
 
 use \kin\settings as settings;
 
-require_once(__DIR__.'/testcase.php');
-require_once(__DIR__.'/../../kin/settings.php');
+require_once(__DIR__.'/../testcase.php');
+require_once(__DIR__.'/../../kin/lib/settings.php');
 
 class settings_test extends testcase {
 

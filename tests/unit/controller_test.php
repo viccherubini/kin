@@ -3,8 +3,8 @@ declare(encoding='UTF-8');
 
 use \kin\controller as controller;
 
-require_once(__DIR__.'/testcase.php');
-require_once(__DIR__.'/../../kin/controller.php');
+require_once(__DIR__.'/../testcase.php');
+require_once(__DIR__.'/../../kin/lib/controller.php');
 
 class controller_test extends testcase {
 	

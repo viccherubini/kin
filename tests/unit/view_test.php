@@ -5,8 +5,8 @@ use \kin\view as view;
 
 require_once('vfsStream/vfsStream.php');
 
-require_once(__DIR__.'/testcase.php');
-require_once(__DIR__.'/../../kin/view.php');
+require_once(__DIR__.'/../testcase.php');
+require_once(__DIR__.'/../../kin/lib/view.php');
 
 class view_test extends testcase {
 
