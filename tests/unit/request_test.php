@@ -35,6 +35,14 @@ class request_test extends testcase {
 		$this->assertEquals('POST', $request->get_method());
 	}
 	
+	public function test_set_method__can_not_be_empty() {
+		$request = new request;
+		$expected_method = $request->get_method();
+		
+		$request->set_method('');
+		$this->assertEquals($expected_method, $request->get_method());
+	}
+	
 	public function test_set_path__cannot_be_empty() {
 		$request = new request;
 		$request->set_path('');

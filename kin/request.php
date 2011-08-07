@@ -27,7 +27,10 @@ class request {
 	}
 	
 	public function set_method($method) {
-		$this->method = strtoupper($method);
+		$method = trim($method);
+		if (!empty($method)) {
+			$this->method = strtoupper($method);
+		}
 		return($this);
 	}
 	
