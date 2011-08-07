@@ -12,20 +12,19 @@ require_once(__DIR__.'/view.php');
 
 class app {
 
-	public $compiler = null;
-	public $dispatcher = null;
 	public $request = null;
 	public $response = null;
-	public $router = null;
 	public $settings = null;
-	public $view = null;
+
+	private $controller = null;
+	private $route = null;
 
 	private $routes = array();
 	private $exception_routes = array();
 	
 	public function __construct() {
-		$this->compile_request();
-		$this->response = new response;
+		$this->compile_request()
+			->build_response();
 	}
 	
 	
@@ -37,6 +36,7 @@ class app {
 	
 	public function attach_settings(settings $settings) {
 		$this->settings = $settings;
+		$this->settings->compile();
 		return($this);
 	}
 	
@@ -44,48 +44,31 @@ class app {
 	
 	public function run() {
 		try {
-			$this->settings->compile();
+			$content_type = $this->settings->content_type;
+			if (empty($content_type)) {
+				$content_type = $this->request->get_accept();
+			}
 			
+			$this->build_and_execute_router()
+				->build_and_execute_compiler()
+				->build_and_execute_dispatcher();
+			
+			if (!$this->controller->has_content_type()) {
+				$this->controller->set_content_type($content_type);
+			}
+			
+			$type = $this->settings->type;
+			if (empty($type)) {
+				$type = $this->request->get_type();
+			}
+			
+			$content = $this->build_and_render_view($type);
 			$this->response
-				->set_content_type($this->settings->content_type);
-			
-			// Build the router object and attach the routes and request data
-			$router = new router;
-			$router->set_path($this->request->get_path())
-				->set_request_method($this->request->get_method())
-				->set_routes($this->routes)
-				->set_exception_routes($this->exception_routes)
-				->route();
-			$route = $router->get_route();
-			
-			// Build the compiler and set the data from the route
-			$compiler = new compiler;
-			$compiler->set_class($route->get_class())
-				->set_file($route->get_controller())
-				->set_path($this->settings->controllers_path)
-				->compile();
-			$controller = $compiler->get_controller();
-			
-			// Build the dispatcher and set the controller and data from the route
-			$dispatcher = new dispatcher;
-			$dispatcher->attach_controller($controller)
-				->set_action($route->get_action())
-				->set_arguments($route->get_arguments())
-				->dispatch();
-			$controller = $dispatcher->get_controller();
-			
-			$view = new view;
-			$view->set_payload($controller->get_payload())
-				->set_file($controller->get_view())
-				->set_path($this->settings->views_path)
-				->set_type($this->settings->type)
-				->render();
-			$content = $view->get_rendering();
-			
-			$this->response
-				->set_headers($controller->get_headers())
-				->set_response_code($controller->get_response_code())
+				->set_headers($this->controller->get_headers())
+				->set_content_type($this->controller->get_content_type())
+				->set_response_code($this->controller->get_response_code())
 				->set_content($content);
+			
 		} catch (\Exception $e) {
 			$this->response->set_content($e->getMessage());
 		}
@@ -109,4 +92,51 @@ class app {
 			
 		return($this);
 	}
+	
+	private function build_response() {
+		$this->response = new response;
+		return($this);
+	}
+	
+	private function build_and_execute_router() {
+		$router = new router;
+		$router->set_path($this->request->get_path())
+			->set_request_method($this->request->get_method())
+			->set_routes($this->routes)
+			->set_exception_routes($this->exception_routes)
+			->route();
+		$this->route = $router->get_route();
+		return($this);
+	}
+	
+	private function build_and_execute_compiler() {
+		$compiler = new compiler;
+		$compiler->set_class($this->route->get_class())
+			->set_file($this->route->get_controller())
+			->set_path($this->settings->controllers_path)
+			->compile();
+		$this->controller = $compiler->get_controller();
+		return($this);
+	}
+	
+	private function build_and_execute_dispatcher() {
+		$dispatcher = new dispatcher;
+		$dispatcher->attach_controller($this->controller)
+			->set_action($this->route->get_action())
+			->set_arguments($this->route->get_arguments())
+			->dispatch();
+		$this->controller = $dispatcher->get_controller();
+		return($this);
+	}
+	
+	private function build_and_render_view($type) {
+		$view = new view;
+		$view->set_payload($this->controller->get_payload())
+			->set_file($this->controller->get_view())
+			->set_path($this->settings->views_path)
+			->set_type($type)
+			->render();
+		return($view->get_rendering());
+	}
+	
 }
