@@ -1,17 +1,18 @@
-<?php namespace kintest;
+<?php namespace kintest\app;
 declare(encoding='UTF-8');
 
-use \kin\router as router;
+use \kin\app\router as router,
+	\kintest\testcase as testcase;
 
-require_once(__DIR__.'/../testcase.php');
-require_once(__DIR__.'/../../kin/lib/router.php');
+require_once(__DIR__.'/../../testcase.php');
+require_once(__DIR__.'/../../../kin/lib/app/router.php');
 
 class router_test extends testcase {
 	
 	private $empty_route = null;
 	
 	public function setUp() {
-		$this->empty_route = $this->getMock('\kin\route', array(), array(), '', false);
+		$this->empty_route = $this->getMock('kin\app\route', array(), array(), '', false);
 	}
 	
 	/**
@@ -86,7 +87,7 @@ class router_test extends testcase {
 	public function test_route__finds_exception_404_route_if_path_empty() {
 		$exception_controller = 'exception_controller';
 		
-		$exception_404_route = $this->getMock('kin\route', array('get_controller'), array(), '', false);
+		$exception_404_route = $this->getMock('kin\app\route', array('get_controller'), array(), '', false);
 		$exception_404_route->expects($this->once())
 			->method('get_controller')
 			->will($this->returnValue($exception_controller));
@@ -104,7 +105,7 @@ class router_test extends testcase {
 	public function test_route__finds_exception_404_route_if_request_method_empty() {
 		$exception_controller = 'exception_controller';
 		
-		$exception_404_route = $this->getMock('kin\route', array('get_controller'), array(), '', false);
+		$exception_404_route = $this->getMock('kin\app\route', array('get_controller'), array(), '', false);
 		$exception_404_route->expects($this->once())
 			->method('get_controller')
 			->will($this->returnValue($exception_controller));
@@ -122,12 +123,12 @@ class router_test extends testcase {
 	public function test_route__finds_exception_404_route_if_no_routes_match() {
 		$exception_controller = 'exception_controller';
 		
-		$exception_404_route = $this->getMock('kin\route', array('get_controller'), array(), '', false);
+		$exception_404_route = $this->getMock('kin\app\route', array('get_controller'), array(), '', false);
 		$exception_404_route->expects($this->once())
 			->method('get_controller')
 			->will($this->returnValue($exception_controller));
 		
-		$unmatchable_route = $this->getMock('kin\route', array('get_method', 'get_compiled_route'), array(), '', false);
+		$unmatchable_route = $this->getMock('kin\app\route', array('get_method', 'get_compiled_route'), array(), '', false);
 		$unmatchable_route->expects($this->once())
 			->method('get_method')
 			->will($this->returnValue('PUT'));
@@ -151,7 +152,7 @@ class router_test extends testcase {
 		
 		$exception_404_route = $this->empty_route;
 		
-		$matchable_route = $this->getMock('kin\route', array('get_method', 'get_compiled_route', 'get_controller'), array(), '', false);
+		$matchable_route = $this->getMock('kin\app\route', array('get_method', 'get_compiled_route', 'get_controller'), array(), '', false);
 		$matchable_route->expects($this->any())
 			->method('get_method')
 			->will($this->returnValue('GET'));
@@ -179,7 +180,7 @@ class router_test extends testcase {
 		
 		$exception_404_route = $this->empty_route;
 		
-		$matchable_route = $this->getMock('kin\route', array('get_method', 'get_compiled_route'), array(), '', false);
+		$matchable_route = $this->getMock('kin\app\route', array('get_method', 'get_compiled_route'), array(), '', false);
 		$matchable_route->expects($this->any())
 			->method('get_method')
 			->will($this->returnValue('GET'));

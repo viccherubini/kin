@@ -1,12 +1,13 @@
-<?php namespace kintest;
+<?php namespace kintest\app;
 declare(encoding='UTF-8');
 
-use \kin\compiler as compiler;
+use \kin\app\compiler as compiler,
+	\kintest\testcase as testcase;
 
 require_once('vfsStream/vfsStream.php');
 
-require_once(__DIR__.'/../testcase.php');
-require_once(__DIR__.'/../../kin/lib/compiler.php');
+require_once(__DIR__.'/../../testcase.php');
+require_once(__DIR__.'/../../../kin/lib/app/compiler.php');
 
 class compiler_test extends testcase {
 	

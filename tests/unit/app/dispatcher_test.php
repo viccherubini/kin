@@ -1,10 +1,11 @@
-<?php namespace kintest;
+<?php namespace kintest\app;
 declare(encoding='UTF-8');
 
-use \kin\dispatcher as dispatcher;
+use \kin\app\dispatcher as dispatcher,
+	\kintest\testcase as testcase;
 
-require_once(__DIR__.'/../testcase.php');
-require_once(__DIR__.'/../../kin/lib/dispatcher.php');
+require_once(__DIR__.'/../../testcase.php');
+require_once(__DIR__.'/../../../kin/lib/app/dispatcher.php');
 
 class dispatcher_test extends testcase {
 	
@@ -30,7 +31,7 @@ class dispatcher_test extends testcase {
 	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_dispatch__requires_action() {
-		$controller = $this->getMock('kin\controller');
+		$controller = $this->getMock('kin\app\controller');
 		
 		$dispatcher = new dispatcher;
 		$dispatcher->attach_controller($controller);
@@ -42,7 +43,7 @@ class dispatcher_test extends testcase {
 	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_dispatch__requires_action_to_exist_in_controller() {
-		$controller = $this->getMock('kin\controller');
+		$controller = $this->getMock('kin\app\controller');
 		
 		$dispatcher = new dispatcher;
 		$dispatcher->attach_controller($controller)
@@ -57,7 +58,7 @@ class dispatcher_test extends testcase {
 	public function _test_dispatch__requires_action_to_be_public() {
 		$action = 'action_process';
 		
-		$controller = $this->getMock('kin\controller', array($action));
+		$controller = $this->getMock('kin\app\controller', array($action));
 		$controller->expects($this->once())
 			->method($action)
 			->will($this->returnValue(true));
@@ -78,7 +79,7 @@ class dispatcher_test extends testcase {
 	public function test_dispatch__catches_all_uncaught_controller_exceptions() {
 		$action = 'action_process';
 		
-		$controller = $this->getMock('kin\controller', array($action));
+		$controller = $this->getMock('kin\app\controller', array($action));
 		$controller->expects($this->once())
 			->method($action)
 			->will($this->throwException(new \Exception('Unit Testing Exception')));
@@ -94,7 +95,7 @@ class dispatcher_test extends testcase {
 		$action = 'action_process';
 		$arguments = array(15);
 		
-		$controller = $this->getMock('kin\controller', array($action));
+		$controller = $this->getMock('kin\app\controller', array($action));
 		$controller->expects($this->once())
 			->method($action)
 			->will($this->returnArgument(0));

@@ -2,12 +2,14 @@
   <testsuites>
 		<testsuite name="Kin Unit Tests">
 			<file>./unit/app_test.php</file>
-			<file>./unit/compiler_test.php</file>
-			<file>./unit/controller_test.php</file>
-			<file>./unit/dispatcher_test.php</file>
+			<file>./unit/app/compiler_test.php</file>
+			<file>./unit/app/controller_test.php</file>
+			<file>./unit/app/dispatcher_test.php</file>
+			<file>./unit/app/router_test.php</file>
+			<file>./unit/app/route_test.php</file>
+			
 			<file>./unit/http/request_test.php</file>
-			<file>./unit/router_test.php</file>
-			<file>./unit/route_test.php</file>
+			
 			<file>./unit/settings_test.php</file>
 			<file>./unit/view_test.php</file>
 		</testsuite>

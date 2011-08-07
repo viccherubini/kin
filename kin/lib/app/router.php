@@ -1,7 +1,7 @@
-<?php namespace kin;
+<?php namespace kin\app;
 declare(encoding='UTF-8');
 
-require_once(__DIR__.'/exceptions/unrecoverable.php');
+require_once(__DIR__.'/../exceptions/unrecoverable.php');
 
 class router {
 
@@ -89,7 +89,7 @@ class router {
 	
 	private function filter_out_invalid_routes($routes) {
 		return array_filter($routes, function($r) {
-			return($r instanceof \kin\route);
+			return($r instanceof \kin\app\route);
 		});
 	}
 	

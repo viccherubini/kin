@@ -4,10 +4,11 @@ declare(encoding='UTF-8');
 require_once(__DIR__.'/http/request.php');
 require_once(__DIR__.'/http/response.php');
 
-require_once(__DIR__.'/compiler.php');
-require_once(__DIR__.'/dispatcher.php');
-require_once(__DIR__.'/route.php');
-require_once(__DIR__.'/router.php');
+require_once(__DIR__.'/app/compiler.php');
+require_once(__DIR__.'/app/dispatcher.php');
+require_once(__DIR__.'/app/route.php');
+require_once(__DIR__.'/app/router.php');
+
 require_once(__DIR__.'/settings.php');
 require_once(__DIR__.'/view.php');
 
@@ -100,7 +101,7 @@ class app {
 	}
 	
 	private function build_and_execute_router() {
-		$router = new router;
+		$router = new app\router;
 		$router->set_path($this->request->get_path())
 			->set_request_method($this->request->get_method())
 			->set_routes($this->routes)
@@ -111,7 +112,7 @@ class app {
 	}
 	
 	private function build_and_execute_compiler() {
-		$compiler = new compiler;
+		$compiler = new app\compiler;
 		$compiler->set_class($this->route->get_class())
 			->set_file($this->route->get_controller())
 			->set_path($this->settings->controllers_path)
@@ -121,7 +122,7 @@ class app {
 	}
 	
 	private function build_and_execute_dispatcher() {
-		$dispatcher = new dispatcher;
+		$dispatcher = new app\dispatcher;
 		$dispatcher->attach_controller($this->controller)
 			->set_action($this->route->get_action())
 			->set_arguments($this->route->get_arguments())

@@ -1,10 +1,11 @@
-<?php namespace kintest;
+<?php namespace kintest\app;
 declare(encoding='UTF-8');
 
-use \kin\controller as controller;
+use \kin\app\controller as controller,
+	\kintest\testcase as testcase;
 
-require_once(__DIR__.'/../testcase.php');
-require_once(__DIR__.'/../../kin/lib/controller.php');
+require_once(__DIR__.'/../../testcase.php');
+require_once(__DIR__.'/../../../kin/lib/app/controller.php');
 
 class controller_test extends testcase {
 	
@@ -78,7 +79,7 @@ class controller_test extends testcase {
 	}
 	
 	public function test_add_model__adds_model_name() {
-		$model_class = 'kin\model';
+		$model_class = 'kin\db\model';
 		
 		$model = $this->getMock($model_class, array('get_values'));
 		$model->expects($this->once())
@@ -93,7 +94,7 @@ class controller_test extends testcase {
 	}
 	
 	public function test_add_model__adds_model_values() {
-		$model_class = 'kin\model';
+		$model_class = 'kin\db\model';
 		$model_values = array('id' => mt_rand(1, 1000), 'password' => uniqid());
 		
 		$model = $this->getMock($model_class, array('get_values'));

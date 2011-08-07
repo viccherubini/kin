@@ -1,5 +1,7 @@
-<?php namespace kin;
+<?php namespace kin\app;
 declare(encoding='UTF-8');
+
+use \kin\db\model as model;
 
 class controller {
 	

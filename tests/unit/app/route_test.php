@@ -1,10 +1,11 @@
-<?php namespace kintest;
+<?php namespace kintest\app;
 declare(encoding='UTF-8');
 
-use \kin\route as route;
+use \kin\app\route as route,
+	\kintest\testcase as testcase;
 
-require_once(__DIR__.'/../testcase.php');
-require_once(__DIR__.'/../../kin/lib/route.php');
+require_once(__DIR__.'/../../testcase.php');
+require_once(__DIR__.'/../../../kin/lib/app/route.php');
 
 class route_test extends testcase {
 
