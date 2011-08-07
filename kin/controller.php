@@ -6,6 +6,7 @@ class controller {
 	private $headers = array();
 	private $payload = array();
 	
+	private $content_type = '';
 	private $response_code = 200;
 	private $view = '';
 	
@@ -38,6 +39,8 @@ class controller {
 		$header = strtolower(trim($header));
 		if ('content-type' !== $header) {
 			$this->headers[$header] = $value;
+		} else {
+			$this->set_content_type($value);
 		}
 		return($this);
 	}
@@ -71,6 +74,10 @@ class controller {
 		return($this);
 	}
 	
+	public function has_content_type() {
+		return(!empty($this->content_type));
+	}
+	
 	public function register($k, $v) {
 		return($this->__set($k, $v));
 	}
@@ -81,6 +88,11 @@ class controller {
 	}
 
 	
+	
+	public function set_content_type($content_type) {
+		$this->content_type = strtolower($content_type);
+		return($this);
+	}
 	
 	public function set_response_code($response_code) {
 		$this->response_code = (int)$response_code;
@@ -93,12 +105,16 @@ class controller {
 		return($this->headers);
 	}
 	
-	public function get_response_code() {
-		return($this->response_code);
-	}
-	
 	public function get_payload() {
 		return($this->payload);
+	}
+	
+	public function get_content_type() {
+		return($this->content_type);
+	}
+	
+	public function get_response_code() {
+		return($this->response_code);
 	}
 	
 	public function get_view() {

@@ -18,6 +18,8 @@ class controller_test extends testcase {
 		$this->assertEquals($value, $payload['contents']['field']);
 	}
 	
+	
+	
 	public function test___get__returns_from_contents() {
 		$value = uniqid();
 		
@@ -27,11 +29,16 @@ class controller_test extends testcase {
 		$this->assertEquals($value, $controller->field);
 	}
 	
+	
+	
 	public function test_add_header__header_cannot_be_content_type() {
+		$content_type = 'text/html';
+		
 		$controller = new controller;
-		$controller->add_header('content-type', 'text/html');
+		$controller->add_header('content-type', $content_type);
 		
 		$this->assertEmpty($controller->get_headers());
+		$this->assertEquals($content_type, $controller->get_content_type());
 	}
 	
 	public function test_add_header__header_is_lowercase() {
@@ -46,6 +53,8 @@ class controller_test extends testcase {
 		$this->assertEquals($header_lowercase, key($headers));
 	}
 	
+	
+	
 	public function test_add_error__error_added_to_stack() {
 		$field = 'username';
 		$error = 'Username can not be empty';
@@ -56,6 +65,8 @@ class controller_test extends testcase {
 		$payload = $controller->get_payload();
 		$this->assertEquals($payload['errors'][$field], $error);
 	}
+	
+	
 	
 	/**
 	 * @expectedException \PHPUnit_Framework_Error
@@ -97,6 +108,8 @@ class controller_test extends testcase {
 		$this->assertEquals($model_values, $payload['models'][0][1]);
 	}
 	
+	
+	
 	/**
 	 * @expectedException \PHPUnit_Framework_Error
 	 */
@@ -104,6 +117,15 @@ class controller_test extends testcase {
 		$controller = new controller;
 		
 		$controller->add_models(null);
+	}
+	
+	
+	
+	public function test_has_content_type__is_true_when_content_type_set() {
+		$controller = new controller;
+		$controller->set_content_type('text/xml');
+		
+		$this->assertTrue($controller->has_content_type());
 	}
 	
 	public function test_register__adds_to_contents() {
