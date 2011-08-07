@@ -17,7 +17,7 @@ class router_test extends testcase {
 	}
 	
 	public function test_set_routes__filters_invalid_routes() {
-		$valid_route = $this->getMock('\jolt\route');
+		$valid_route = $this->getMock('\kin\route');
 		
 		$routes = array(0, 'twelve', new \stdClass, $valid_route);
 		$expected_routes = array($valid_route);
@@ -43,7 +43,7 @@ class router_test extends testcase {
 	 */
 	public function test_set_exception_routes__requires_at_least_one_404_route() {
 		$router = new router;
-		$router->set_exception_routes(array(200 => $this->getMock('\jolt\route')));
+		$router->set_exception_routes(array(200 => $this->getMock('\kin\route')));
 	}
 	
 	
@@ -53,7 +53,7 @@ class router_test extends testcase {
 	 */
 	public function test_route__requires_at_least_one_route() {
 		$router = new router;
-		$router->set_exception_routes(array(404 => $this->getMock('\jolt\route')));
+		$router->set_exception_routes(array(404 => $this->getMock('\kin\route')));
 		
 		$router->route();
 	}
@@ -63,7 +63,7 @@ class router_test extends testcase {
 	 */
 	public function test_route__requires_at_least_one_exception_route() {
 		$router = new router;
-		$router->set_routes(array($this->getMock('\jolt\route')));
+		$router->set_routes(array($this->getMock('\kin\route')));
 		
 		$router->route();
 	}
@@ -73,8 +73,8 @@ class router_test extends testcase {
 	 */
 	public function test_route__requires_at_least_one_exception_404_route() {
 		$router = new router;
-		$router->set_routes(array($this->getMock('\jolt\route')))
-			->set_exception_routes(array(200 => $this->getMock('\jolt\route')));
+		$router->set_routes(array($this->getMock('\kin\route')))
+			->set_exception_routes(array(200 => $this->getMock('\kin\route')));
 		
 		$router->route();
 	}
@@ -82,14 +82,14 @@ class router_test extends testcase {
 	public function test_route__finds_exception_404_route_if_path_empty() {
 		$exception_controller = 'exception_controller';
 		
-		$exception_404_route = $this->getMock('\jolt\route', array('get_controller'));
+		$exception_404_route = $this->getMock('\kin\route', array('get_controller'));
 		$exception_404_route->expects($this->once())
 			->method('get_controller')
 			->will($this->returnValue($exception_controller));
 		
 		$router = new router;
 		$router->set_request_method('GET')
-			->set_routes(array($this->getMock('\jolt\route')))
+			->set_routes(array($this->getMock('\kin\route')))
 			->set_exception_routes(array(404 => $exception_404_route));
 			
 		$router->route();
@@ -100,14 +100,14 @@ class router_test extends testcase {
 	public function test_route__finds_exception_404_route_if_request_method_empty() {
 		$exception_controller = 'exception_controller';
 		
-		$exception_404_route = $this->getMock('\jolt\route', array('get_controller'));
+		$exception_404_route = $this->getMock('\kin\route', array('get_controller'));
 		$exception_404_route->expects($this->once())
 			->method('get_controller')
 			->will($this->returnValue($exception_controller));
 		
 		$router = new router;
 		$router->set_path('/path/to/route')
-			->set_routes(array($this->getMock('\jolt\route')))
+			->set_routes(array($this->getMock('\kin\route')))
 			->set_exception_routes(array(404 => $exception_404_route));
 			
 		$router->route();
@@ -118,12 +118,12 @@ class router_test extends testcase {
 	public function test_route__finds_exception_404_route_if_no_routes_match() {
 		$exception_controller = 'exception_controller';
 		
-		$exception_404_route = $this->getMock('\jolt\route', array('get_controller'));
+		$exception_404_route = $this->getMock('\kin\route', array('get_controller'));
 		$exception_404_route->expects($this->once())
 			->method('get_controller')
 			->will($this->returnValue($exception_controller));
 		
-		$unmatchable_route = $this->getMock('\jolt\route', array('get_method', 'get_compiled_route'));
+		$unmatchable_route = $this->getMock('\kin\route', array('get_method', 'get_compiled_route'));
 		$unmatchable_route->expects($this->once())
 			->method('get_method')
 			->will($this->returnValue('PUT'));
@@ -145,9 +145,9 @@ class router_test extends testcase {
 	public function test_route__finds_matched_route() {
 		$matchable_controller = 'route_controller';
 		
-		$exception_404_route = $this->getMock('\jolt\route');
+		$exception_404_route = $this->getMock('\kin\route');
 		
-		$matchable_route = $this->getMock('\jolt\route', array('get_method', 'get_compiled_route', 'get_controller'));
+		$matchable_route = $this->getMock('\kin\route', array('get_method', 'get_compiled_route', 'get_controller'));
 		$matchable_route->expects($this->any())
 			->method('get_method')
 			->will($this->returnValue('GET'));
@@ -173,9 +173,9 @@ class router_test extends testcase {
 		$arguments = array(10, 'victor+cherubini');
 		$path = '/load/user/'.$arguments[0].'/and/set/his/name/to/'.$arguments[1];
 		
-		$exception_404_route = $this->getMock('\jolt\route');
+		$exception_404_route = $this->getMock('\kin\route');
 		
-		$matchable_route = $this->getMock('\jolt\route', array('get_method', 'get_compiled_route'));
+		$matchable_route = $this->getMock('\kin\route', array('get_method', 'get_compiled_route'));
 		$matchable_route->expects($this->any())
 			->method('get_method')
 			->will($this->returnValue('GET'));
