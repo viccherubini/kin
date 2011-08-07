@@ -84,12 +84,18 @@ class settings {
 			$this->url = rtrim($url_protocol.$this->server_name, '/').'/';
 		}
 		
+		if (empty($this->settings['secure_url'])) {
+			$url_protocol = ($this->allow_ssl ? 'https://' : 'http://');
+			$this->secure_url = rtrim($url_protocol.$this->server_name, '/').'/';
+		}
+		
+		return(true);
 	}
 	
-	
-	
 	public function add_custom($k, $v) {
-		$this->custom[$k] = $v;
+		if (!array_key_exists($k, $this->settings)) {
+			$this->custom[$k] = $v;
+		}
 		return($this);
 	}
 	
@@ -101,6 +107,13 @@ class settings {
 	
 	public function get_custom() {
 		return($this->custom);
+	}
+	
+	public function get_custom_by_key($k) {
+		if (array_key_exists($k, $this->custom)) {
+			return($this->custom[$k]);
+		}
+		return(null);
 	}
 	
 	
