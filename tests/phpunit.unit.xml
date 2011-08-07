@@ -8,6 +8,7 @@
 			<file>./unit/request_test.php</file>
 			<file>./unit/router_test.php</file>
 			<file>./unit/route_test.php</file>
+			<file>./unit/settings_test.php</file>
 			<file>./unit/view_test.php</file>
 		</testsuite>
 	</testsuites>
