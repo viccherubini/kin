@@ -31,6 +31,7 @@ class settings {
 			'css_path' => '',
 			'js_path' => '',
 			'images_path' => '',
+			'accept' => '',
 			'type' => '',
 			'content_type' => '',
 			'server_name' => '',
@@ -60,6 +61,10 @@ class settings {
 			return($this->settings[$k]);
 		}
 		return(null);
+	}
+	
+	public function __isset($k) {
+		return(array_key_exists($k, $this->settings) && !empty($this->settings[$k]));
 	}
 	
 	
