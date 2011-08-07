@@ -71,7 +71,7 @@ class view {
 	private function compile_view_name() {
 		$view_bits = array($this->file);
 		if (!empty($this->type)) {
-			$view_bits[] = $view;
+			$view_bits[] = $this->type;
 		}
 		
 		if (false === strripos($this->file, self::ext)) {
