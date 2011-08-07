@@ -8,12 +8,6 @@ require_once(__DIR__.'/../../kin/lib/app.php');
 
 class app_test extends testcase {
 	
-	public function test___construct__compiles_request() {
-		$app = new app;
-		
-		$this->assertInternalType('object', $app->request);
-	}
-	
 	public function test___construct__builds_response() {
 		$app = new app;
 		
@@ -30,6 +24,15 @@ class app_test extends testcase {
 		$app->attach_settings($settings);
 		
 		$this->assertNotEmpty($settings->controllers_path);
+	}
+	
+	
+	
+	public function test_run__compiles_request() {
+		$app = new app;
+		$app->run();
+		
+		$this->assertInternalType('object', $app->request);
 	}
 	
 }
