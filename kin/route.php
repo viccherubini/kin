@@ -44,8 +44,22 @@ class route {
 		return($this);
 	}
 	
+	
+	
 	public function get_arguments() {
 		return($this->arguments);
+	}
+	
+	public function get_action() {
+		return($this->action);
+	}
+	
+	public function get_class() {
+		return($this->class);
+	}
+	
+	public function get_controller() {
+		return($this->controller);
 	}
 
 	public function get_method() {
