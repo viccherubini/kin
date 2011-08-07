@@ -83,12 +83,43 @@ class settings_test extends testcase {
 		$this->assertNotEmpty($settings->url);
 		$this->assertEquals('http://localhost/', $settings->url);
 	}
-
-	public function _test_compile__compiles_secure_url_if_empty() {
+	
+	public function test_compile__compiles_secure_url_if_empty() {
 		$settings = new settings;
 		$settings->app_path = __DIR__;
 		
+		$settings->compile();
+		$this->assertNotEmpty($settings->secure_url);
+		$this->assertEquals('https://localhost/', $settings->secure_url);
+	}
+	
+	public function test_compile__compiles_empty_url_as_secure_if_forced() {
+		$settings = new settings;
+		$settings->app_path = __DIR__;
+		$settings->force_ssl = true;
 		
+		$settings->compile();
+		$this->assertNotEmpty($settings->url);
+		$this->assertEquals('https://localhost/', $settings->url);
+	}
+	
+	
+	
+	public function test_add_custom__custom_variable_can_not_exist_in_settings() {
+		$settings = new settings;
+		$settings->add_custom('url', 'http://leftnode.com');
+		
+		$this->assertEmpty($settings->get_custom());
+	}
+	
+	public function test_add_custom__pushes_custom_variable_to_settings() {
+		$custom_key = 'custom_path';
+		$custom_value = '/path/to/some/variable/';
+		
+		$settings = new settings;
+		$settings->add_custom($custom_key, $custom_value);
+		
+		$this->assertEquals($custom_value, $settings->get_custom_by_key($custom_key));
 	}
 
 }
