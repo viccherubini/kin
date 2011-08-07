@@ -10,7 +10,7 @@ class settings {
 	
 	private $paths = array();
 
-	public function __construct() {
+	public function __construct($app_path=null) {
 		$this->paths = array(
 			'app_path' => true,
 			'controllers_path' => true,
@@ -39,6 +39,10 @@ class settings {
 			'url' => '',
 			'secure_url' => ''
 		);
+		
+		if (!empty($app_path)) {
+			$this->app_path = $app_path;
+		}
 	}
 	
 	public function __set($k, $v) {
@@ -135,4 +139,5 @@ class settings {
 		}
 		return($this);
 	}
+	
 }
