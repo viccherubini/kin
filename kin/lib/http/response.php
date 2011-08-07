@@ -26,6 +26,9 @@ class response {
 			header($full_header, true, $this->response_code);
 		}
 		
+		$memory_usage_kb = round((memory_get_peak_usage()/1024), 3);
+		header('X-Memory-Usage: '.$memory_usage_kb.'KB');
+		
 		return($this->content);
 	}
 	
