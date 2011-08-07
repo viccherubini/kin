@@ -20,4 +20,16 @@ class app_test extends testcase {
 		$this->assertInternalType('object', $app->response);
 	}
 	
+	
+	
+	public function test_attach_settings__compiles_settings() {
+		$settings = new \kin\settings;
+		$settings->app_path = __DIR__;
+		
+		$app = new app;
+		$app->attach_settings($settings);
+		
+		$this->assertNotEmpty($settings->controllers_path);
+	}
+	
 }
