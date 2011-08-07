@@ -1,10 +1,11 @@
-<?php namespace kintest;
+<?php namespace kintest\http;
 declare(encoding='UTF-8');
 
-use \kin\request as request;
+use \kin\http\request as request,
+	\kintest\testcase as testcase;
 
-require_once(__DIR__.'/../testcase.php');
-require_once(__DIR__.'/../../kin/lib/request.php');
+require_once(__DIR__.'/../../testcase.php');
+require_once(__DIR__.'/../../../kin/lib/http/request.php');
 
 class request_test extends testcase {
 	

@@ -1,4 +1,4 @@
-<?php namespace kin;
+<?php namespace kin\http;
 declare(encoding='UTF-8');
 
 class request {

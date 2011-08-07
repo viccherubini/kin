@@ -1,10 +1,11 @@
 <?php namespace kin;
 declare(encoding='UTF-8');
 
+require_once(__DIR__.'/http/request.php');
+require_once(__DIR__.'/http/response.php');
+
 require_once(__DIR__.'/compiler.php');
 require_once(__DIR__.'/dispatcher.php');
-require_once(__DIR__.'/request.php');
-require_once(__DIR__.'/response.php');
 require_once(__DIR__.'/route.php');
 require_once(__DIR__.'/router.php');
 require_once(__DIR__.'/settings.php');
@@ -85,7 +86,7 @@ class app {
 			'PATH_INFO' => array()
 		));
 		
-		$this->request = new request;
+		$this->request = new http\request;
 		$this->request->set_accept($http_headers['HTTP_ACCEPT'])
 			->set_method($http_headers['REQUEST_METHOD'])
 			->set_path($http_headers['PATH_INFO']);
@@ -94,7 +95,7 @@ class app {
 	}
 	
 	private function build_response() {
-		$this->response = new response;
+		$this->response = new http\response;
 		return($this);
 	}
 	
