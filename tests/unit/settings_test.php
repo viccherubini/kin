@@ -8,6 +8,16 @@ require_once(__DIR__.'/../../kin/settings.php');
 
 class settings_test extends testcase {
 
+	public function test___construct__can_set_the_app_path() {
+		$app_path = __DIR__;
+		$settings = new settings($app_path);
+		$settings->compile();
+		
+		$this->assertEquals($app_path.'/', $settings->app_path);
+	}
+
+
+
 	public function test___set__can_only_change_predefined_settings() {
 		$property = uniqid('kin_');
 		
