@@ -3,7 +3,7 @@ declare(encoding='UTF-8');
 
 class response {
 
-	private $content_type = 'text/html';
+	private $content_type = '';
 	private $response_code = 200;
 	
 	private $headers = array();
