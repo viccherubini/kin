@@ -25,9 +25,9 @@ class app {
 	private $exception_routes = array();
 	
 	public function __construct() {
-		$this->compile_request()
-			->build_response();
+		
 	}
+	
 	
 	
 	public function attach_all_routes(array $routes, array $exception_routes) {
@@ -46,6 +46,9 @@ class app {
 	
 	public function run() {
 		try {
+			$this->compile_request()
+				->build_response();
+			
 			$content_type = $this->settings->content_type;
 			if (empty($content_type)) {
 				$content_type = $this->request->get_accept();
@@ -86,6 +89,10 @@ class app {
 			'REQUEST_METHOD' => array(),
 			'PATH_INFO' => array()
 		));
+		
+		if (!empty($this->settings->accept)) {
+			$http_headers['HTTP_ACCEPT'] = $this->settings->accept;
+		}
 		
 		$this->request = new http\request;
 		$this->request->set_accept($http_headers['HTTP_ACCEPT'])
