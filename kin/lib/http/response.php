@@ -19,15 +19,24 @@ class response {
 		header_remove('content-type');
 		header('content-type: '.$this->content_type, true, $this->response_code);
 		
+		$found_location_header = false;
 		foreach ($this->headers as $header => $value) {
 			$full_header = implode(': ', array($header, $value));
 			
 			header_remove($header);
 			header($full_header, true, $this->response_code);
+			
+			if ('location' === strtolower($header)) {
+				$found_location_header = true;
+			}
 		}
 		
 		$memory_usage_kb = round((memory_get_peak_usage()/1024), 3);
 		header('X-Memory-Usage: '.$memory_usage_kb.'KB');
+		
+		if ($found_location_header && in_array($this->response_code, array(301, 302))) {
+			$this->content = '';
+		}
 		
 		return($this->content);
 	}
