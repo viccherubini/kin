@@ -64,7 +64,25 @@ class controller_test extends testcase {
 		$controller->add_error($field, $error);
 		
 		$payload = $controller->get_payload();
-		$this->assertEquals($payload['errors'][$field], $error);
+		$this->assertEquals($payload['errors']['errors'][$field], $error);
+	}
+	
+	public function test_add_error__toggles_has_errors_flag() {
+		$controller = new controller;
+		
+		$controller->add_error('username', 'Username can not be empty');
+		
+		$this->assertTrue($controller->has_errors());
+	}
+	
+	
+	
+	public function test_add_error_contents__toggles_has_errors_flag() {
+		$controller = new controller;
+		
+		$controller->add_error_contents(array('name' => 'Kin Framework'));
+		
+		$this->assertTrue($controller->has_errors());
 	}
 	
 	
@@ -76,21 +94,6 @@ class controller_test extends testcase {
 		$controller = new controller;
 		
 		$controller->add_model('hello, world');
-	}
-	
-	public function test_add_model__adds_model_name() {
-		$model_class = 'kin\db\model';
-		
-		$model = $this->getMock($model_class, array('get_values'));
-		$model->expects($this->once())
-			->method('get_values')
-			->will($this->returnValue(array()));
-		
-		$controller = new controller;
-		$controller->add_model($model);
-		
-		$payload = $controller->get_payload();
-		$this->assertEquals($model_class, get_parent_class($payload['models'][0][0]));
 	}
 	
 	public function test_add_model__adds_model_values() {
@@ -106,7 +109,7 @@ class controller_test extends testcase {
 		$controller->add_model($model);
 		
 		$payload = $controller->get_payload();
-		$this->assertEquals($model_values, $payload['models'][0][1]);
+		$this->assertEquals($model_values, $payload['models'][0]);
 	}
 	
 	

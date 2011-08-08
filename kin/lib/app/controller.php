@@ -16,9 +16,13 @@ class controller {
 	public function __construct() {
 		$this->payload = array(
 			'contents' => array(),
-			'errors' => array(),
+			'errors' => array(
+				'contents' => array(),
+				'errors' => array(),
+				'message' => ''
+			),
 			'models' => array(),
-			'message' => ''
+			'has_errors' => false
 		);
 	}
 	
@@ -35,7 +39,7 @@ class controller {
 		if (array_key_exists($k, $this->payload['contents'])) {
 			return $this->payload['contents'][$k];
 		}
-		return null;
+		return(null);
 	}
 	
 	public function add_header($header, $value) {
@@ -48,24 +52,39 @@ class controller {
 		return($this);
 	}
 	
+	public function add_contents(array $contents) {
+		$this->payload['contents'] = $contents;
+		return($this);
+	}
+	
+	public function add_error_contents(array $contents) {
+		$this->toggle_has_errors();
+		
+		$this->payload['errors']['contents'] = $contents;
+		return($this);
+	}
+	
 	public function add_error($field, $error) {
-		$field = trim($field);
-		$this->payload['errors'][$field] = trim($error);
+		$this->toggle_has_errors();
+		
+		$this->payload['errors']['errors'][$field] = trim($error);
 		return($this);
 	}
 	
 	public function add_message($e) {
+		$this->toggle_has_errors();
+		
 		$message = $e;
 		if (is_object($e) && ($e instanceof \Exception)) {
 			$message = $e->getMessage();
 		}
-		$this->payload['message'] = $message;
+		$this->payload['errors']['message'] = $message;
 		return($this);
 	}
 
 	public function add_model(\kin\db\model $model) {
 		if (is_object($model)) {
-			$this->payload['models'][] = array(get_class($model), $model->get_values());
+			$this->payload['models'][] = $model->get_values();
 		}
 		return($this);
 	}
@@ -79,6 +98,14 @@ class controller {
 	
 	public function has_content_type() {
 		return(!empty($this->content_type));
+	}
+	
+	public function has_errors() {
+		return($this->payload['has_errors']);
+	}
+	
+	public function has_view() {
+		return(!empty($this->view));
 	}
 	
 	public function redirect($location, $response_code=self::response_302) {
@@ -132,6 +159,12 @@ class controller {
 	
 	public function get_view() {
 		return($this->view);
+	}
+	
+	
+	private function toggle_has_errors() {
+		$this->payload['has_errors'] = true;
+		return($this);
 	}
 	
 }
