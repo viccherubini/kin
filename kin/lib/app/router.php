@@ -40,7 +40,7 @@ class router {
 		foreach ($this->routes as $r) {
 			if ($this->check_route_matches_path($r->get_method(), $r->get_compiled_route())) {
 				$this->format_route_arguments();
-				$this->route = $r;
+				$this->route = $r->set_arguments($this->arguments);
 				break;
 			}
 		}
