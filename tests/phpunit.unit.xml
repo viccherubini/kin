@@ -10,6 +10,7 @@
 			<file>./unit/app/settings_test.php</file>
 			
 			<file>./unit/http/request_test.php</file>
+			<file>./unit/http/response_test.php</file>
 			
 			<file>./unit/view_test.php</file>
 		</testsuite>
