@@ -129,6 +129,38 @@ class controller_test extends testcase {
 		$this->assertTrue($controller->has_content_type());
 	}
 	
+	
+	
+	public function test_redirect__adds_location_header() {
+		$controller = new controller;
+		$controller->redirect('http://leftnode.com/');
+		
+		$this->assertArrayHasKey('location', $controller->get_headers());
+	}
+	
+	public function test_redirect__sets_302_response_code_by_default() {
+		$controller = new controller;
+		$controller->redirect('http://leftnode.com/');
+		
+		$this->assertEquals(controller::response_302, $controller->get_response_code());
+	}
+	
+	public function test_redirect__allows_301_response_code() {
+		$controller = new controller;
+		$controller->redirect('http://leftnode.com/', controller::response_301);
+		
+		$this->assertEquals(controller::response_301, $controller->get_response_code());
+	}
+	
+	public function test_redirect__does_not_allow_response_code_other_than_302_or_301() {
+		$controller = new controller;
+		$controller->redirect('http://leftnode.com/', 405);
+		
+		$this->assertEquals(controller::response_302, $controller->get_response_code());
+	}
+	
+	
+	
 	public function test_register__adds_to_contents() {
 		$field = 'password';
 		$value = uniqid();

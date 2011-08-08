@@ -10,6 +10,9 @@ class controller {
 	private $response_code = 200;
 	private $view = '';
 	
+	const response_301 = 301;
+	const response_302 = 302;
+	
 	public function __construct() {
 		$this->payload = array(
 			'contents' => array(),
@@ -76,6 +79,16 @@ class controller {
 	
 	public function has_content_type() {
 		return(!empty($this->content_type));
+	}
+	
+	public function redirect($location, $response_code=self::response_302) {
+		if (!in_array($response_code, array(self::response_301, self::response_302), true)) {
+			$response_code = self::response_302;
+		}
+		
+		$this->add_header('location', $location)
+			->set_response_code($response_code);
+		return($this);
 	}
 	
 	public function register($k, $v) {
