@@ -138,13 +138,17 @@ class app {
 	}
 	
 	private function build_and_render_view($type) {
-		$view = new view;
-		$view->set_payload($this->controller->get_payload())
-			->set_file($this->controller->get_view())
-			->set_path($this->settings->views_path)
-			->set_type($type)
-			->render();
-		return($view->get_rendering());
+		$content = '';
+		if ($this->controller->has_view()) {
+			$view = new view;
+			$view->set_payload($this->controller->get_payload())
+				->set_file($this->controller->get_view())
+				->set_path($this->settings->views_path)
+				->set_type($type)
+				->render();
+			$content = $view->get_rendering();
+		}
+		return($content);
 	}
 	
 }
