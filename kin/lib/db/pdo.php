@@ -1,4 +1,4 @@
-<?php namespace kin;
+<?php namespace kin\db;
 declare(encoding='UTF-8');
 
 class pdo extends \PDO {
