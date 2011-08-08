@@ -1,4 +1,4 @@
-<?php namespace kin;
+<?php namespace kin\db;
 declare(encoding='UTF-8');
 
 class model {
@@ -16,19 +16,14 @@ class model {
 	const status_enabled = 1;
 	const status_disabled = 0;
 
-	public function __construct($model_data=null) {
-		if (!$this->is_compiled()) {
-			$this->compile();
-		}
-		
-		if (!is_null($model_data)) {
-			$this->load($model_data);
+	public function __construct($model=null) {
+		$this->compile();
+		if (!is_null($model)) {
+			$this->load($model);
 		}
 	}
 
-	public function __destruct() {
 
-	}
 
 	public function __call($method, $argv) {
 		$argc = count($argv);
@@ -39,25 +34,23 @@ class model {
 		if (0 === $argc) {
 			// If the length is 0, assume this is a get()
 			$v = $this->__get($k);
-			return $v;
+			return($v);
 		} else {
 			$v = current($argv);
 			$this->__set($k, $v);
-			return $this;
+			return($this);
 		}
 	}
 
 	public function __isset($k) {
-		return (array_key_exists($k, $this->members));
+		return(array_key_exists($k, $this->members));
 	}
 
 	public function __set($k, $v) {
 		// When building this from a fetchObject() on PDO, the __set methods are
 		// called before the constructor, and thus we need to compile the object
 		// first if it isn't already. Don't worry, this only runs once.
-		if (!$this->is_compiled()) {
-			$this->compile();
-		}
+		$this->compile();
 		
 		if (array_key_exists($k, $this->members)) {
 			if ($this->is_type_int($k)) {
@@ -71,7 +64,7 @@ class model {
 			$this->values[$k] = $v;
 		}
 
-		return true;
+		return(true);
 	}
 
 	public function __get($k) {
@@ -82,21 +75,19 @@ class model {
 	}
 
 	public function copy(model $model) {
-		$ext_model_values = $model->get_values();
-		foreach ($ext_model_values as $member => $value) {
+		foreach ($model->get_values() as $member => $value) {
 			$this->__set($member, $value);
 		}
-		return $this;
+		return($this);
 	}
 
 	public function merge(model $model) {
-		$ext_model_values = $model->get_values();
-		foreach ($ext_model_values as $member => $value) {
+		foreach ($model->get_values() as $member => $value) {
 			if (isset($this->$member) && empty($this->$member)) {
 				$this->__set($member, $value);
 			}
 		}
-		return $this;
+		return($this);
 	}
 
 	public function load($model) {
@@ -105,17 +96,15 @@ class model {
 				$this->__set($k, $v);
 			}
 		}
-		return $this;
+		return($this);
 	}
 
 	public function disable() {
-		$this->set_status(self::status_disabled);
-		return $this;
+		return($this->set_status(self::status_disabled));
 	}
 
 	public function enable() {
-		$this->set_status(self::status_enabled);
-		return $this;
+		return($this->set_status(self::status_enabled));
 	}
 
 	public function extract() {
@@ -127,36 +116,43 @@ class model {
 				$member_values[$member] = $this->__get($member);
 			}
 		}
-
-		return $member_values;
+		return($member_values);
 	}
 
 	// Traits
+	public function is_compiled() {
+		return($this->compiled);
+	}
+	
 	public function is_saved() {
-		return ($this->get_id() > 0);
+		return($this->id > 0);
 	}
 
 	public function is_disabled() {
-		return ($this->get_status() == self::status_disabled);
+		return($this->status == self::status_disabled);
 	}
 	
 	public function is_enabled() {
-		return ($this->get_status() == self::status_enabled);
+		return($this->status == self::status_enabled);
 	}
 
 
 	// Getters
 	public function get_members() {
-		return $this->members;
+		return($this->members);
 	}
 
 	public function get_values() {
-		return $this->values;
+		return($this->values);
 	}
 
 
 
 	private function compile() {
+		if ($this->is_compiled()) {
+			return($this);
+		}
+		
 		// Take the predefined members and build out the arrays we'll need
 		$types = array(self::type_int => true, self::type_float => true, self::type_string => true);
 
@@ -177,27 +173,24 @@ class model {
 		}
 
 		$this->compiled = true;
+		return($this);
 	}
 
 	// Private traits
-	private function is_compiled() {
-		return $this->compiled;
-	}
-
 	private function is_type_int($member) {
-		return $this->is_type($member, self::type_int);
+		return($this->is_type($member, self::type_int));
 	}
 
 	private function is_type_float($member) {
-		return $this->is_type($member, self::type_float);
+		return($this->is_type($member, self::type_float));
 	}
 
 	private function is_type_string($member) {
-		return $this->is_type($member, self::type_string);
+		return($this->is_type($member, self::type_string));
 	}
 
 	private function is_type($member, $type) {
-		return (array_key_exists($member, $this->types) && $type === $this->types[$member]);
+		return(array_key_exists($member, $this->types) && $type === $this->types[$member]);
 	}
 
 }
