@@ -8,23 +8,35 @@ class request {
 	private $method = 'GET';
 	private $type = 'html';
 
+	private $stream_contents = array();
+
 	public function __construct() {
-	
+		$stream_data = file_get_contents('php://input');
+		if (!empty($stream_data)) {
+			parse_str($stream_data, $this->stream_contents);
+		}
 	}
 	
 	
-	public function get($key, $default=null, $expected=array()) {
-		return($this->get_superglobal_value($key, \INPUT_GET, $default, $expected));
+	
+	public function get($key, $default=null) {
+		return($this->find_array_value_by_key($key, $_GET, $default));
 	}
 	
-	public function post($key, $default=null, $expected=array()) {
-		return($this->get_superglobal_value($key, \INPUT_POST, $default, $expected));
+	public function post($key, $default=null) {
+		return($this->find_array_value_by_key($key, $_POST, $default));
 	}
 
-	public function put($key, $default=null, $expected=array()) {
+	public function put($key, $default=null) {
+		return($this->find_array_value_by_key($key, $this->stream_contents, $default));
 	}
 	
-	public function delete($key, $default=null, $expected=array()) {
+	public function delete($key, $default=null) {
+		return($this->find_array_value_by_key($key, $this->stream_contents, $default));
+	}
+	
+	public function server($key, $default=null) {
+		return($this->find_array_value_by_key($key, $_SERVER, $default));
 	}
 	
 	
@@ -82,6 +94,10 @@ class request {
 		return($this->type);
 	}
 	
+	public function get_stream_contents() {
+		return($this->stream_contents);
+	}
+	
 	
 	
 	private function find_first_accept_type($accept) {
@@ -107,26 +123,8 @@ class request {
 		return($this);
 	}
 	
-	private function get_superglobal_value($key, $superglobal, $default, $expected) {
-		$return = $default;
-		
-		if (filter_has_var($superglobal, $key)) {
-			$return = filter_input($superglobal, $key);
-			
-			if (is_int($default)) {
-				$return = (int)$return;
-			} elseif (is_float($default)) {
-				$return = (float)$return;
-			} elseif (is_array($default)) {
-				$return = (array)$return;
-				
-				if (is_array($expected) && count($expected) > 0) {
-					$return = array_merge($expected, $return);
-				}
-			}
-		}
-		
-		return($return);
+	private function find_array_value_by_key($key, $array, $default) {
+		return(array_key_exists($key, $array) ? $array[$key] : $default);
 	}
 	
 }
