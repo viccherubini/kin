@@ -9,6 +9,9 @@
 			<file>./unit/app/route_test.php</file>
 			<file>./unit/app/settings_test.php</file>
 			
+			<file>./unit/db/model_test.php</file>
+			<file>./unit/db/pdo_test.php</file>
+			
 			<file>./unit/http/request_test.php</file>
 			<file>./unit/http/response_test.php</file>
 			
