@@ -1,7 +1,8 @@
-<?php namespace kintest;
+<?php namespace kintest\db;
 declare(encoding='UTF-8');
 
 use \kin\db\model as model,
+	\kintest\testcase as testcase,
 	\kinfixture\fixture1 as fixture1;
 
 require_once(__DIR__.'/../../testcase.php');

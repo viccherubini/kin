@@ -3,6 +3,8 @@ declare(encoding='UTF-8');
 
 use \kin\db\pdo as pdo;
 
+require_once(__DIR__.'/../pdo.php');
+
 class pgsql extends pdo {
 	
 	// Helper functions

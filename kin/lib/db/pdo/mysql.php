@@ -3,6 +3,8 @@ declare(encoding='UTF-8');
 
 use \kin\db\pdo as pdo;
 
+require_once(__DIR__.'/../pdo.php');
+
 class mysql extends pdo {
 	
 	protected function build_insert_query_field_string() {
