@@ -17,14 +17,14 @@ class pdo_test extends testcase {
 	protected $pdo = null;
 	
 	public function test_save__inserts_model_to_database() {
-		$fixture1 = $this->create_fixture1();
+		$fixture1 = $this->create_fixture();
 		
 		$this->assertGreaterThan(0, $fixture1->id);
 		$this->assertNotEmpty($fixture1->id);
 	}
 	
-	public function _test_save__upates_model_in_database() {
-		$fixture1 = $this->create_fixture1();
+	public function test_save__upates_model_in_database() {
+		$fixture1 = $this->create_fixture();
 		
 		$this->assertGreaterThan(0, $fixture1->id);
 		$this->assertNotEmpty($fixture1->id);
@@ -36,50 +36,102 @@ class pdo_test extends testcase {
 		$this->assertNotEmpty($fixture1->updated);
 	}
 	
-	public function _test_save__inserts_multiple_models_to_database() {
-		$fixture1 = $this->create_fixture1();
-		$fixture2 = $this->create_fixture1();
+	public function test_save__inserts_multiple_models_to_database() {
+		$fixture1 = $this->create_fixture();
+		$fixture2 = $this->create_fixture();
 		
 		$this->assertGreaterThan(0, $fixture1->id);
 		$this->assertGreaterThan(0, $fixture2->id);
 		$this->assertNotEquals($fixture1->id, $fixture2->id);
 	}
 	
-	public function _test_delete__removes_object_from_database() {
-		$fixture1 = $this->create_fixture1();
+	
+	
+	public function test_delete__removes_object_from_database() {
+		$fixture1 = $this->create_fixture();
 		$this->pdo->delete($fixture1);
 		
 		$this->assertEmpty($this->pdo->select('select * from fixture1')->fetchAll());
 	}
 	
-	public function _test_prep__prepares_query() {
+	
+	
+	public function test_prep__prepares_query() {
 		$this->pdo->prep('select * from fixture1');
 		$this->assertInternalType('object', $this->pdo->get_stmt());
 	}
 	
-	public function _test_select__finds_object() {
-		$fixture1 = $this->create_fixture1();
+	
+	
+	public function test_select__finds_object() {
+		$fixture1 = $this->create_fixture();
 		$fixture2 = $this->pdo->select('select * from fixture1 where id = :id',
 			array('id' => $fixture1->id))
 			->fetchObject('\kinfixture\fixture1');
+
+		$this->pdo->close();
 
 		$this->assertEquals($fixture1->id, $fixture2->id);
 		$this->assertEquals($fixture1->identifier, $fixture2->identifier);
 	}
 	
 	public function _test_select__returns_null_on_invalid_query() {
-		$fixture1 = $this->create_fixture1();
+		$fixture1 = $this->create_fixture();
 		
 		$invalid_fixture = $this->pdo->select('select * from invalid_fixture where id = :id',
 			array('id' => $fixture1->id));
-			
+		
 		$this->assertInternalType('null', $invalid_fixture);
 	}
 	
 	
 	
+	public function test_select_one__returns_single_model() {
+		$this->create_x_fixtures(5);
+		
+		$fixture1 = $this->pdo->select_one('select * from fixture1 where id = :id', '\kinfixture\fixture1', array('id' => 1));
+		
+		$this->assertGreaterThan(0, $fixture1->id);
+	}
 	
-	protected function create_fixture1() {
+	public function test_select_one__returns_false_when_no_rows_found() {
+		$this->create_x_fixtures(5);
+		
+		$fixture1 = $this->pdo->select_one('select * from fixture1 where id = :id', '\kinfixture\fixture1', array('id' => 'abc'));
+		
+		$this->assertFalse($fixture1);
+	}
+	
+	
+	
+	public function test_select_exists__returns_true_when_row_exists() {
+		$this->create_x_fixtures(5);
+		
+		$this->assertTrue($this->pdo->select_exists('select count(id) from fixture1 where id = :id', array('id' => 1)));
+	}
+	
+	public function test_select_exists__returns_false_when_row_does_not_exist() {
+		$this->create_x_fixtures(5);
+		
+		$this->assertFalse($this->pdo->select_exists('select count(id) from fixture1 where id = :id', array('id' => 'abc')));
+	}
+	
+	
+	
+	public function test_modify__updates_data() {
+		$new_identifier = uniqid();
+		$fixture1 = $this->create_fixture();
+		
+		$modified = $this->pdo->modify('update fixture1 set identifier = :identifier', array('identifier' => $new_identifier));
+		$this->assertTrue($modified);
+		
+		$found_fixture1 = $this->pdo->select_one('select * from fixture1 where id = :id', '\kinfixture\fixture1', array('id' => $fixture1->id));
+		$this->assertEquals($new_identifier, $found_fixture1->identifier);
+	}
+	
+	
+	
+	protected function create_fixture() {
 		$name = uniqid();
 		$identifier = mt_rand(1, 100000);
 		
@@ -89,4 +141,12 @@ class pdo_test extends testcase {
 
 		return($this->pdo->save($fixture1));
 	}
+	
+	protected function create_x_fixtures($x) {
+		for ($i=0; $i<$x; $i++) {
+			$this->create_fixture();
+		}
+		return(true);
+	}
+	
 }

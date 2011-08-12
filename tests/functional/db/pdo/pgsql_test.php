@@ -22,5 +22,5 @@ class pgsql_test extends pdo_test {
 		$sql_teardown = file_get_contents(__DIR__.'/../../../fixtures/scripts/pgsql_teardown.sql');
 		$this->pdo->exec($sql_teardown);
 	}
-
+	
 }
