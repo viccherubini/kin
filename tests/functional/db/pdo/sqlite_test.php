@@ -2,7 +2,6 @@
 declare(encoding='UTF-8');
 
 use \kin\db\pdo\sqlite as sqlite,
-	\kin\db\model as model,
 	\kintest\db\pdo_test as pdo_test,
 	\kinfixture\fixture1 as fixture1;
 

@@ -2,7 +2,6 @@
 declare(encoding='UTF-8');
 
 use \kin\db\pdo as pdo,
-	\kin\db\model as model,
 	\kintest\testcase as testcase,
 	\kinfixture\fixture1 as fixture1;
 
