@@ -123,7 +123,8 @@ class app {
 			->set_file($this->route->get_controller())
 			->set_path($this->settings->controllers_path)
 			->compile();
-		$this->controller = $compiler->get_controller();
+		$this->controller = $compiler->get_controller()
+			->attach_request($this->request);
 		return($this);
 	}
 	

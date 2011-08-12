@@ -13,7 +13,22 @@ class request {
 	}
 	
 	
+	public function get($key, $default=null, $expected=array()) {
+		return($this->get_superglobal_value($key, \INPUT_GET, $default, $expected));
+	}
+	
+	public function post($key, $default=null, $expected=array()) {
+		return($this->get_superglobal_value($key, \INPUT_POST, $default, $expected));
+	}
 
+	public function put($key, $default=null, $expected=array()) {
+	}
+	
+	public function delete($key, $default=null, $expected=array()) {
+	}
+	
+	
+	
 	public function set_accept($accept) {
 		$accept_bits = $this->find_first_accept_type($accept);
 		if (count($accept_bits) > 0) {
@@ -90,6 +105,28 @@ class request {
 			$this->set_type($accept_bits[1]);
 		}
 		return($this);
+	}
+	
+	private function get_superglobal_value($key, $superglobal, $default, $expected) {
+		$return = $default;
+		
+		if (filter_has_var($superglobal, $key)) {
+			$return = filter_input($superglobal, $key);
+			
+			if (is_int($default)) {
+				$return = (int)$return;
+			} elseif (is_float($default)) {
+				$return = (float)$return;
+			} elseif (is_array($default)) {
+				$return = (array)$return;
+				
+				if (is_array($expected) && count($expected) > 0) {
+					$return = array_merge($expected, $return);
+				}
+			}
+		}
+		
+		return($return);
 	}
 	
 }

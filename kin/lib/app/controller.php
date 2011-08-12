@@ -9,6 +9,8 @@ class controller {
 	private $content_type = '';
 	private $response_code = 200;
 	private $view = '';
+
+	protected $request = null;
 	
 	const response_301 = 301;
 	const response_302 = 302;
@@ -41,6 +43,15 @@ class controller {
 		}
 		return(null);
 	}
+	
+	
+	
+	public function attach_request(\kin\http\request $request) {
+		$this->request = $request;
+		return($this);
+	}
+	
+	
 	
 	public function add_header($header, $value) {
 		$header = strtolower(trim($header));
@@ -160,6 +171,7 @@ class controller {
 	public function get_view() {
 		return($this->view);
 	}
+	
 	
 	
 	private function toggle_has_errors() {
