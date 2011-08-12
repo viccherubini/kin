@@ -9,6 +9,60 @@ require_once(__DIR__.'/../../../kin/lib/http/request.php');
 
 class request_test extends testcase {
 	
+	public function test_get__finds_value_by_key_in_superglobal() {
+		$id = $_GET['id'] = mt_rand(1, 10000);
+		
+		$request = new request;
+		
+		$this->assertEquals($id, $request->get('id'));
+	}
+	
+	public function test_get__returns_default_value_when_key_not_found() {
+		$default_id = 0;
+		
+		$request = new request;
+		
+		$this->assertEquals(0, $request->get('id', $default_id));
+	}
+	
+	
+	
+	public function test_post__finds_value_by_key_in_superglobal() {
+		$id = $_POST['id'] = mt_rand(1, 10000);
+		
+		$request = new request;
+		
+		$this->assertEquals($id, $request->post('id'));
+	}
+	
+	public function test_post__returns_default_value_when_key_not_found() {
+		$default_id = 0;
+		
+		$request = new request;
+		
+		$this->assertEquals(0, $request->post('id', $default_id));
+	}
+	
+	
+	
+	public function test_server__returns_value_by_key_in_superglobal() {
+		$id = $_SERVER['id'] = mt_rand(1, 10000);
+		
+		$request = new request;
+		
+		$this->assertEquals($id, $request->server('id'));
+	}
+	
+	public function test_server__returns_default_value_when_key_not_found() {
+		$default_id = 0;
+		
+		$request = new request;
+		
+		$this->assertEquals(0, $request->server('id', $default_id));
+	}
+	
+	
+	
 	/**
 	 * @dataProvider provider_accept_headers
 	 */
@@ -29,6 +83,8 @@ class request_test extends testcase {
 		$this->assertEquals($type, $request->get_type());
 	}
 	
+	
+	
 	public function test_set_method__always_uppercase() {
 		$request = new request;
 		$request->set_method('post');
@@ -44,12 +100,16 @@ class request_test extends testcase {
 		$this->assertEquals($expected_method, $request->get_method());
 	}
 	
+	
+	
 	public function test_set_path__cannot_be_empty() {
 		$request = new request;
 		$request->set_path('');
 		
 		$this->assertNotEquals('', $request->get_path());
 	}
+	
+	
 	
 	public function test_set_type__cannot_be_star() {
 		$request = new request;
