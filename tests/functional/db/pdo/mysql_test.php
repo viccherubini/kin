@@ -12,9 +12,12 @@ require_once(__DIR__.'/../../../../kin/lib/db/pdo/sqlite.php');
 class mysql_test extends pdo_test {
 
 	public function setUp() {
+		parent::setUp();
+		$s = $this->settings['mysql'];
+		
 		$sql_setup = file_get_contents(__DIR__.'/../../../fixtures/scripts/mysql_setup.sql');
 		
-		$this->pdo = new mysql('mysql:host=localhost;dbname=kintest', 'root', 'dba89da');
+		$this->pdo = new mysql('mysql:host='.$s['host'].';dbname='.$s['dbname'], $s['user'], $s['password']);
 		$this->pdo->exec($sql_setup);
 	}
 	

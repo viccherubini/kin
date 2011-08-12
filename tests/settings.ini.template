@@ -1,0 +1,13 @@
+[mysql]
+host = localhost
+dbname = kintest
+user = 
+password = 
+
+[pgsql]
+host = localhost
+dbname = kintest
+user = 
+password = 
+
+[sqlite]

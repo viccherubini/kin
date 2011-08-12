@@ -16,6 +16,17 @@ class pdo_test extends testcase {
 	
 	protected $pdo = null;
 	
+	protected $settings = array();
+	
+	public function setUp() {
+		$settings_file = __DIR__.'/../../settings.ini';
+		if (!is_file($settings_file)) {
+			echo("Please copy the settings.ini.template file to settings.ini and update the values to reflect your test system.".PHP_EOL.PHP_EOL);
+			exit(1);
+		}
+		$this->settings = parse_ini_file($settings_file, true);
+	}
+	
 	public function test_save__inserts_model_to_database() {
 		$fixture1 = $this->create_fixture();
 		

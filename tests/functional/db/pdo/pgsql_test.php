@@ -12,9 +12,12 @@ require_once(__DIR__.'/../../../../kin/lib/db/pdo/pgsql.php');
 class pgsql_test extends pdo_test {
 
 	public function setUp() {
+		parent::setUp();
+		$s = $this->settings['pgsql'];
+		
 		$sql_setup = file_get_contents(__DIR__.'/../../../fixtures/scripts/pgsql_setup.sql');
 		
-		$this->pdo = new pgsql('pgsql:host=localhost;dbname=kintest;user=postgres;password=dba89da');
+		$this->pdo = new pgsql('pgsql:host='.$s['host'].';dbname='.$s['dbname'].';user='.$s['user'].';password='.$s['password']);
 		$this->pdo->exec($sql_setup);
 	}
 	

@@ -12,6 +12,7 @@ require_once(__DIR__.'/../../../../kin/lib/db/pdo/sqlite.php');
 class sqlite_test extends pdo_test {
 
 	public function setUp() {
+		parent::setUp();
 		$sql_setup = file_get_contents(__DIR__.'/../../../fixtures/scripts/sqlite_setup.sql');
 		
 		$this->pdo = new sqlite('sqlite::memory:');
