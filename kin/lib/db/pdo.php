@@ -22,7 +22,7 @@ abstract class pdo extends \PDO {
 		if (!empty($dsn)) {
 			parent::__construct($dsn, $username, $password, $options);
 			
-			$this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
 			$this->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
 			
 			$this->connected = true;
@@ -43,6 +43,13 @@ abstract class pdo extends \PDO {
 
 	public function prep($query) {
 		$this->stmt = $this->prepare($query);
+		return($this);
+	}
+	
+	public function close() {
+		if (is_object($this->stmt)) {
+			$this->stmt->closeCursor();
+		}
 		return($this);
 	}
 
@@ -67,15 +74,15 @@ abstract class pdo extends \PDO {
 		return(null);
 	}
 	
+	public function select_one($query, $object='stdClass', $parameters=array()) {
+		return($this->select($query, $parameters)
+			->fetchObject($object));
+	}
+	
 	public function select_exists($query, $parameters=array()) {
 		$field_count = (int)$this->select($query, $parameters)
 			->fetchColumn(0);
 		return(0 === $field_count ? false : true);
-	}
-
-	public function select_one($query, $object='stdClass', $parameters=array()) {
-		return($this->select($query, $parameters)
-			->fetchObject($object));
 	}
 
 	// Modification methods
@@ -84,10 +91,11 @@ abstract class pdo extends \PDO {
 			return(false);
 		}
 
-		$table = $this->get_table($model);
-		$query = "DELETE FROM {$table} WHERE id = :id";
+		$this->set_model($model)
+			->set_table();
+		$query = "DELETE FROM {$this->table} WHERE id = :id";
 
-		return($this->modify($query, array('id' => $model->get_id())));
+		return($this->modify($query, array('id' => $this->model->get_id())));
 	}
 
 	public function modify($query, $parameters=array()) {
@@ -167,7 +175,7 @@ abstract class pdo extends \PDO {
 		return($this);
 	}
 	
-	private function set_model_updated_date(model $model) {
+	private function set_model_updated_date() {
 		if (!is_null($this->model) && isset($this->model->updated)) {
 			$this->model->set_updated($this->now());
 		}
