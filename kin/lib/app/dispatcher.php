@@ -29,6 +29,7 @@ class dispatcher {
 		
 		$action = $this->build_action();
 		return($this->check_action_is_public($action)
+			->dispatch_controller_init()
 			->dispatch_action($action));
 	}
 	
@@ -80,6 +81,18 @@ class dispatcher {
 			throw new \kin\exception\unrecoverable("The controller action, {$this->action}, is not a member of the controller class {$this->class}.");
 		}
 		return($action);
+	}
+	
+	private function dispatch_controller_init() {
+		$init_successful = true;
+		if (method_exists($this->controller, 'init')) {
+			$init_successful = $this->controller->init();
+		}
+		
+		if (!$init_successful) {
+			throw new \kin\exception\unrecoverable("The controller's init() method was called but returned false. Execution can not continue.");
+		}
+		return($this);
 	}
 	
 	private function dispatch_action($action) {
