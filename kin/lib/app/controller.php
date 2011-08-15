@@ -12,8 +12,18 @@ class controller {
 
 	protected $request = null;
 	
+	const response_200 = 200;
+	const response_201 = 201;
+	
 	const response_301 = 301;
 	const response_302 = 302;
+	
+	const response_400 = 400;
+	const response_404 = 404;
+	const response_405 = 405;
+	const response_409 = 409;
+	
+	const response_500 = 500;
 	
 	public function __construct() {
 		$this->payload = array(
