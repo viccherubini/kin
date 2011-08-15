@@ -57,8 +57,10 @@ class model {
 				$v = (int)$v;
 			} elseif ($this->is_type_float($k)) {
 				$v = (float)$v;
-			} else {
+			} elseif ($this->is_type_string($k) && !is_null($v)) {
 				$v = (string)$v;
+			} else {
+				$v = $v;
 			}
 
 			$this->values[$k] = $v;
