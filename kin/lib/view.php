@@ -33,6 +33,10 @@ class view {
 
 		return($this);
 	}
+	
+	public function safe($v) {
+		return htmlentities($v, ENT_COMPAT, 'UTF-8');
+	}
 
 
 

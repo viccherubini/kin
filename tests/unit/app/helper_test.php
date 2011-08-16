@@ -16,4 +16,26 @@ class helper_test extends testcase {
 		$helper = new helper;
 		$helper->attach_settings(null);
 	}
+	
+	
+	
+	public function test_css__appends_extension_only_if_local_file() {
+		$settings = $this->getMock('\kin\app\settings');
+		
+		$helper = new helper;
+		$helper->attach_settings($settings);
+		
+		$css_file = '/path/to/css';
+		$css_file_with_extension = $css_file.'.css';
+		
+		$link_tag = $helper->css($css_file);
+		
+		$matcher = array(
+			'tag' => 'link',
+			'attributes' => array('href' => $css_file_with_extension)
+		);
+		
+		$this->assertTag($matcher, $link_tag);
+	}
+	
 }
