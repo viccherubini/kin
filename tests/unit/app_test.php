@@ -29,10 +29,21 @@ class app_test extends testcase {
 	
 	
 	public function test_run__compiles_request() {
+		$settings = $this->getMock('\kin\app\settings', array(), array(), '', true);
+		
 		$app = new app;
+		$app->attach_settings($settings);
+		
 		$app->run();
 		
 		$this->assertInternalType('object', $app->request);
+	}
+	
+	public function test_run__requires_settings() {
+		$app = new app;
+		$app->run();
+		
+		$this->assertInternalType('null', $app->get_route());
 	}
 	
 }

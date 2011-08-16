@@ -25,7 +25,8 @@ class app {
 	private $exception_routes = array();
 	
 	public function __construct() {
-		$this->build_response();
+		$this->build_request()
+			->build_response();
 	}
 	
 	
@@ -46,19 +47,19 @@ class app {
 	
 	public function run() {
 		try {
-			$this->compile_request();
+			$this->check_settings()
+				->compile_request();
 			
-			$content_type = $this->settings->content_type;
-			if (empty($content_type)) {
-				$content_type = $this->request->get_accept();
+			if (isset($this->settings->content_type)) {
+				$this->response->set_content_type($this->settings->content_type);
 			}
-			
+
 			$this->build_and_execute_router()
 				->build_and_execute_compiler()
 				->build_and_execute_dispatcher();
 			
 			if (!$this->controller->has_content_type()) {
-				$this->controller->set_content_type($content_type);
+				$this->controller->set_content_type($this->response->get_content_type());
 			}
 			
 			$type = $this->settings->type;
@@ -82,6 +83,30 @@ class app {
 	
 	
 	
+	public function get_controller() {
+		return($this->controller);
+	}
+	
+	public function get_request() {
+		return($this->request);
+	}
+	
+	public function get_response() {
+		return($this->response);
+	}
+	
+	public function get_route() {
+		return($this->route);
+	}
+	
+	
+	private function check_settings() {
+		if (is_null($this->settings)) {
+			throw new \kin\exception\unrecoverable("A kin\\settings object must be attached to the app object before it can run.");
+		}
+		return($this);
+	}
+	
 	private function compile_request() {
 		$http_headers = filter_input_array(INPUT_SERVER, array(
 			'HTTP_ACCEPT' => array(),
@@ -89,21 +114,29 @@ class app {
 			'PATH_INFO' => array()
 		));
 		
-		if (!empty($this->settings->accept)) {
+		if (isset($this->settings->accept)) {
 			$http_headers['HTTP_ACCEPT'] = $this->settings->accept;
 		}
 		
-		$this->request = new http\request;
 		$this->request->set_accept($http_headers['HTTP_ACCEPT'])
 			->set_method($http_headers['REQUEST_METHOD'])
 			->set_path($http_headers['PATH_INFO']);
-			
+		return($this->copy_request_accept_to_response_content_type());
+	}
+	
+	private function copy_request_accept_to_response_content_type() {
+		$this->response->set_content_type($this->request->get_accept());
+		return($this);
+	}
+	
+	private function build_request() {
+		$this->request = new http\request;
 		return($this);
 	}
 	
 	private function build_response() {
 		$this->response = new http\response;
-		return($this);
+		return($this->copy_request_accept_to_response_content_type());
 	}
 	
 	private function build_and_execute_router() {

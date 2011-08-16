@@ -62,5 +62,11 @@ class response {
 		$this->headers = $headers;
 		return($this);
 	}
+	
+	
+	
+	public function get_content_type() {
+		return($this->content_type);
+	}
 
 }
