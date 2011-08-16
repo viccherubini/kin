@@ -300,12 +300,12 @@ class helper_test extends testcase {
 		$settings->force_ssl = false;
 		$settings->url = 'http://leftnode.com/';
 		$settings->rewrite = true;
-		
+
 		$helper = new helper;
 		$helper->attach_settings($settings);
 		
 		$url = $settings->url.'path/to/some/resource';
-		
+
 		$this->assertEquals($url, $helper->url('path', 'to', 'some', 'resource'));
 	}
 	

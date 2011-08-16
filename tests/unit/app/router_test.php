@@ -152,7 +152,7 @@ class router_test extends testcase {
 		
 		$exception_404_route = $this->empty_route;
 		
-		$matchable_route = $this->getMock('kin\app\route', array('get_method', 'get_compiled_route', 'get_controller'), array(), '', false);
+		$matchable_route = $this->getMock('kin\app\route', array('get_method', 'get_compiled_route', 'get_controller', 'set_arguments'), array(), '', false);
 		$matchable_route->expects($this->any())
 			->method('get_method')
 			->will($this->returnValue('GET'));
@@ -162,6 +162,9 @@ class router_test extends testcase {
 		$matchable_route->expects($this->once())
 			->method('get_controller')
 			->will($this->returnValue($matchable_controller));
+		$matchable_route->expects($this->once())
+			->method('set_arguments')
+			->will($this->returnValue($matchable_route));
 		
 		$router = new router;
 		$router->set_path('/')
@@ -180,13 +183,16 @@ class router_test extends testcase {
 		
 		$exception_404_route = $this->empty_route;
 		
-		$matchable_route = $this->getMock('kin\app\route', array('get_method', 'get_compiled_route'), array(), '', false);
+		$matchable_route = $this->getMock('kin\app\route', array('get_method', 'get_compiled_route', 'set_arguments'), array(), '', false);
 		$matchable_route->expects($this->any())
 			->method('get_method')
 			->will($this->returnValue('GET'));
 		$matchable_route->expects($this->once())
 			->method('get_compiled_route')
 			->will($this->returnValue('#^/load/user/([\d]+)/and/set/his/name/to/([a-z0-9_\-/%\.\*\+]*)$#i'));
+		$matchable_route->expects($this->once())
+			->method('set_arguments')
+			->will($this->returnValue($matchable_route));
 		
 		$router = new router;
 		$router->set_path($path)
