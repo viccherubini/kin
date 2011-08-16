@@ -38,7 +38,8 @@ class settings {
 			'allow_ssl' => true,
 			'force_ssl' => false,
 			'url' => '',
-			'secure_url' => ''
+			'secure_url' => '',
+			'rewrite' => false
 		);
 		
 		if (!empty($app_path)) {
@@ -97,6 +98,9 @@ class settings {
 			$url_protocol = ($this->allow_ssl ? 'https://' : 'http://');
 			$this->secure_url = rtrim($url_protocol.$this->server_name, '/').'/';
 		}
+		
+		$root_script = ltrim(dirname(filter_input(INPUT_SERVER, 'SCRIPT_NAME')), '/');
+		$this->rewrite = empty($root_script);
 		
 		return(true);
 	}
