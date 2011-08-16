@@ -6,6 +6,7 @@ require_once(__DIR__.'/http/response.php');
 
 require_once(__DIR__.'/app/compiler.php');
 require_once(__DIR__.'/app/dispatcher.php');
+require_once(__DIR__.'/app/helper.php');
 require_once(__DIR__.'/app/route.php');
 require_once(__DIR__.'/app/router.php');
 require_once(__DIR__.'/app/settings.php');
@@ -14,6 +15,7 @@ require_once(__DIR__.'/view.php');
 
 class app {
 
+	public $helper = null;
 	public $request = null;
 	public $response = null;
 	public $settings = null;
@@ -25,7 +27,8 @@ class app {
 	private $exception_routes = array();
 	
 	public function __construct() {
-		$this->build_request()
+		$this->build_helper()
+			->build_request()
 			->build_response();
 	}
 	
@@ -40,6 +43,8 @@ class app {
 	public function attach_settings(app\settings $settings) {
 		$this->settings = $settings;
 		$this->settings->compile();
+		
+		$this->helper->attach_settings($this->settings);
 		return($this);
 	}
 	
@@ -129,6 +134,11 @@ class app {
 		return($this);
 	}
 	
+	private function build_helper() {
+		$this->helper = new app\helper;
+		return($this);
+	}
+	
 	private function build_request() {
 		$this->request = new http\request;
 		return($this);
@@ -157,6 +167,7 @@ class app {
 			->set_path($this->settings->controllers_path)
 			->compile();
 		$this->controller = $compiler->get_controller()
+			->attach_helper($this->helper)
 			->attach_request($this->request);
 		return($this);
 	}
@@ -175,7 +186,8 @@ class app {
 		$content = '';
 		if ($this->controller->has_view()) {
 			$view = new view;
-			$view->set_payload($this->controller->get_payload())
+			$view->attach_helper($this->helper)
+				->set_payload($this->controller->get_payload())
 				->set_file($this->controller->get_view())
 				->set_path($this->settings->views_path)
 				->set_type($type)

@@ -3,6 +3,8 @@ declare(encoding='UTF-8');
 
 class controller {
 	
+	public $helper = null;
+	
 	private $headers = array();
 	private $payload = array();
 	
@@ -55,6 +57,11 @@ class controller {
 	}
 	
 	
+	
+	public function attach_helper(helper $helper) {
+		$this->helper = $helper;
+		return($this);
+	}
 	
 	public function attach_request(\kin\http\request $request) {
 		$this->request = $request;

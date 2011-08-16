@@ -5,6 +5,8 @@ require_once(__DIR__.'/exceptions/unrecoverable.php');
 
 class view {
 
+	public $helper = null;
+
 	private $file = '';
 	private $path = '';
 	private $type = '';
@@ -19,6 +21,12 @@ class view {
 	}
 
 
+	public function attach_helper(app\helper $helper) {
+		$this->helper = $helper;
+		return($this);
+	}
+	
+	
 	
 	public function render() {
 		$file_path = $this->path.$this->compile_view_name();
