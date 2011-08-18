@@ -60,7 +60,6 @@ class helper {
 		if (!empty($http_parameters)) {
 			$url .= '?'.$http_parameters;
 		}
-
 		return($url);
 	}
 	
@@ -78,6 +77,7 @@ class helper {
 		if ($this->is_secure() || $this->settings->force_ssl) {
 			$this->root_url = $this->settings->secure_url;
 		}
+		return(true);
 	}
 
 	private function is_secure() {

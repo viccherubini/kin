@@ -75,6 +75,10 @@ class settings {
 			throw new \kin\exception\unrecoverable("The settings can not begin compilation, an app_path is not set.");
 		}
 		
+		$script_name = dirname(filter_input(INPUT_SERVER, 'SCRIPT_NAME'));
+		$script_root = ltrim($script_name, '/');
+		$this->rewrite = empty($script_root);
+		
 		$app_path = $this->settings['app_path'];
 		$this->compile_app_subpath('controllers_path', 'controllers')
 			->compile_app_subpath('validators_path', 'validators')
@@ -91,17 +95,14 @@ class settings {
 		
 		if (empty($this->settings['url'])) {
 			$url_protocol = ($this->allow_ssl && $this->force_ssl ? 'https://' : 'http://');
-			$this->url = rtrim($url_protocol.$this->server_name, '/').'/';
+			$this->url = rtrim($url_protocol.$this->server_name.$script_name, '/').'/';
 		}
 		
 		if (empty($this->settings['secure_url'])) {
 			$url_protocol = ($this->allow_ssl ? 'https://' : 'http://');
-			$this->secure_url = rtrim($url_protocol.$this->server_name, '/').'/';
+			$this->secure_url = rtrim($url_protocol.$this->server_name.$script_name, '/').'/';
 		}
-		
-		$root_script = ltrim(dirname(filter_input(INPUT_SERVER, 'SCRIPT_NAME')), '/');
-		$this->rewrite = empty($root_script);
-		
+
 		return(true);
 	}
 	
