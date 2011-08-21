@@ -21,11 +21,13 @@ class controller {
 	const response_302 = 302;
 	
 	const response_400 = 400;
+	const response_403 = 403;
 	const response_404 = 404;
 	const response_405 = 405;
 	const response_409 = 409;
 	
 	const response_500 = 500;
+	const response_501 = 500;
 	
 	public function __construct() {
 		$this->payload = array(
