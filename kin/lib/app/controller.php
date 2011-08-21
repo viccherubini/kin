@@ -27,7 +27,7 @@ class controller {
 	const response_409 = 409;
 	
 	const response_500 = 500;
-	const response_501 = 500;
+	const response_501 = 501;
 	
 	public function __construct() {
 		$this->payload = array(
