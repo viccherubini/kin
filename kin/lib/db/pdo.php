@@ -16,7 +16,9 @@ abstract class pdo extends \PDO {
 	protected $model_fields = array();
 	protected $model_values = array();
 
-
+	// These are duplicated in \kin\db\model as class constants.
+	public $status_enabled = 1;
+	public $status_disabled = 0;
 
 	public function __construct($dsn, $username=null, $password=null, $options=array()) {
 		if (!empty($dsn)) {
