@@ -119,7 +119,7 @@ class app {
 			'PATH_INFO' => array()
 		));
 		
-		if (isset($this->settings->accept)) {
+		if (isset($this->settings->accept) && '*/*' == $http_headers['HTTP_ACCEPT']) {
 			$http_headers['HTTP_ACCEPT'] = $this->settings->accept;
 		}
 		
