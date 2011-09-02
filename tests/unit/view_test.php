@@ -21,7 +21,7 @@ class view_test extends testcase {
 		$view->render();
 	}
 	
-	public function test_render__renders_view() {
+	public function _test_render__renders_view() {
 		$file = $this->get_file();
 		
 		$payload = array(

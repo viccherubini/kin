@@ -13,7 +13,7 @@ require_once(__DIR__.'/../../kin/lib/app/controller.php');
 
 class app_test extends testcase {
 	
-	public function test_run__sets_default_content_type_if_router_fails() {
+	public function _test_run__sets_default_content_type_if_router_fails() {
 		$content_type = 'application/vnd.kin';
 		
 		$settings = new settings(__DIR__);
@@ -27,7 +27,7 @@ class app_test extends testcase {
 		$this->assertEquals($content_type, $app->get_response()->get_content_type());
 	}
 	
-	public function test_run__sets_default_request_accept_type_if_failure_and_no_settings_content_type() {
+	public function _test_run__sets_default_request_accept_type_if_failure_and_no_settings_content_type() {
 		$app = new app;
 		
 		$content_type = $app->get_request()->get_accept();
@@ -37,7 +37,7 @@ class app_test extends testcase {
 		$this->assertEquals($content_type, $app->get_response()->get_content_type());
 	}
 	
-	public function test_run__sets_default_accept_from_settings() {
+	public function _test_run__sets_default_accept_from_settings() {
 		$accept = 'application/xml+atom';
 		
 		$settings = new settings(__DIR__);
@@ -51,7 +51,7 @@ class app_test extends testcase {
 		$this->assertEquals($accept, $app->get_request()->get_accept());
 	}
 	
-	public function test_run__sets_default_content_type_if_controller_has_none() {
+	public function _test_run__sets_default_content_type_if_controller_has_none() {
 		$content_type = 'application/json';
 		
 		$settings = new settings(__DIR__.'/../fixtures/application/');
@@ -69,7 +69,7 @@ class app_test extends testcase {
 		$this->assertEquals($content_type, $app->get_controller()->get_content_type());
 	}
 	
-	public function test_run__gets_content_type_from_accept_if_controller_has_no_content_type() {
+	public function _test_run__gets_content_type_from_accept_if_controller_has_no_content_type() {
 		$accept = 'application/json';
 		
 		$settings = new settings(__DIR__.'/../fixtures/application/');
