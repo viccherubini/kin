@@ -3,12 +3,17 @@ declare(encoding='UTF-8');
 
 class request {
 
-	private $accept = 'text/html';
 	private $path = '/';
 	private $method = 'GET';
-	private $type = 'html';
 
+	private $acceptable_types = array();
+	private $renderable_types = array();
+	
 	private $stream_contents = array();
+	
+	const accept_any = '*/*';
+	const default_accept = 'text/html';
+	const default_type = 'html';
 
 	public function __construct() {
 		$stream_data = file_get_contents('php://input');
@@ -41,17 +46,56 @@ class request {
 	
 	
 	
-	public function set_accept($accept) {
-		$accept_bits = $this->find_first_accept_type($accept);
-		if (count($accept_bits) > 0) {
-			$accept = $this->parse_out_accept_quality($accept_bits[0]);
-			$accept = $this->format_accept_type($accept);
-			$this->find_type_from_accept($accept);
+	public function set_accept_header($accept_header) {
+		$accept_header = strtolower(str_replace(' ', '', $accept_header));
+		$acceptable_types = explode(',', $accept_header);
+
+		foreach ($acceptable_types as $accept) {
+			if (preg_match('#^(.+)/(.+)$#i', $accept)) {
+				$accept_quality = explode(';', $accept);
+
+				$quality = 1.0;
+				if (isset($accept_quality[1]) && false !== strpos($accept_quality[1], 'q=')) {
+					$quality = (float)str_replace('q=', '', $accept_quality[1]);
+				}
+				
+				$accept = trim($accept_quality[0]);
+				if (self::accept_any == $accept) {
+					$accept = self::default_accept;
+				}
+				
+				if (false !== strpos($accept, '*')) {
+					$accept_bits = explode('/', $accept);
+					if ('*' == $accept_bits[0]) {
+						$accept_bits[0] = $accept_bits[1];
+					} elseif ('*' == $accept_bits[1]) {
+						$accept_bits[1] = $accept_bits[0];
+					}
+					$accept = implode('/', $accept_bits);
+				}
+			} else {
+				$quality = 0.0;
+				$accept = self::default_accept;
+			}
 			
-			$this->accept = $accept;
+			$this->acceptable_types[] = array($accept, $quality);
 		}
+		
+		usort($this->acceptable_types, function($a, $b) {
+			if ($a[1] == $b[1]) {
+				return(0);
+			}
+			return($a[1] > $b[1] ? -1 : 1);
+		});
+		
+		$this->acceptable_types = array_map(function($v) {
+			return($v[0]);
+		}, $this->acceptable_types);
+		
 		return($this);
 	}
+	
+	
 	
 	public function set_method($method) {
 		$method = trim($method);
@@ -67,19 +111,11 @@ class request {
 		}
 		return($this);
 	}
-	
-	public function set_type($type) {
-		$type = trim($type);
-		if ('*' !== $type) {
-			$this->type = $type;
-		}
-		return($this);
-	}
 
 
 
-	public function get_accept() {
-		return($this->accept);
+	public function get_acceptable_types() {
+		return($this->acceptable_types);
 	}
 	
 	public function get_method() {
@@ -90,39 +126,12 @@ class request {
 		return($this->path);
 	}
 	
-	public function get_type() {
-		return($this->type);
-	}
-	
 	public function get_stream_contents() {
 		return($this->stream_contents);
 	}
 	
 	
-	
-	private function find_first_accept_type($accept) {
-		return(explode(',', $accept));
-	}
-	
-	private function parse_out_accept_quality($accept) {
-		return(current(explode(';', $accept)));
-	}
-	
-	private function format_accept_type($accept) {
-		if (preg_match('#(.+)/(.+)#i', $accept)) {
-			return($accept);
-		}
-		return($this->accept);
-	}
-	
-	private function find_type_from_accept($accept) {
-		$accept_bits = explode('/', $accept);
-		if (isset($accept_bits[1])) {
-			$this->set_type($accept_bits[1]);
-		}
-		return($this);
-	}
-	
+
 	private function find_array_value_by_key($key, $array, $default) {
 		return(array_key_exists($key, $array) ? $array[$key] : $default);
 	}

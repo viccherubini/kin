@@ -3,11 +3,15 @@ declare(encoding='UTF-8');
 
 class response {
 
-	private $content_type = '';
+	private $start_time = 0.0;
 	private $response_code = 200;
+	
+	private $content_type = '';
 	
 	private $headers = array();
 	private $content = null;
+	
+	
 
 	public function __construct() {
 		
@@ -31,8 +35,10 @@ class response {
 			}
 		}
 		
-		$memory_usage_kb = round((memory_get_peak_usage()/1024), 3);
-		header('X-Memory-Usage: '.$memory_usage_kb.'KB');
+		header('X-Memory-Usage: '.round((memory_get_peak_usage()/1024), 3).'KB');
+		if ($this->start_time > 0) {
+			header('X-Run-Time: '.round((microtime(true)-$this->start_time), 5).'s');
+		}
 		
 		if ($found_location_header && in_array($this->response_code, array(301, 302))) {
 			$this->content = '';
@@ -63,6 +69,10 @@ class response {
 		return($this);
 	}
 	
+	public function set_start_time($start_time) {
+		$this->start_time = (float)$start_time;
+		return($this);
+	}
 	
 	
 	public function get_content_type() {

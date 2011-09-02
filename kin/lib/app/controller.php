@@ -9,7 +9,7 @@ class controller {
 	private $payload = array();
 	
 	private $content_type = '';
-	private $response_code = 200;
+	private $response_code = self::response_200;
 	private $view = '';
 
 	protected $request = null;

@@ -32,8 +32,6 @@ class settings {
 			'js_path' => '',
 			'images_path' => '',
 			'accept' => '',
-			'type' => '',
-			'content_type' => '',
 			'server_name' => '',
 			'allow_ssl' => true,
 			'force_ssl' => false,

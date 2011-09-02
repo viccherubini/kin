@@ -20,13 +20,17 @@ class app {
 	public $response = null;
 	public $settings = null;
 
+	private $start_time = 0.0;
+	
 	private $controller = null;
 	private $route = null;
+	private $view = null;
 
 	private $routes = array();
 	private $exception_routes = array();
 	
 	public function __construct() {
+		$this->start_time = microtime(true);
 		$this->build_helper()
 			->build_request()
 			->build_response();
@@ -54,30 +58,22 @@ class app {
 		try {
 			$this->check_settings()
 				->compile_request();
-			
-			if (isset($this->settings->content_type)) {
-				$this->response->set_content_type($this->settings->content_type);
-			}
 
 			$this->build_and_execute_router()
 				->build_and_execute_compiler()
 				->build_and_execute_dispatcher();
 			
-			if (!$this->controller->has_content_type()) {
-				$this->controller->set_content_type($this->response->get_content_type());
+			if ($this->controller->has_content_type()) {
+				$this->request->set_accept_header($this->controller->get_content_type());
 			}
 			
-			$type = $this->settings->type;
-			if (empty($type)) {
-				$type = $this->request->get_type();
-			}
-			
-			$content = $this->build_and_render_view($type);
+			$this->build_and_render_view();
 			$this->response
 				->set_headers($this->controller->get_headers())
-				->set_content_type($this->controller->get_content_type())
+				->set_content_type($this->view->get_content_type())
 				->set_response_code($this->controller->get_response_code())
-				->set_content($content);
+				->set_content($this->view->get_rendering())
+				->set_start_time($this->start_time);
 			
 		} catch (\Exception $e) {
 			$this->response->set_content($e->getMessage());
@@ -107,7 +103,7 @@ class app {
 	
 	private function check_settings() {
 		if (is_null($this->settings)) {
-			throw new \kin\exception\unrecoverable("A kin\\settings object must be attached to the app object before it can run.");
+			throw new \kin\exception\unrecoverable("A \\kin\\settings object must be attached to the app object before it can run.");
 		}
 		return($this);
 	}
@@ -119,21 +115,16 @@ class app {
 			'PATH_INFO' => array()
 		));
 		
-		if (isset($this->settings->accept) && '*/*' == $http_headers['HTTP_ACCEPT']) {
+		if (isset($this->settings->accept)) {
 			$http_headers['HTTP_ACCEPT'] = $this->settings->accept;
 		}
 		
-		$this->request->set_accept($http_headers['HTTP_ACCEPT'])
+		$this->request->set_accept_header($http_headers['HTTP_ACCEPT'])
 			->set_method($http_headers['REQUEST_METHOD'])
 			->set_path($http_headers['PATH_INFO']);
-		return($this->copy_request_accept_to_response_content_type());
-	}
-	
-	private function copy_request_accept_to_response_content_type() {
-		$this->response->set_content_type($this->request->get_accept());
 		return($this);
 	}
-	
+
 	private function build_helper() {
 		$this->helper = new app\helper;
 		return($this);
@@ -146,7 +137,7 @@ class app {
 	
 	private function build_response() {
 		$this->response = new http\response;
-		return($this->copy_request_accept_to_response_content_type());
+		return($this);
 	}
 	
 	private function build_and_execute_router() {
@@ -182,19 +173,17 @@ class app {
 		return($this);
 	}
 	
-	private function build_and_render_view($type) {
-		$content = '';
+	private function build_and_render_view() {
+		$this->view = new view;
 		if ($this->controller->has_view()) {
-			$view = new view;
-			$view->attach_helper($this->helper)
+			$this->view->attach_helper($this->helper)
 				->set_payload($this->controller->get_payload())
 				->set_file($this->controller->get_view())
 				->set_path($this->settings->views_path)
-				->set_type($type)
+				->set_acceptable_types($this->request->get_acceptable_types())
 				->render();
-			$content = $view->get_rendering();
 		}
-		return($content);
+		return($this);
 	}
 	
 }

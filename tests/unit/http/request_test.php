@@ -66,21 +66,11 @@ class request_test extends testcase {
 	/**
 	 * @dataProvider provider_accept_headers
 	 */
-	public function test_set_accept__normalizes_accept_format($actual_header, $normalized_header) {
+	public function test_set_accept__orders_mime_types_by_quality($accept_header, $acceptable_types) {
 		$request = new request;
-		$request->set_accept($actual_header);
+		$request->set_accept_header($accept_header);
 		
-		$this->assertEquals($normalized_header, $request->get_accept());
-	}
-	
-	/**
-	 * @dataProvider provider_accept_headers_and_type
-	 */
-	public function test_set_accept__sets_type($actual_header, $type) {
-		$request = new request;
-		$request->set_accept($actual_header);
-		
-		$this->assertEquals($type, $request->get_type());
+		$this->assertEquals($acceptable_types, $request->get_acceptable_types());
 	}
 	
 	
@@ -108,44 +98,26 @@ class request_test extends testcase {
 		
 		$this->assertNotEquals('', $request->get_path());
 	}
-	
-	
-	
-	public function test_set_type__cannot_be_star() {
-		$request = new request;
-		$request->set_type('*');
-		
-		$this->assertNotEquals('*', $request->get_type());
-	}
+
 	
 	
 	
 	public function provider_accept_headers() {
 		return array(
-			array('', 'text/html'), // Default value
-			array('text/', 'text/html'), // Malformed header
-			array('*/*', '*/*'),
-			array('text/html', 'text/html'),
-			array('text/plain', 'text/plain'),
-			array('application/json', 'application/json'),
-			array('audio/*; q=0.2, audio/basic', 'audio/*'),
-			array('text/plain; q=0.5, text/html, text/x-dvi; q=0.8, text/x-c', 'text/plain'),
-			array('text/html;level=1', 'text/html')
+			array('', array('text/html')),
+			array('*/*', array('text/html')),
+			array('*/', array('text/html')),
+			array('*/audio', array('audio/audio')),
+			array('text/', array('text/html')),
+			array('audio/*', array('audio/audio')),
+			array('text/html', array('text/html')),
+			array('text/plain', array('text/plain')),
+			array('application/json', array('application/json')),
+			array('audio/*; q=0.2, audio/basic', array('audio/basic', 'audio/audio')),
+			array('text/plain; q=0.5, text/html, text/x-dvi; q=0.8, text/x-c', array('text/x-c', 'text/html', 'text/x-dvi', 'text/plain')),
+			array('text/html;level=1', array('text/html')),
+			array('image/jpeg;q=0.5,text/html,application/json;q=0.75,application/javascript;q=0.8,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('application/xhtml+xml', 'text/html', 'application/xml', 'text/html', 'application/javascript', 'application/json', 'image/jpeg'))
 		);
 	}
-	
-	public function provider_accept_headers_and_type() {
-		return array(
-			array('', 'html'),
-			array('text/', 'html'),
-			array('*/*', 'html'),
-			array('text/html', 'html'),
-			array('text/plain', 'plain'),
-			array('application/json', 'json'),
-			array('audio/*; q=0.2, audio/basic', 'html'),
-			array('text/plain; q=0.5, text/html, text/x-dvi; q=0.8, text/x-c', 'plain'),
-			array('text/html;level=1', 'html')
-		);
-	}
-	
+
 }

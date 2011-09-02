@@ -23,6 +23,7 @@ class view_test extends testcase {
 	
 	public function test_render__renders_view() {
 		$file = $this->get_file();
+		
 		$payload = array(
 			'contents' => array(
 				'name' => 'Vic'
@@ -33,12 +34,14 @@ class view_test extends testcase {
 		\vfsStreamWrapper::setRoot(new \vfsStreamDirectory($this->path));
 
 		$path = \vfsStreamWrapper::getRoot();
-		$path->addChild(\vfsStream::newFile($file)->withContent("<strong>Hello, <?php echo \$payload['contents']['name']; ?>!</strong>"));
+		$path->addChild(\vfsStream::newFile($file)
+			->withContent("<strong>Hello, <?php echo \$payload['contents']['name']; ?>!</strong>"));
 
 		$file_url = \vfsStream::url($this->path.'/'.$file);
 		
 		$view = new view;
-		$view->set_payload($payload)
+		$view->set_acceptable_types(array('text/html'))
+			->set_payload($payload)
 			->set_file($file_url);
 		
 		$view->render();
@@ -73,7 +76,7 @@ class view_test extends testcase {
 	
 	
 	private function get_file() {
-		return(implode('.', array(uniqid(true).'_'.$this->view, view::ext)));
+		return(implode('.', array(uniqid(true).'_'.$this->view, 'html', view::ext)));
 	}
 	
 }
