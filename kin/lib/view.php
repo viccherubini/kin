@@ -5,6 +5,7 @@ require_once(__DIR__.'/exceptions/unrecoverable.php');
 
 class view {
 
+	public $api = null;
 	public $helper = null;
 
 	private $content_type = '';
@@ -22,6 +23,13 @@ class view {
 	}
 
 
+	public function attach_api(app\api $api=null) {
+		if (!is_null($api)) {
+			$this->api = $api;
+		}
+		return($this);
+	}
+	
 	public function attach_helper(app\helper $helper) {
 		$this->helper = $helper;
 		return($this);
