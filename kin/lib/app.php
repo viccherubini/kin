@@ -65,6 +65,10 @@ class app {
 		try {
 			$this->check_settings()
 				->compile_request();
+				
+			if (!is_null($this->api)) {
+				$this->api->attach_settings($this->settings);
+			}
 
 			$this->build_and_execute_router()
 				->build_and_execute_compiler()

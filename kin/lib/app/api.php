@@ -2,6 +2,8 @@
 
 class api {
 
+	public $settings = null;
+
 	public function __construct() {
 	
 	}
@@ -10,4 +12,9 @@ class api {
 	
 	}
 
+	public function attach_settings(settings $settings) {
+		$this->settings = $settings;
+		return($this);
+	}
+	
 }
