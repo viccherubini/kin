@@ -1,4 +1,4 @@
-<?php namespace kin;
+<?php namespace kin\app;
 
 class api {
 

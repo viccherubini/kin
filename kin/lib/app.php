@@ -4,6 +4,7 @@ declare(encoding='UTF-8');
 require_once(__DIR__.'/http/request.php');
 require_once(__DIR__.'/http/response.php');
 
+require_once(__DIR__.'/app/api.php');
 require_once(__DIR__.'/app/compiler.php');
 require_once(__DIR__.'/app/dispatcher.php');
 require_once(__DIR__.'/app/helper.php');
@@ -39,7 +40,7 @@ class app {
 	
 	
 	
-	public function attach_api(\kin\api $api) {
+	public function attach_api(app\api $api) {
 		$this->api = $api;
 		return($this);
 	}
@@ -164,6 +165,7 @@ class app {
 			->set_path($this->settings->controllers_path)
 			->compile();
 		$this->controller = $compiler->get_controller()
+			->attach_api($this->api)
 			->attach_helper($this->helper)
 			->attach_request($this->request);
 		return($this);

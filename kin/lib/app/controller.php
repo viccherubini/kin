@@ -3,6 +3,7 @@ declare(encoding='UTF-8');
 
 class controller {
 	
+	public $api = null;
 	public $helper = null;
 	
 	private $headers = array();
@@ -59,6 +60,13 @@ class controller {
 	}
 	
 	
+	
+	public function attach_api(api $api=null) {
+		if (!is_null($api)) {
+			$this->api = $api;
+		}
+		return($this);
+	}
 	
 	public function attach_helper(helper $helper) {
 		$this->helper = $helper;
