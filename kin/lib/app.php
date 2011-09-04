@@ -15,6 +15,7 @@ require_once(__DIR__.'/view.php');
 
 class app {
 
+	public $api = null;
 	public $helper = null;
 	public $request = null;
 	public $response = null;
@@ -37,6 +38,11 @@ class app {
 	}
 	
 	
+	
+	public function attach_api(\kin\api $api) {
+		$this->api = $api;
+		return($this);
+	}
 	
 	public function attach_all_routes(array $routes, array $exception_routes) {
 		$this->routes = $routes;
