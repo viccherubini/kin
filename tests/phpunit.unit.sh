@@ -16,3 +16,4 @@ phpunit --bootstrap bootstrap.php --colors --strict ./unit/http/request_test.php
 phpunit --bootstrap bootstrap.php --colors --strict ./unit/http/response_test.php
 
 phpunit --bootstrap bootstrap.php --colors --strict ./unit/view_test.php
+phpunit --bootstrap bootstrap.php --colors --strict ./unit/simple_object_test.php

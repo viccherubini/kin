@@ -4,7 +4,7 @@ class simple_object {
 	
 	private $simple = array();
 	
-	public function __construct($array)
+	public function __construct($array) {
 		$this->simple = $array;
 	}
 	
