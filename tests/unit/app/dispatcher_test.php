@@ -73,10 +73,7 @@ class dispatcher_test extends testcase {
 		$dispatcher->dispatch();
 	}
 	
-	/**
-	 * @expectedException \kin\exception\unrecoverable
-	 */
-	public function test_dispatch__requires_init_method_to_return_true() {
+	public function test_dispatch__executes_init_method() {
 		$action = 'action_process';
 		
 		$controller = $this->getMock('kin\app\controller', array($action, 'init'));
@@ -86,13 +83,15 @@ class dispatcher_test extends testcase {
 			
 		$controller->expects($this->once())
 			->method('init')
-			->will($this->returnValue(false));
+			->will($this->returnValue(true));
 		
 		$dispatcher = new dispatcher;
 		$dispatcher->attach_controller($controller)
 			->set_action($action);
 		
 		$dispatcher->dispatch();
+		
+		$this->assertTrue($dispatcher->is_init_successful());
 	}
 	
 	/**

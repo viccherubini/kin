@@ -4,6 +4,8 @@ declare(encoding='UTF-8');
 require_once(__DIR__.'/../exceptions/unrecoverable.php');
 
 class dispatcher {
+	
+	private $init_successful = true;
 
 	private $arguments = array();
 
@@ -31,6 +33,10 @@ class dispatcher {
 		return($this->check_action_is_public($action)
 			->dispatch_controller_init()
 			->dispatch_action($action));
+	}
+	
+	public function is_init_successful() {
+		return($this->init_successful);
 	}
 	
 	
@@ -84,22 +90,19 @@ class dispatcher {
 	}
 	
 	private function dispatch_controller_init() {
-		$init_successful = true;
 		if (method_exists($this->controller, 'init')) {
-			$init_successful = $this->controller->init();
-		}
-		
-		if (!$init_successful) {
-			throw new \kin\exception\unrecoverable("The controller's init() method was called but returned false. Execution can not continue.");
+			$this->init_successful = $this->controller->init();
 		}
 		return($this);
 	}
 	
 	private function dispatch_action($action) {
-		try {
-			return($action->invokeArgs($this->controller, $this->arguments));
-		} catch (\Exception $e) {
-			throw new \kin\exception\unrecoverable("The controller action, {$this->action}, threw an exception that was not caught: ".$e->getMessage());
+		if ($this->init_successful) {
+			try {
+				return($action->invokeArgs($this->controller, $this->arguments));
+			} catch (\Exception $e) {
+				throw new \kin\exception\unrecoverable("The controller action, {$this->action}, threw an exception that was not caught: ".$e->getMessage());
+			}
 		}
 		return(true);
 	}
