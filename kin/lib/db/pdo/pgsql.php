@@ -25,7 +25,7 @@ class pgsql extends pdo {
 	}
 	
 	protected function build_insert_query() {
-		$this->query = 'INSERT INTO '.$this->table.'("'.$this->query_fields.'") VALUES ('.$this->query_values.')';
+		$this->query = 'INSERT INTO "'.$this->table.'"("'.$this->query_fields.'") VALUES ('.$this->query_values.')';
 		return($this);
 	}
 	
@@ -40,7 +40,7 @@ class pgsql extends pdo {
 	}
 	
 	protected function build_update_query() {
-		$this->query = 'UPDATE '.$this->table.' SET '.$this->query_fields.' WHERE "id" = :pid';
+		$this->query = 'UPDATE "'.$this->table.'" SET '.$this->query_fields.' WHERE "id" = :pid';
 		return($this);
 	}
 	
