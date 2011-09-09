@@ -179,6 +179,14 @@ class controller {
 	
 	
 	
+	public function get_api() {
+		return($this->api);
+	}
+	
+	public function get_helper() {
+		return($this->helper);
+	}
+
 	public function get_headers() {
 		return($this->headers);
 	}
