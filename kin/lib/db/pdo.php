@@ -171,14 +171,14 @@ abstract class pdo extends \PDO {
 	
 	// Model manipulation
 	private function set_model_created_date() {
-		if (!is_null($this->model) && isset($this->model->created)) {
+		if (!is_null($this->model)) {
 			$this->model->set_created($this->now());
 		}
 		return($this);
 	}
 	
 	private function set_model_updated_date() {
-		if (!is_null($this->model) && isset($this->model->updated)) {
+		if (!is_null($this->model)) {
 			$this->model->set_updated($this->now());
 		}
 		return($this);
@@ -194,7 +194,7 @@ abstract class pdo extends \PDO {
 	private function build_model_values() {
 		if (!is_null($this->model)) {
 			$ignore_filter = array_combine(func_get_args(), func_get_args());
-			$this->model_values = array_diff_key($this->model->get_values(), $ignore_filter);
+			$this->model_values = array_diff_key($this->model->get_model_values(), $ignore_filter);
 		}
 		return($this);
 	}
