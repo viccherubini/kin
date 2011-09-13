@@ -85,7 +85,7 @@ class pdo_test extends testcase {
 		$this->assertEquals($fixture1->identifier, $fixture2->identifier);
 	}
 	
-	public function _test_select__returns_null_on_invalid_query() {
+	public function test_select__returns_null_on_invalid_query() {
 		$fixture1 = $this->create_fixture();
 		
 		$invalid_fixture = $this->pdo->select('select * from invalid_fixture where id = :id',

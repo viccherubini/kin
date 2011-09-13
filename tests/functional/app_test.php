@@ -13,6 +13,10 @@ require_once(__DIR__.'/../../kin/lib/app/controller.php');
 
 class app_test extends testcase {
 	
+	public function test_true() {
+		$this->assertTrue(true);
+	}
+	
 	public function _test_run__sets_default_content_type_if_router_fails() {
 		$content_type = 'application/vnd.kin';
 		

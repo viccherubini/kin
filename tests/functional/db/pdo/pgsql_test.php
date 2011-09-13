@@ -25,4 +25,9 @@ class pgsql_test extends pdo_test {
 		$this->pdo->exec($sql_teardown);
 	}
 	
+	public function test_select__returns_null_on_invalid_query() {
+		// pgsql always prepares a query even if it's invalid.
+		$this->assertTrue(true);
+	}
+	
 }
