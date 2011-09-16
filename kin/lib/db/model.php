@@ -3,6 +3,8 @@ declare(encoding='UTF-8');
 
 class model extends \StdClass {
 
+	private $__fields = array();
+
 	const status_enabled = 1;
 	const status_disabled = 0;
 	
@@ -43,9 +45,17 @@ class model extends \StdClass {
 	}
 
 	public function load($model) {
+		foreach ($this as $k => $v) {
+			if ($this->is_field($v)) {
+				$this->__fields[$k] = true;
+			}
+		}
+		
 		if (is_array($model) || is_object($model)) {
 			foreach ($model as $k => $v) {
-				$this->__set($k, $v);
+				if (array_key_exists($k, $this->__fields)) {
+					$this->__set($k, $v);
+				}
 			}
 		}
 
@@ -83,14 +93,10 @@ class model extends \StdClass {
 
 
 	// Getters
-	public function get_members() {
-		return($this->members);
-	}
-	
 	public function get_model_values() {
 		$model_values = array();
 		foreach ($this as $k => $v) {
-			if (is_scalar($v) || is_null($v)) {
+			if ($this->is_field($v)) {
 				$model_values[$k] = $v;
 			}
 		}
@@ -100,7 +106,7 @@ class model extends \StdClass {
 	public function get_values() {
 		$model_values = $this->get_model_values();
 		foreach ($this as $k => $v) {
-			if (is_array($v)) {
+			if (is_array($v) && '__fields' != $k) {
 				$model_values[$k] = array_map(function($e) {
 					return($e->get_values());
 				}, $v);
@@ -109,4 +115,10 @@ class model extends \StdClass {
 		return($model_values);
 	}
 
+
+
+	private function is_field($v) {
+		return(is_scalar($v) || is_null($v));
+	}
+	
 }
