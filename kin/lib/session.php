@@ -132,7 +132,7 @@ class session {
 	public function read($id) {
 		$this->check_pdo();
 
-		$query = 'select * from kinsession where id = :id';
+		$query = 'select * from _kinsession where id = :id';
 		$session = $this->pdo->select_one($query, '\StdClass', array(
 			'id' => $id
 		));
@@ -156,13 +156,13 @@ class session {
 		$expiration = time();
 		$now = date('Y-m-d H:i:s');
 
-		$query = 'select count(id) from kinsession where id = :id';
+		$query = 'select count(id) from _kinsession where id = :id';
 		$session_exists = $this->pdo->select_exists($query, array(
 			'id' => $id
 		));
 		
 		if ($session_exists) {
-			$query = 'update kinsession set updated = :updated, expiration = :expiration, data = :data where id = :id';
+			$query = 'update _kinsession set updated = :updated, expiration = :expiration, data = :data where id = :id';
 			$this->pdo->modify($query, array(
 				'updated' => $now,
 				'expiration' => $expiration,
@@ -170,7 +170,7 @@ class session {
 				'id' => $id
 			));
 		} else {
-			$query = 'insert into kinsession (id, created, expiration, ip, agent, agent_hash, data) 
+			$query = 'insert into _kinsession (id, created, expiration, ip, agent, agent_hash, data) 
 				values(:id, :created, :expiration, :ip, :agent, :agent_hash, :data)';
 			$this->pdo->modify($query, array(
 				'id' => $id,
@@ -189,7 +189,7 @@ class session {
 	public function destroy($id) {
 		$this->check_pdo();
 		
-		$query = 'delete from kinsession where id = :id';
+		$query = 'delete from _kinsession where id = :id';
 		$this->pdo->modify($query, array(
 			'id' => $id
 		));
@@ -199,7 +199,7 @@ class session {
 	public function gc($lifetime) {
 		$this->check_pdo();
 
-		$query = 'delete from kinsession where expiration < :expiration';
+		$query = 'delete from _kinsession where expiration < :expiration';
 		$this->pdo->modify($query, array(
 			'expiration' => (time() - $lifetime)
 		));
