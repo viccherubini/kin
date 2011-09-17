@@ -56,7 +56,7 @@ abstract class pdo extends \PDO {
 	}
 
 	// Searching methods
-	public function find_all($object='stdClass', $parameters=array()) {
+	public function find_all($object='StdClass', $parameters=array()) {
 		if (!is_object($this->stmt)) {
 			return(array());
 		}
@@ -76,7 +76,7 @@ abstract class pdo extends \PDO {
 		return(null);
 	}
 	
-	public function select_one($query, $object='stdClass', $parameters=array()) {
+	public function select_one($query, $object='StdClass', $parameters=array()) {
 		return($this->select($query, $parameters)
 			->fetchObject($object));
 	}
