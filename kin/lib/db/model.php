@@ -13,12 +13,8 @@ class model extends \StdClass {
 	}
 
 	public function __call($method, $argv) {
-		$argc = count($argv);
-
-		$method = strtolower($method);
-		$k = substr($method, 4);
-
-		if (0 === $argc) {
+		$k = substr(strtolower($method), 4);
+		if (0 === count($argv)) {
 			$v = $this->__get($k);
 			return($v);
 		} else {
@@ -33,12 +29,14 @@ class model extends \StdClass {
 	}
 
 	public function __set($k, $v) {
-		$this->$k = $v;
+		if (array_key_exists($k, $this->__fields)) {
+			$this->$k = $v;
+		}
 		return(true);
 	}
 
 	public function __get($k) {
-		if (array_key_exists($k, $this)) {
+		if (isset($this->$k)) {
 			return($this->$k);
 		}
 		return(null);
@@ -53,9 +51,7 @@ class model extends \StdClass {
 		
 		if (is_array($model) || is_object($model)) {
 			foreach ($model as $k => $v) {
-				if (array_key_exists($k, $this->__fields)) {
-					$this->__set($k, $v);
-				}
+				$this->__set($k, $v);
 			}
 		}
 
