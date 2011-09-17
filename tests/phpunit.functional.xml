@@ -1,0 +1,10 @@
+<phpunit colors="true" strict="true">
+  <testsuites>
+		<testsuite name="Kin Functional Tests">
+			<file>./functional/app_test.php</file>
+			<file>./functional/db/pdo/mysql_test.php</file>
+			<file>./functional/db/pdo/pgsql_test.php</file>
+			<file>./functional/db/pdo/sqlite_test.php</file>
+		</testsuite>
+	</testsuites>
+</phpunit>

@@ -1,0 +1,46 @@
+<phpunit colors="true" strict="true" bootstrap="./bootstrap.php">
+  <testsuites>
+		<testsuite name="Kin Unit Tests">
+			<file>./unit/app/compiler_test.php</file>
+			<file>./unit/app/controller_test.php</file>
+			<file>./unit/app/dispatcher_test.php</file>
+			<file>./unit/app/helper_test.php</file>
+			<file>./unit/app/router_test.php</file>
+			<file>./unit/app/route_test.php</file>
+			<file>./unit/app/settings_test.php</file>
+			<file>./unit/db/model_test.php</file>
+			<file>./unit/db/pdo_test.php</file>
+			<file>./unit/http/request_test.php</file>
+			<file>./unit/http/response_test.php</file>
+			<file>./unit/app_test.php</file>
+			<file>./unit/simple_object_test.php</file>
+			<file>./unit/view_test.php</file>
+		</testsuite>
+	</testsuites>
+	<filter>
+		<whitelist>
+			<file>../kin/lib/app/api.php</file>
+			<file>../kin/lib/app/compiler.php</file>
+			<file>../kin/lib/app/controller.php</file>
+			<file>../kin/lib/app/dispatcher.php</file>
+			<file>../kin/lib/app/helper.php</file>
+			<file>../kin/lib/app/route.php</file>
+			<file>../kin/lib/app/router.php</file>
+			<file>../kin/lib/app/settings.php</file>
+			<file>../kin/lib/db/model.php</file>
+			<file>../kin/lib/db/pdo.php</file>
+			<file>../kin/lib/db/pdo/mysql.php</file>
+			<file>../kin/lib/db/pdo/pgsql.php</file>
+			<file>../kin/lib/db/pdo/sqlite.php</file>
+			<file>../kin/lib/exceptions/unrecoverable.php</file>
+			<file>../kin/lib/http/request.php</file>
+			<file>../kin/lib/http/response.php</file>
+			<file>../kin/lib/session.php</file>
+			<file>../kin/lib/simple_object.php</file>
+			<file>../kin/lib/view.php</file>
+		</whitelist>
+	</filter>
+	<logging>
+		<log type="coverage-html" target="./output/unit/" charset="UTF-8" yui="true" highlight="false" />
+	</logging>
+</phpunit>
