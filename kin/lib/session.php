@@ -132,7 +132,10 @@ class session {
 	public function read($id) {
 		$this->check_pdo();
 
-		$session = $this->pdo->select_one('select* from session where id = :id', '\stdClass', array('id' => $id));
+		$query = 'select * from kinsession where id = :id';
+		$session = $this->pdo->select_one($query, '\StdClass', array(
+			'id' => $id
+		));
 
 		if (is_object($session) && property_exists($session, 'data')) {
 			if ($session->agent_hash !== $this->agent_hash) {
@@ -153,16 +156,23 @@ class session {
 		$expiration = time();
 		$now = date('Y-m-d H:i:s');
 
-		$session_exists = $this->pdo->select_exists('select count(id) from session where id = :id', array('id' => $id));
+		$query = 'select count(id) from kinsession where id = :id';
+		$session_exists = $this->pdo->select_exists($query, array(
+			'id' => $id
+		));
+		
 		if ($session_exists) {
-			$pdo->modify('update session set updated = :updated, expiration = :expiration, data = :data where id = :id', array(
+			$query = 'update kinsession set updated = :updated, expiration = :expiration, data = :data where id = :id';
+			$this->pdo->modify($query, array(
 				'updated' => $now,
 				'expiration' => $expiration,
 				'data' => $data,
 				'id' => $id
 			));
 		} else {
-			$pdo->modify('insert into session (id, created, expiration, ip, agent, agent_hash, data) values (:id, :created, :expiration, :ip, :agent, :agent_hash, :data)', array(
+			$query = 'insert into kinsession (id, created, expiration, ip, agent, agent_hash, data) 
+				values(:id, :created, :expiration, :ip, :agent, :agent_hash, :data)';
+			$this->pdo->modify($query, array(
 				'id' => $id,
 				'created' => $now,
 				'expiration' => $expiration,
@@ -178,17 +188,21 @@ class session {
 
 	public function destroy($id) {
 		$this->check_pdo();
-		$pdo->modify('delete from session where id = :id', array('id' => $id));
-
+		
+		$query = 'delete from kinsession where id = :id';
+		$this->pdo->modify($query, array(
+			'id' => $id
+		));
 		return(true);
 	}
 
 	public function gc($lifetime) {
 		$this->check_pdo();
 
-		$expiration = time() - $lifetime;
-		$this->pdo->modify('delete from session where expiration < :expiration', array('expiration' => $expiration));
-
+		$query = 'delete from kinsession where expiration < :expiration';
+		$this->pdo->modify($query, array(
+			'expiration' => (time() - $lifetime)
+		));
 		return(true);
 	}
 
