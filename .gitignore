@@ -1,1 +1,3 @@
 tests/settings.ini
+tests/output/functional/*
+tests/output/unit/*
