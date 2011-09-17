@@ -296,7 +296,8 @@ class helper_test extends testcase {
 	}
 	
 	public function test_url__allows_rewrites() {
-		$settings = $this->getMock('\kin\app\settings');
+		// This allows __set() to not be overwritten by PHPUnit
+		$settings = $this->getMockForAbstractClass('\kin\app\settings');
 		$settings->force_ssl = false;
 		$settings->url = 'http://leftnode.com/';
 		$settings->rewrite = true;
