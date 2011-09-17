@@ -97,10 +97,9 @@ class controller_test extends testcase {
 	}
 	
 	public function test_add_model__adds_model_values() {
-		$model_class = 'kin\db\model';
 		$model_values = array('id' => mt_rand(1, 1000), 'password' => uniqid());
 		
-		$model = $this->getMock($model_class, array('get_values'));
+		$model = $this->getMock('\kin\db\model', array('get_values'));
 		$model->expects($this->once())
 			->method('get_values')
 			->will($this->returnValue($model_values));
