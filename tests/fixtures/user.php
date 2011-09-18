@@ -12,10 +12,10 @@ class user extends \kin\db\model {
 	public $friends = array();
 
 
-	public function load_friends() {
+	public function hydrate_friends() {
 		if ($this->id > 0) {
-				$this->friends[0] = new \StdClass;
-				$this->friends[0]->id = mt_rand(1, 1000);
+			$this->friends[0] = new \StdClass;
+			$this->friends[0]->id = mt_rand(1, 1000);
 		}
 		return($this);
 	}

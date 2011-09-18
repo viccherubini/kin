@@ -56,7 +56,7 @@ class model extends \StdClass {
 		}
 
 		foreach ($this as $xrel => $v) {
-			$load_method = "load_{$xrel}";
+			$load_method = "hydrate_{$xrel}";
 			if (is_array($v) && method_exists($this, $load_method)) {
 				$this->$load_method();
 			}
