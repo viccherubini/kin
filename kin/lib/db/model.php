@@ -1,15 +1,17 @@
 <?php namespace kin\db;
-declare(encoding='UTF-8');
 
 class model extends \StdClass {
 
 	private $__fields = array();
+	private $__xrels = array();
 
 	const status_enabled = 1;
 	const status_disabled = 0;
 	
-	public function __construct($model=null) {
-		$this->load($model);
+	const with_separator = '/';
+	
+	public function __construct($model=null, $with='') {
+		$this->load($model, $with);
 	}
 
 	public function __call($method, $argv) {
@@ -42,23 +44,17 @@ class model extends \StdClass {
 		return(null);
 	}
 
-	public function load($model) {
-		foreach ($this as $k => $v) {
-			if ($this->is_field($v)) {
-				$this->__fields[$k] = true;
-			}
-		}
-		
-		if (is_array($model) || is_object($model)) {
-			foreach ($model as $k => $v) {
-				$this->__set($k, $v);
-			}
-		}
+	public function load($model, $with='') {
+		$this->compile_fields()
+			->load_field_values($model);
 
-		foreach ($this as $xrel => $v) {
+		$withs = explode(self::with_separator, $with);
+		foreach ($this->__xrels as $xrel => $is_xrel) {
 			$load_method = "hydrate_{$xrel}";
-			if (is_array($v) && method_exists($this, $load_method)) {
-				$this->$load_method();
+			
+			if ($xrel == $withs[0] && method_exists($this, $load_method)) {
+				array_shift($withs);
+				$this->$load_method(implode(self::with_separator, $withs));
 			}
 		}
 		return($this);
@@ -102,7 +98,7 @@ class model extends \StdClass {
 	public function get_values() {
 		$model_values = $this->get_model_values();
 		foreach ($this as $k => $v) {
-			if (is_array($v) && '__fields' != $k) {
+			if (is_array($v) && '__fields' != $k && '__xrels' != $k) {
 				$model_values[$k] = array_map(function($e) {
 					return($e->get_values());
 				}, $v);
@@ -112,9 +108,33 @@ class model extends \StdClass {
 	}
 
 
-
+	
+	private function compile_fields() {
+		foreach ($this as $k => $v) {
+			if ($this->is_field($v)) {
+				$this->__fields[$k] = true;
+			} elseif ($this->is_xrel($k, $v)) {
+				$this->__xrels[$k] = true;
+			}
+		}
+		return($this);
+	}
+	
+	private function load_field_values($model) {
+		if (is_array($model) || is_object($model)) {
+			foreach ($model as $k => $v) {
+				$this->__set($k, $v);
+			}
+		}
+		return($this);
+	}
+	
 	private function is_field($v) {
 		return(is_scalar($v) || is_null($v));
+	}
+	
+	private function is_xrel($k, $v) {
+		return(0 !== stripos($k, '_') && is_array($v));
 	}
 	
 }

@@ -1,5 +1,4 @@
 <?php namespace kin\db;
-declare(encoding='UTF-8');
 
 abstract class pdo extends \PDO {
 
@@ -15,6 +14,8 @@ abstract class pdo extends \PDO {
 	
 	protected $model_fields = array();
 	protected $model_values = array();
+	
+	public $with = '';
 
 	// These are duplicated in \kin\db\model as class constants.
 	public $status_enabled = 1;
@@ -56,14 +57,15 @@ abstract class pdo extends \PDO {
 	}
 
 	// Searching methods
-	public function find_all($object='StdClass', $parameters=array()) {
+	public function find_all($object='\StdClass', $parameters=array()) {
 		if (!is_object($this->stmt)) {
 			return(array());
 		}
 
 		$this->bind_parameters($this->stmt, $parameters)
 			->execute();
-		return($this->stmt->fetchAll(\PDO::FETCH_CLASS, $object));
+
+		return($this->stmt->fetchAll(\PDO::FETCH_CLASS, $object, array(null, $this->with)));
 	}
 
 	public function select($query, $parameters=array()) {
@@ -76,9 +78,9 @@ abstract class pdo extends \PDO {
 		return(null);
 	}
 	
-	public function select_one($query, $object='StdClass', $parameters=array()) {
+	public function select_one($query, $object='\StdClass', $parameters=array()) {
 		return($this->select($query, $parameters)
-			->fetchObject($object));
+			->fetchObject($object, array(null, $this->with)));
 	}
 	
 	public function select_exists($query, $parameters=array()) {
@@ -138,6 +140,11 @@ abstract class pdo extends \PDO {
 		}
 
 		return($this->model);
+	}
+	
+	public function with($with) {
+		$this->with = trim($with);
+		return($this);
 	}
 	
 	
