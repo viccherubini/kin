@@ -1,5 +1,4 @@
 <?php namespace kin\http;
-declare(encoding='UTF-8');
 
 class response {
 

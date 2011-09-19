@@ -1,5 +1,4 @@
 <?php namespace kin;
-declare(encoding='UTF-8');
 
 class session {
 

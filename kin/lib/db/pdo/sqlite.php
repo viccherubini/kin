@@ -1,6 +1,4 @@
 <?php namespace kin\db\pdo;
-declare(encoding='UTF-8');
-
 use \kin\db\pdo as pdo;
 
 require_once(__DIR__.'/../pdo.php');

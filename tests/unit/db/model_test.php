@@ -104,14 +104,23 @@ class model_test extends testcase {
 		$this->assertEquals($id, $model->id);
 	}
 
-	public function test_load__calls_load_method_for_model_arrays() {
+	public function test_load__does_not_call_hydrate_method_for_model_arrays_without_with_parameter() {
+		$id = mt_rand(1, 1000);
+		
+		$model = new user(array('id' => $id));
+		
+		$this->assertEmpty($model->friends);
+	}
+	
+	public function test_load__calls_hydrate_method_for_model_arrays() {
 		$id = mt_rand(1, 1000);
 
-		$model = new user(array('id' => $id));
+		$model = new user(array('id' => $id), 'friends');
 		
 		$this->assertArrayHasKey(0, $model->friends);
 		$this->assertGreaterThan(0, $model->friends[0]->id);
 	}
+	
 
 	
 	public function test_disable__toggles_status_flag() {

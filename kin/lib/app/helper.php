@@ -1,5 +1,4 @@
 <?php namespace kin\app;
-declare(encoding='UTF-8');
 
 class helper {
 
