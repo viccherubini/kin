@@ -72,11 +72,7 @@ class app {
 			$this->build_and_execute_router()
 				->build_and_execute_compiler()
 				->build_and_execute_dispatcher();
-			
-			if ($this->controller->has_content_type()) {
-				$this->request->set_accept_header($this->controller->get_content_type());
-			}
-			
+	
 			$this->build_and_render_view();
 			$this->response
 				->set_headers($this->controller->get_headers())
@@ -86,7 +82,8 @@ class app {
 				->set_start_time($this->start_time);
 			
 		} catch (\Exception $e) {
-			$this->response->set_content($e->getMessage());
+			$this->response->set_content_type('text/plain')
+				->set_content($e->getMessage());
 		}
 		
 		return($this->response->respond());
