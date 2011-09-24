@@ -1,4 +1,5 @@
 <?php namespace kin\db;
+require_once(__DIR__.'/row.php');
 
 abstract class pdo extends \PDO {
 
