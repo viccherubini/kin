@@ -1,5 +1,7 @@
 <?php namespace kin;
 
+require_once('session/row.php');
+
 class session {
 
 	private static $instance = null;
@@ -132,7 +134,7 @@ class session {
 		$this->check_pdo();
 
 		$query = 'select * from _kinsession where id = :id';
-		$session = $this->pdo->select_one($query, '\StdClass', array(
+		$session = $this->pdo->select_one($query, '\kin\session\row', array(
 			'id' => $id
 		));
 
