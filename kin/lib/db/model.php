@@ -123,7 +123,8 @@ class model extends \StdClass {
 	private function load_field_values($model) {
 		if (is_array($model) || is_object($model)) {
 			foreach ($model as $k => $v) {
-				$this->__set($k, $v);
+				$method = "set_{$k}";
+				$this->$method($v);
 			}
 		}
 		return($this);
