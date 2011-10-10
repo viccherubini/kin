@@ -71,6 +71,10 @@ class model extends \StdClass {
 
 
 	// Traits
+	public function is_empty_field($field) {
+		return(isset($this->$field) && !empty($this->$field));
+	}
+	
 	public function is_saved() {
 		return($this->id > 0);
 	}
@@ -85,6 +89,14 @@ class model extends \StdClass {
 
 
 	// Getters
+	public function id() {
+		return($this->get('id'));
+	}
+	
+	public function get($k) {
+		return($this->__get($k));
+	}
+	
 	public function get_model_values() {
 		$model_values = array();
 		foreach ($this as $k => $v) {
@@ -105,6 +117,14 @@ class model extends \StdClass {
 			}
 		}
 		return($model_values);
+	}
+
+
+
+	// Setters
+	public function set($k, $v) {
+		$this->__set($k, $v);
+		return($this);
 	}
 
 
