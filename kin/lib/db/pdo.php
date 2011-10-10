@@ -70,7 +70,8 @@ abstract class pdo extends \PDO {
 	}
 
 	public function select($query, $parameters=array()) {
-		$this->prep($query);
+		$this->set_query($query)
+			->create_query_hash();
 		if (is_object($this->stmt)) {
 			$this->stmt = $this->bind_parameters($this->stmt, $parameters);
 			$this->stmt->execute();
@@ -100,13 +101,19 @@ abstract class pdo extends \PDO {
 			->set_table();
 		$query = "DELETE FROM {$this->table} WHERE id = :id";
 
-		return($this->modify($query, array('id' => $this->model->get_id())));
+		return($this->modify($query, array(
+			'id' => $this->model->id()
+		)));
 	}
 
 	public function modify($query, $parameters=array()) {
-		$this->stmt = $this->prep($query)
-			->bind_parameters($this->stmt, $parameters);
-		return($this->stmt->execute());
+		$this->set_query($query)
+			->create_query_hash();
+		if (is_object($this->stmt)) {
+			return($this->bind_parameters($this->stmt, $parameters)
+				->execute());
+		}
+		return(false);
 	}
 
 	public function save(model $model) {
@@ -152,6 +159,11 @@ abstract class pdo extends \PDO {
 	
 	public function set_model(model $model) {
 		$this->model = $model;
+		return($this);
+	}
+	
+	public function set_query($query) {
+		$this->query = $query;
 		return($this);
 	}
 	
