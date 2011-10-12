@@ -72,7 +72,7 @@ class model extends \StdClass {
 
 	// Traits
 	public function is_empty_field($field) {
-		return(isset($this->$field) && !empty($this->$field));
+		return(property_exists($this, $field) && empty($this->$field));
 	}
 	
 	public function is_saved() {
