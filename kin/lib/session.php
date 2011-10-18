@@ -231,6 +231,10 @@ class session {
 	public function get($key) {
 		return($this->$key);
 	}
+	
+	public function has($key) {
+		return($this->__isset($k));
+	}
 
 	public function get_agent() {
 		return($this->agent);

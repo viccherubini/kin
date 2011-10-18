@@ -7,7 +7,7 @@ abstract class pdo extends \PDO {
 	protected $stmt = null;
 
 	protected $query = '';
-	protected $query_hash = '';
+	//protected $query_hash = '';
 	protected $query_fields = '';
 	protected $query_values = '';
 	
@@ -70,8 +70,7 @@ abstract class pdo extends \PDO {
 	}
 
 	public function select($query, $parameters=array()) {
-		$this->set_query($query)
-			->create_query_hash();
+		$this->prep($query);
 		if (is_object($this->stmt)) {
 			$this->stmt = $this->bind_parameters($this->stmt, $parameters);
 			$this->stmt->execute();
@@ -107,8 +106,7 @@ abstract class pdo extends \PDO {
 	}
 
 	public function modify($query, $parameters=array()) {
-		$this->set_query($query)
-			->create_query_hash();
+		$this->prep($query);
 		if (is_object($this->stmt)) {
 			return($this->bind_parameters($this->stmt, $parameters)
 				->execute());
@@ -139,7 +137,7 @@ abstract class pdo extends \PDO {
 			$this->model_values['pid'] = $this->model_values['id'];
 		}
 		
-		$this->create_query_hash()
+		$this->prep($this->query)
 			->execute_save();
 
 		if ($is_insert) {
@@ -225,15 +223,6 @@ abstract class pdo extends \PDO {
 	}
 	
 	// Query manipulation
-	private function create_query_hash() {
-		$query_hash = sha1($this->query);
-		if ($query_hash !== $this->query_hash) {
-			$this->query_hash = $query_hash;
-			$this->prep($this->query);
-		}
-		return($this);
-	}
-	
 	private function execute_save() {
 		if (is_object($this->stmt)) {
 			$this->stmt = $this->bind_parameters($this->stmt, $this->model_values);
