@@ -206,12 +206,26 @@ class session {
 		));
 		return(true);
 	}
+	
+	public function has($key) {
+		return($this->__isset($key));
+	}
 
 	public function set($key, $value) {
 		$this->$key = $value;
 		return($this);
 	}
 
+	public function get($key) {
+		return($this->$key);
+	}
+
+	public function remove($key) {
+		return($this->__unset($key));
+	}
+	
+	
+	
 	public function set_agent($agent) {
 		$this->agent = trim($agent);
 		$this->set_agent_hash(sha1($agent));
@@ -228,13 +242,7 @@ class session {
 		return($this);
 	}
 
-	public function get($key) {
-		return($this->$key);
-	}
-	
-	public function has($key) {
-		return($this->__isset($k));
-	}
+
 
 	public function get_agent() {
 		return($this->agent);
@@ -243,6 +251,8 @@ class session {
 	public function get_agent_hash() {
 		return($this->agent_hash);
 	}
+	
+	
 
 	private function check_pdo() {
 		if (!($this->pdo instanceof \kin\db\pdo)) {
