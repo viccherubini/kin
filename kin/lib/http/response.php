@@ -19,8 +19,8 @@ class response {
 	
 	
 	public function respond() {
-		header_remove('content-type');
-		header('content-type: '.$this->content_type, true, $this->response_code);
+		header_remove('Content-Type');
+		header('Content-Type: '.$this->content_type, true, $this->response_code);
 		
 		$found_location_header = false;
 		foreach ($this->headers as $header => $value) {
@@ -36,7 +36,7 @@ class response {
 		
 		header('X-Memory-Usage: '.round((memory_get_peak_usage()/1024), 3).'KB');
 		if ($this->start_time > 0) {
-			header('X-Run-Time: '.round((microtime(true)-$this->start_time), 5).'s');
+			header('X-Exec-Time: '.round((microtime(true)-$this->start_time), 5).'s');
 		}
 		
 		if ($found_location_header && in_array($this->response_code, array(301, 302))) {
@@ -76,6 +76,10 @@ class response {
 	
 	public function get_content_type() {
 		return($this->content_type);
+	}
+	
+	public function get_response_code() {
+		return($this->response_code);
 	}
 
 }

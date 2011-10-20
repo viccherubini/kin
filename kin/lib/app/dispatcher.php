@@ -95,10 +95,18 @@ class dispatcher {
 		return($this);
 	}
 	
+	private function dispatch_controller_shutdown() {
+		if (method_exists($this->controller, 'shut_down')) {
+			return($this->controller->shut_down());
+		}
+		return(true);
+	}
+	
 	private function dispatch_action($action) {
 		if ($this->init_successful) {
 			try {
-				return($action->invokeArgs($this->controller, $this->arguments));
+				return((false !== $action->invokeArgs($this->controller, $this->arguments)) &&
+					$this->dispatch_controller_shutdown());
 			} catch (\Exception $e) {
 				throw new \kin\exception\unrecoverable("The controller action, {$this->action}, threw an exception that was not caught: ".$e->getMessage());
 			}
