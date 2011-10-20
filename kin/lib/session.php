@@ -212,12 +212,12 @@ class session {
 	}
 
 	public function set($key, $value) {
-		$this->$key = $value;
+		$this->__set($key, $value);
 		return($this);
 	}
 
 	public function get($key) {
-		return($this->$key);
+		return($this->__get($key));
 	}
 
 	public function remove($key) {

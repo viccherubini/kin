@@ -51,7 +51,7 @@ class view {
 		}
 		
 		if (!$found_view) {
-			throw new \kin\exception\unrecoverable("The renderer can not find any acceptable views. Please request this application with at least one acceptable type.");
+			throw new \kin\exception\unrecoverable("The renderer can not find any acceptable views. Please request this application with at least one acceptable type.", 406);
 		}
 		return($this);
 	}

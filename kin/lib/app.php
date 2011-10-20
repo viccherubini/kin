@@ -82,7 +82,13 @@ class app {
 				->set_start_time($this->start_time);
 			
 		} catch (\Exception $e) {
+			$response_code = (int)$e->getCode();
+			if (0 === $response_code) {
+				$response_code = 500;
+			}
+			
 			$this->response->set_content_type('text/plain')
+				->set_response_code($response_code)
 				->set_content($e->getMessage());
 		}
 		
