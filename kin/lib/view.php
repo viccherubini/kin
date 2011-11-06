@@ -102,9 +102,7 @@ class view {
 	private function render_file($file_path) {
 		$payload = $this->payload;
 		ob_start();
-			if (array_key_exists("contents", $this->payload)) {
-				extract($this->payload["contents"]);
-			}
+			extract($this->payload);
 			require($file_path);
 		$this->rendering = ob_get_clean();
 		return($this);
