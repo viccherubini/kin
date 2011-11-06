@@ -14,20 +14,19 @@ require_once(__DIR__."/view.php");
 
 class app {
 
-	public $api = null;
 	public $helper = null;
 	public $request = null;
 	public $response = null;
 	public $settings = null;
 
-	private $start_time = 0.0;
+	public $start_time = 0.0;
 	
-	private $controller = null;
-	private $route = null;
-	private $view = null;
+	public $controller = null;
+	public $route = null;
+	public $view = null;
 
-	private $routes = array();
-	private $exception_routes = array();
+	public $routes = array();
+	public $exception_routes = array();
 	
 	public function __construct() {
 		$this->start_time = microtime(true);
@@ -37,11 +36,6 @@ class app {
 	}
 	
 	
-	
-	public function attach_api(app\api $api) {
-		$this->api = $api;
-		return($this);
-	}
 	
 	public function attach_all_routes(array $routes, array $exception_routes) {
 		$this->routes = $routes;
@@ -63,10 +57,6 @@ class app {
 		try {
 			$this->check_settings()
 				->compile_request();
-				
-			if (!is_null($this->api)) {
-				$this->api->attach_settings($this->settings);
-			}
 
 			$this->build_and_execute_router()
 				->build_and_execute_compiler()
@@ -79,7 +69,6 @@ class app {
 				->set_response_code($this->controller->get_response_code())
 				->set_content($this->view->get_rendering())
 				->set_start_time($this->start_time);
-			
 		} catch (\Exception $e) {
 			$response_code = (int)$e->getCode();
 			if (0 === $response_code) {
@@ -90,7 +79,6 @@ class app {
 				->set_response_code($response_code)
 				->set_content($e->getMessage());
 		}
-		
 		return($this->response->respond());
 	}
 	
@@ -170,7 +158,6 @@ class app {
 			->set_path($this->settings->controllers_path)
 			->compile();
 		$this->controller = $compiler->get_controller()
-			->attach_api($this->api)
 			->attach_helper($this->helper)
 			->attach_request($this->request);
 		return($this);
@@ -189,8 +176,7 @@ class app {
 	private function build_and_render_view() {
 		$this->view = new view;
 		if ($this->controller->has_view()) {
-			$this->view->attach_api($this->api)
-				->attach_helper($this->helper)
+			$this->view->attach_helper($this->helper)
 				->set_payload($this->controller->get_payload())
 				->set_file($this->controller->get_view())
 				->set_path($this->settings->views_path)

@@ -1,34 +1,26 @@
 <?php namespace kin;
-
-require_once(__DIR__.'/exceptions/unrecoverable.php');
+require_once(__DIR__."/exceptions/unrecoverable.php");
 
 class view {
 
-	public $api = null;
 	public $helper = null;
 
-	private $content_type = '';
-	private $file = '';
-	private $path = '';
-	private $rendering = '';
+	public $content_type = "";
+	public $file = "";
+	public $path = "";
+	public $rendering = "";
 	
-	private $acceptable_types = array();
-	private $payload = array();
+	public $acceptable_types = array();
+	public $payload = array();
 	
-	const ext = 'php';
+	const ext = "php";
 
 	public function __construct() {
 		
 	}
 
 
-	public function attach_api(app\api $api=null) {
-		if (!is_null($api)) {
-			$this->api = $api;
-		}
-		return($this);
-	}
-	
+
 	public function attach_helper(app\helper $helper) {
 		$this->helper = $helper;
 		return($this);
@@ -39,7 +31,7 @@ class view {
 	public function render() {
 		$found_view = false;
 		foreach ($this->acceptable_types as $content_type) {
-			$content_type_bits = explode('/', $content_type);
+			$content_type_bits = explode("/", $content_type);
 			$file_path = $this->path.$this->compile_view_filename($content_type_bits[1]);
 
 			if (is_file($file_path)) {
@@ -57,7 +49,7 @@ class view {
 	}
 	
 	public function safe($v) {
-		return htmlentities($v, ENT_COMPAT, 'UTF-8');
+		return htmlentities($v, ENT_COMPAT, "UTF-8");
 	}
 
 
@@ -83,7 +75,7 @@ class view {
 	}
 	
 	public function set_path($path) {
-		$this->path = rtrim($path, '/').'/';
+		$this->path = rtrim($path, "/")."/";
 		return($this);
 	}
 	
@@ -104,14 +96,14 @@ class view {
 
 
 	private function compile_view_filename($type) {
-		return(implode('.', array($this->file, $type, self::ext)));
+		return(implode(".", array($this->file, $type, self::ext)));
 	}
 	
 	private function render_file($file_path) {
 		$payload = $this->payload;
 		ob_start();
-			if (array_key_exists('contents', $this->payload)) {
-				extract($this->payload['contents']);
+			if (array_key_exists("contents", $this->payload)) {
+				extract($this->payload["contents"]);
 			}
 			require($file_path);
 		$this->rendering = ob_get_clean();

@@ -26,16 +26,7 @@ class controller {
 	const response_501 = 501;
 	
 	public function __construct() {
-		$this->payload = array(
-			"contents" => array(),
-			"errors" => array(
-				"contents" => array(),
-				"errors" => array(),
-				"message" => ""
-			),
-			"models" => array(),
-			"has_errors" => false
-		);
+		$this->payload = array();
 	}
 	
 	public function __destruct() {
@@ -43,13 +34,13 @@ class controller {
 	}
 	
 	public function __set($k, $v) {
-		$this->payload["contents"][$k] = $v;
+		$this->payload[$k] = $v;
 		return($this);
 	}
 	
 	public function __get($k) {
-		if (array_key_exists($k, $this->payload["contents"])) {
-			return $this->payload["contents"][$k];
+		if (array_key_exists($k, $this->payload)) {
+			return $this->payload[$k];
 		}
 		return(null);
 	}
@@ -78,62 +69,6 @@ class controller {
 		return($this);
 	}
 	
-	public function add_contents(array $contents) {
-		$this->payload["contents"] = $contents;
-		return($this);
-	}
-	
-	public function add_error_contents(array $contents) {
-		$this->toggle_has_errors();
-		
-		$this->payload["errors"]["contents"] = $contents;
-		return($this);
-	}
-	
-	public function add_error($field, $error) {
-		$this->toggle_has_errors();
-		
-		$this->payload["errors"]["errors"][$field] = trim($error);
-		return($this);
-	}
-	
-	public function add_message($e) {
-		$this->toggle_has_errors();
-		
-		$message = $e;
-		if (is_object($e) && ($e instanceof \Exception)) {
-			$message = $e->getMessage();
-		}
-		$this->payload["errors"]["message"] = $message;
-		return($this);
-	}
-
-	public function add_model(\kin\db\model $model) {
-		if (is_object($model)) {
-			$this->payload["models"][] = $model->get_values();
-		}
-		return($this);
-	}
-	
-	public function add_models(array $models) {
-		foreach ($models as $model) {
-			$this->add_model($model);
-		}
-		return($this);
-	}
-	
-	public function has_content_type() {
-		return(!empty($this->content_type));
-	}
-	
-	public function has_errors() {
-		return($this->payload["has_errors"]);
-	}
-	
-	public function has_view() {
-		return(!empty($this->view));
-	}
-	
 	public function redirect($location, $response_code=self::response_302) {
 		if (!in_array($response_code, array(self::response_301, self::response_302), true)) {
 			$response_code = self::response_302;
@@ -152,7 +87,17 @@ class controller {
 		$this->view = trim($view);
 		return($this);
 	}
-
+	
+	
+	
+	public function has_content_type() {
+		return(!empty($this->content_type));
+	}
+	
+	public function has_view() {
+		return(!empty($this->view));
+	}
+	
 	
 	
 	public function set_content_type($content_type) {
@@ -189,13 +134,6 @@ class controller {
 	
 	public function get_view() {
 		return($this->view);
-	}
-	
-	
-	
-	private function toggle_has_errors() {
-		$this->payload["has_errors"] = true;
-		return($this);
 	}
 	
 }
