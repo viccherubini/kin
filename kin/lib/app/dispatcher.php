@@ -1,16 +1,15 @@
 <?php namespace kin\app;
-
 require_once(__DIR__.'/../exceptions/unrecoverable.php');
 
 class dispatcher {
 	
-	private $init_successful = true;
+	public $init_successful = true;
 
-	private $arguments = array();
+	public $arguments = array();
 
-	private $action = null;
-	private $class = null;
-	private $controller = null;
+	public $action = null;
+	public $class = null;
+	public $controller = null;
 
 	public function __construct() {
 		
@@ -89,14 +88,14 @@ class dispatcher {
 	}
 	
 	private function dispatch_controller_init() {
-		if (method_exists($this->controller, 'init')) {
+		if (method_exists($this->controller, "init")) {
 			$this->init_successful = $this->controller->init();
 		}
 		return($this);
 	}
 	
 	private function dispatch_controller_shutdown() {
-		if (method_exists($this->controller, 'shut_down')) {
+		if (method_exists($this->controller, "shut_down")) {
 			return($this->controller->shut_down());
 		}
 		return(true);

@@ -1,6 +1,4 @@
 <?php namespace kintest\http;
-declare(encoding='UTF-8');
-
 use \kin\http\request as request,
 	\kintest\testcase as testcase;
 

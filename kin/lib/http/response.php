@@ -2,13 +2,13 @@
 
 class response {
 
-	private $start_time = 0.0;
-	private $response_code = 200;
+	public $start_time = 0.0;
+	public $response_code = 200;
 	
-	private $content_type = '';
+	public $content_type = "";
 	
-	private $headers = array();
-	private $content = null;
+	public $headers = array();
+	public $content = null;
 	
 	
 
@@ -19,28 +19,28 @@ class response {
 	
 	
 	public function respond() {
-		header_remove('Content-Type');
-		header('Content-Type: '.$this->content_type, true, $this->response_code);
+		header_remove("Content-Type");
+		header("Content-Type: ".$this->content_type, true, $this->response_code);
 		
 		$found_location_header = false;
 		foreach ($this->headers as $header => $value) {
-			$full_header = implode(': ', array($header, $value));
+			$full_header = implode(": ", array($header, $value));
 			
 			header_remove($header);
 			header($full_header, true, $this->response_code);
 			
-			if ('location' === strtolower($header)) {
+			if ("location" === strtolower($header)) {
 				$found_location_header = true;
 			}
 		}
 		
-		header('X-Memory-Usage: '.round((memory_get_peak_usage()/1024), 3).'KB');
+		header("X-Memory-Usage: ".round((memory_get_peak_usage()/1024), 3)."KB");
 		if ($this->start_time > 0) {
-			header('X-Exec-Time: '.round((microtime(true)-$this->start_time), 5).'s');
+			header("X-Exec-Time: ".round((microtime(true)-$this->start_time), 5)."s");
 		}
 		
 		if ($found_location_header && in_array($this->response_code, array(301, 302))) {
-			$this->content = '';
+			$this->content = "";
 		}
 		
 		return($this->content);

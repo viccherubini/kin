@@ -1,17 +1,16 @@
 <?php namespace kin;
 
-require_once(__DIR__.'/http/request.php');
-require_once(__DIR__.'/http/response.php');
+require_once(__DIR__."/http/request.php");
+require_once(__DIR__."/http/response.php");
 
-require_once(__DIR__.'/app/api.php');
-require_once(__DIR__.'/app/compiler.php');
-require_once(__DIR__.'/app/dispatcher.php');
-require_once(__DIR__.'/app/helper.php');
-require_once(__DIR__.'/app/route.php');
-require_once(__DIR__.'/app/router.php');
-require_once(__DIR__.'/app/settings.php');
+require_once(__DIR__."/app/compiler.php");
+require_once(__DIR__."/app/dispatcher.php");
+require_once(__DIR__."/app/helper.php");
+require_once(__DIR__."/app/route.php");
+require_once(__DIR__."/app/router.php");
+require_once(__DIR__."/app/settings.php");
 
-require_once(__DIR__.'/view.php');
+require_once(__DIR__."/view.php");
 
 class app {
 
@@ -87,7 +86,7 @@ class app {
 				$response_code = 500;
 			}
 			
-			$this->response->set_content_type('text/plain')
+			$this->response->set_content_type("text/plain")
 				->set_response_code($response_code)
 				->set_content($e->getMessage());
 		}
@@ -123,18 +122,18 @@ class app {
 	
 	private function compile_request() {
 		$http_headers = filter_input_array(INPUT_SERVER, array(
-			'HTTP_ACCEPT' => array(),
-			'REQUEST_METHOD' => array(),
-			'PATH_INFO' => array()
+			"HTTP_ACCEPT" => array(),
+			"REQUEST_METHOD" => array(),
+			"PATH_INFO" => array()
 		));
 		
 		if (isset($this->settings->accept)) {
-			$http_headers['HTTP_ACCEPT'] = $this->settings->accept;
+			$http_headers["HTTP_ACCEPT"] = $this->settings->accept;
 		}
 		
-		$this->request->set_accept_header($http_headers['HTTP_ACCEPT'])
-			->set_method($http_headers['REQUEST_METHOD'])
-			->set_path($http_headers['PATH_INFO']);
+		$this->request->set_accept_header($http_headers["HTTP_ACCEPT"])
+			->set_method($http_headers["REQUEST_METHOD"])
+			->set_path($http_headers["PATH_INFO"]);
 		return($this);
 	}
 

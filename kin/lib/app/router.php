@@ -1,19 +1,18 @@
 <?php namespace kin\app;
-
 require_once(__DIR__.'/../exceptions/unrecoverable.php');
 
 class router {
 
 	// Data passed in from the request
-	private $path = '';
-	private $request_method = '';
+	public $path = '';
+	public $request_method = '';
 	
 	// All of the routes
-	private $routes = array();
-	private $exception_routes = array();
+	public $routes = array();
+	public $exception_routes = array();
 	
 	// The matched route
-	private $route = null;
+	public $route = null;
 	
 	const route_404 = 404;
 	
@@ -28,10 +27,7 @@ class router {
 			->check_exception_routes()
 			->check_exception_route_404_exists();
 		
-		// Set the route as the error route by default
 		$this->route = $this->exception_routes[self::route_404];
-		
-		// Don't bother to do anything else if the path or method are empty
 		if (empty($this->path) || empty($this->request_method)) {
 			return(true);
 		}
@@ -43,7 +39,6 @@ class router {
 				break;
 			}
 		}
-		
 		return(true);
 	}
 

@@ -52,33 +52,10 @@ class dispatcher_test extends testcase {
 		$dispatcher->dispatch();
 	}
 	
-	/**
-	 * @expectedException \kin\exception\unrecoverable
-	 */
-	public function _test_dispatch__requires_action_to_be_public() {
-		$action = 'action_process';
-		
-		$controller = $this->getMock('kin\app\controller', array($action));
-		$controller->expects($this->once())
-			->method($action)
-			->will($this->returnValue(true));
-			
-		$method = new \ReflectionMethod($controller, $action);
-		$method->setAccessible(false);
-		
-		$dispatcher = new dispatcher;
-		$dispatcher->attach_controller($controller)
-			->set_action($action);
-		
-		$dispatcher->dispatch();
-	}
-	
 	public function test_dispatch__executes_init_method() {
-		$action = 'action_process';
-		
-		$controller = $this->getMock('kin\app\controller', array($action, 'init'));
+		$controller = $this->getMock('kin\app\controller', array('action_process', 'init'));
 		$controller->expects($this->any())
-			->method($action)
+			->method('action_process')
 			->will($this->returnValue(true));
 			
 		$controller->expects($this->once())
@@ -87,7 +64,7 @@ class dispatcher_test extends testcase {
 		
 		$dispatcher = new dispatcher;
 		$dispatcher->attach_controller($controller)
-			->set_action($action);
+			->set_action('action_process');
 		
 		$dispatcher->dispatch();
 		
@@ -98,35 +75,47 @@ class dispatcher_test extends testcase {
 	 * @expectedException \kin\exception\unrecoverable
 	 */
 	public function test_dispatch__catches_all_uncaught_controller_exceptions() {
-		$action = 'action_process';
-		
-		$controller = $this->getMock('kin\app\controller', array($action));
+		$controller = $this->getMock('kin\app\controller', array('action_process'));
 		$controller->expects($this->once())
-			->method($action)
+			->method('action_process')
 			->will($this->throwException(new \Exception('Unit Testing Exception')));
 		
 		$dispatcher = new dispatcher;
 		$dispatcher->attach_controller($controller)
-			->set_action($action);
+			->set_action('action_process');
 		
 		$dispatcher->dispatch();
 	}
 	
-	public function test_dispatch__action_returns_argument() {
-		$action = 'action_process';
-		$arguments = array(15);
-		
-		$controller = $this->getMock('kin\app\controller', array($action));
+	public function test_dispatch__action_returns_false_when_shut_down_fails_to_execute() {
+		$controller = $this->getMock('kin\app\controller', array('action_process', 'shut_down'));
 		$controller->expects($this->once())
-			->method($action)
+			->method('action_process')
+			->will($this->returnArgument(0));
+		$controller->expects($this->once())
+			->method('shut_down')
+			->will($this->returnValue(false));
+			
+		$dispatcher = new dispatcher;
+		$dispatcher->attach_controller($controller)
+			->set_action('action_process')
+			->set_arguments(array(15));
+		
+		$this->assertFalse($dispatcher->dispatch());
+	}
+	
+	public function test_dispatch__action_returns_true_when_action_successfully_executes() {
+		$controller = $this->getMock('kin\app\controller', array('action_process'));
+		$controller->expects($this->once())
+			->method('action_process')
 			->will($this->returnArgument(0));
 			
 		$dispatcher = new dispatcher;
 		$dispatcher->attach_controller($controller)
-			->set_action($action)
-			->set_arguments($arguments);
+			->set_action('action_process')
+			->set_arguments(array(15));
 		
-		$this->assertEquals($arguments[0], $dispatcher->dispatch());
+		$this->assertTrue($dispatcher->dispatch());
 	}
 	
 }

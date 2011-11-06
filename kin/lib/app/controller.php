@@ -2,43 +2,39 @@
 
 class controller {
 	
-	public $api = null;
 	public $helper = null;
 	
-	private $headers = array();
-	private $payload = array();
+	public $headers = array();
+	public $payload = array();
 	
-	private $content_type = '';
-	private $response_code = self::response_200;
-	private $view = '';
+	public $content_type = "";
+	public $response_code = self::response_200;
+	public $view = "";
 
-	protected $request = null;
+	public $request = null;
 	
 	const response_200 = 200;
 	const response_201 = 201;
-	
 	const response_301 = 301;
 	const response_302 = 302;
-	
 	const response_400 = 400;
 	const response_403 = 403;
 	const response_404 = 404;
 	const response_405 = 405;
 	const response_409 = 409;
-	
 	const response_500 = 500;
 	const response_501 = 501;
 	
 	public function __construct() {
 		$this->payload = array(
-			'contents' => array(),
-			'errors' => array(
-				'contents' => array(),
-				'errors' => array(),
-				'message' => ''
+			"contents" => array(),
+			"errors" => array(
+				"contents" => array(),
+				"errors" => array(),
+				"message" => ""
 			),
-			'models' => array(),
-			'has_errors' => false
+			"models" => array(),
+			"has_errors" => false
 		);
 	}
 	
@@ -47,25 +43,18 @@ class controller {
 	}
 	
 	public function __set($k, $v) {
-		$this->payload['contents'][$k] = $v;
+		$this->payload["contents"][$k] = $v;
 		return($this);
 	}
 	
 	public function __get($k) {
-		if (array_key_exists($k, $this->payload['contents'])) {
-			return $this->payload['contents'][$k];
+		if (array_key_exists($k, $this->payload["contents"])) {
+			return $this->payload["contents"][$k];
 		}
 		return(null);
 	}
 	
 	
-	
-	public function attach_api(api $api=null) {
-		if (!is_null($api)) {
-			$this->api = $api;
-		}
-		return($this);
-	}
 	
 	public function attach_helper(helper $helper) {
 		$this->helper = $helper;
@@ -81,7 +70,7 @@ class controller {
 	
 	public function add_header($header, $value) {
 		$header = strtolower(trim($header));
-		if ('content-type' !== $header) {
+		if ("content-type" !== $header) {
 			$this->headers[$header] = $value;
 		} else {
 			$this->set_content_type($value);
@@ -90,21 +79,21 @@ class controller {
 	}
 	
 	public function add_contents(array $contents) {
-		$this->payload['contents'] = $contents;
+		$this->payload["contents"] = $contents;
 		return($this);
 	}
 	
 	public function add_error_contents(array $contents) {
 		$this->toggle_has_errors();
 		
-		$this->payload['errors']['contents'] = $contents;
+		$this->payload["errors"]["contents"] = $contents;
 		return($this);
 	}
 	
 	public function add_error($field, $error) {
 		$this->toggle_has_errors();
 		
-		$this->payload['errors']['errors'][$field] = trim($error);
+		$this->payload["errors"]["errors"][$field] = trim($error);
 		return($this);
 	}
 	
@@ -115,13 +104,13 @@ class controller {
 		if (is_object($e) && ($e instanceof \Exception)) {
 			$message = $e->getMessage();
 		}
-		$this->payload['errors']['message'] = $message;
+		$this->payload["errors"]["message"] = $message;
 		return($this);
 	}
 
 	public function add_model(\kin\db\model $model) {
 		if (is_object($model)) {
-			$this->payload['models'][] = $model->get_values();
+			$this->payload["models"][] = $model->get_values();
 		}
 		return($this);
 	}
@@ -138,7 +127,7 @@ class controller {
 	}
 	
 	public function has_errors() {
-		return($this->payload['has_errors']);
+		return($this->payload["has_errors"]);
 	}
 	
 	public function has_view() {
@@ -150,7 +139,7 @@ class controller {
 			$response_code = self::response_302;
 		}
 		
-		$this->add_header('location', $location)
+		$this->add_header("location", $location)
 			->set_response_code($response_code);
 		return($this);
 	}
@@ -177,10 +166,6 @@ class controller {
 	}
 	
 	
-	
-	public function get_api() {
-		return($this->api);
-	}
 	
 	public function get_helper() {
 		return($this->helper);
@@ -209,7 +194,7 @@ class controller {
 	
 	
 	private function toggle_has_errors() {
-		$this->payload['has_errors'] = true;
+		$this->payload["has_errors"] = true;
 		return($this);
 	}
 	

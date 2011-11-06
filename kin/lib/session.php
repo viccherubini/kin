@@ -1,7 +1,5 @@
 <?php namespace kin;
 
-require_once(__DIR__.'/db/row.php');
-
 class session {
 
 	private static $instance = null;
@@ -64,26 +62,26 @@ class session {
 	public function start($session_name=null) {
 		$started = false;
 
-		if (php_sapi_name() != 'cli') {
-			if (0 == @ini_get('session.auto_start') && !defined('SID')) {
+		if (php_sapi_name() != "cli") {
+			if (0 == @ini_get("session.auto_start") && !defined("SID")) {
 				if (!empty($session_name)) {
-					$matched_alpha_num = preg_match('/^[a-zA-Z0-9]+$/', $session_name);
+					$matched_alpha_num = preg_match("/^[a-zA-Z0-9]+$/", $session_name);
 					if (!$matched_alpha_num || is_numeric($session_name)) {
 						$session_name = null;
 					}
 				}
 
 				if (!is_null($this->pdo)) {
-					ini_set('session.save_handler', 'user');
-					register_shutdown_function('session_write_close');
+					ini_set("session.save_handler", "user");
+					register_shutdown_function("session_write_close");
 
 					session_set_save_handler(
-						array($this, 'open'),
-						array($this, 'close'),
-						array($this, 'read'),
-						array($this, 'write'),
-						array($this, 'destroy'),
-						array($this, 'gc')
+						array($this, "open"),
+						array($this, "close"),
+						array($this, "read"),
+						array($this, "write"),
+						array($this, "destroy"),
+						array($this, "gc")
 					);
 				}
 
@@ -108,7 +106,7 @@ class session {
 
 	public function delete() {
 		if (array_key_exists($this->session_name, $_COOKIE)) {
-			setcookie($this->session_name, $this->id, 1, '/');
+			setcookie($this->session_name, $this->id, 1, "/");
 		}
 
 		session_destroy();
@@ -125,7 +123,7 @@ class session {
 	}
 
 	public function close() {
-		$max_lifetime = (int)get_cfg_var('session.gc_maxlifetime');
+		$max_lifetime = (int)get_cfg_var("session.gc_maxlifetime");
 		$this->gc($max_lifetime);
 		return(true);
 	}
@@ -133,12 +131,12 @@ class session {
 	public function read($id) {
 		$this->check_pdo();
 
-		$query = 'select * from _kinsession where id = :id';
-		$session = $this->pdo->select_one($query, '\kin\db\row', array(
-			'id' => $id
-		));
+		$query = "SELECT * FROM _kinsession WHERE id = :id";
+		$read_stmt = $this->pdo->prepare($query);
+		$read_stmt->execute(array("id" => $id));
+		$session = $read_stmt->fetchObject();
 
-		if (is_object($session) && property_exists($session, 'data')) {
+		if (is_object($session) && property_exists($session, "data")) {
 			if ($session->agent_hash !== $this->agent_hash) {
 				$this->destroy();
 				return(null);
@@ -155,55 +153,60 @@ class session {
 		$this->check_pdo();
 
 		$expiration = time();
-		$now = date('Y-m-d H:i:s');
+		$now = date("Y-m-d H:i:s");
 
-		$query = 'select count(id) from _kinsession where id = :id';
-		$session_exists = $this->pdo->select_exists($query, array(
-			'id' => $id
-		));
+		$query = "SELECT COUNT(id) FROM _kinsession WHERE id = :id";
+		$read_stmt = $this->pdo->prepare($query);
+		$read_stmt->execute(array("id" => $id));
+		$session_count = (int)$read_stmt->fetchColumn(0);
 		
-		if ($session_exists) {
-			$query = 'update _kinsession set updated = :updated, expiration = :expiration, data = :data where id = :id';
-			$this->pdo->modify($query, array(
-				'updated' => $now,
-				'expiration' => $expiration,
-				'data' => $data,
-				'id' => $id
-			));
+		if (0 == $session_count) {
+			$query = "UPDATE _kinsession SET updated = :updated, expiration = :expiration, data = :data WHERE id = :id";
+			$modify_stmt = $this->pdo->prepare($query);
+			$modify_stmt->execute(array(
+				"update" => $now,
+				"expiration" => $expiration,
+				"data" => $data,
+				"id" => $id));
 		} else {
-			$query = 'insert into _kinsession (id, created, expiration, ip, agent, agent_hash, data) 
-				values(:id, :created, :expiration, :ip, :agent, :agent_hash, :data)';
-			$this->pdo->modify($query, array(
-				'id' => $id,
-				'created' => $now,
-				'expiration' => $expiration,
-				'ip' => $this->ip,
-				'agent' => $this->agent,
-				'agent_hash' => $this->agent_hash,
-				'data' => $data
-			));
+			$query = "INSERT INTO _kinsession (id, created, expiration, ip, agent, agent_hash, data) 
+				VALUES(:id, :created, :expiration, :ip, :agent, :agent_hash, :data)";
+			$modify_stmt = $this->pdo->prepare($query);
+			$modify_stmt->execute(array(
+				"id" => $id,
+				"created" => $now,
+				"expiration" => $expiration,
+				"ip" => $this->ip,
+				"agent" => $this->agent,
+				"agent_hash" => $this->agent_hash,
+				"data" => $data));
 		}
-
+		
+		$read_stmt->closeCursor();
+		$modify_stmt->closeCursor();
+		
 		return(true);
 	}
 
 	public function destroy($id) {
 		$this->check_pdo();
 		
-		$query = 'delete from _kinsession where id = :id';
-		$this->pdo->modify($query, array(
-			'id' => $id
-		));
+		$query = "DELETE FROM _kinsession WHERE id = :id";
+		$modify_stmt = $this->pdo->prepare($query);
+		$modify_stmt->execute(array("id" => $id));
+		$modify_stmt->closeCursor();
+		
 		return(true);
 	}
 
 	public function gc($lifetime) {
 		$this->check_pdo();
 
-		$query = 'delete from _kinsession where expiration < :expiration';
-		$this->pdo->modify($query, array(
-			'expiration' => (time() - $lifetime)
-		));
+		$query = "DELETE FROM _kinsession WHERE expiration < :expiration";
+		$modify_stmt = $this->pdo->prepare($query);
+		$modify_stmt->execute(array("expiration" => (time() - $lifetime)));
+		$modify_stmt->closeCursor();
+		
 		return(true);
 	}
 	
@@ -256,7 +259,7 @@ class session {
 
 	private function check_pdo() {
 		if (!($this->pdo instanceof \kin\db\pdo)) {
-			throw new \Exception('A \\kin\\db\\pdo object is not attached properly.');
+			throw new \Exception("A \\kin\\db\\pdo object is not attached properly.");
 		}
 		return(true);
 	}

@@ -2,20 +2,20 @@
 
 class request {
 
-	private $path = '/';
-	private $method = 'GET';
+	private $path = "/";
+	private $method = "GET";
 
 	private $acceptable_types = array();
 	private $renderable_types = array();
 	
 	private $stream_contents = array();
 	
-	const accept_any = '*/*';
-	const default_accept = 'text/html';
-	const default_type = 'html';
+	const accept_any = "*/*";
+	const default_accept = "text/html";
+	const default_type = "html";
 
 	public function __construct() {
-		$stream_data = file_get_contents('php://input');
+		$stream_data = file_get_contents("php://input");
 		if (!empty($stream_data)) {
 			parse_str($stream_data, $this->stream_contents);
 		}
@@ -46,16 +46,16 @@ class request {
 	
 	
 	public function set_accept_header($accept_header) {
-		$accept_header = strtolower(str_replace(' ', '', $accept_header));
-		$acceptable_types = explode(',', $accept_header);
+		$accept_header = strtolower(str_replace(" ", "", $accept_header));
+		$acceptable_types = explode(",", $accept_header);
 
 		foreach ($acceptable_types as $accept) {
-			if (preg_match('#^(.+)/(.+)$#i', $accept)) {
-				$accept_quality = explode(';', $accept);
+			if (preg_match("#^(.+)/(.+)$#i", $accept)) {
+				$accept_quality = explode(";", $accept);
 
 				$quality = 1.0;
-				if (isset($accept_quality[1]) && false !== strpos($accept_quality[1], 'q=')) {
-					$quality = (float)str_replace('q=', '', $accept_quality[1]);
+				if (isset($accept_quality[1]) && false !== strpos($accept_quality[1], "q=")) {
+					$quality = (float)str_replace("q=", "", $accept_quality[1]);
 				}
 				
 				$accept = trim($accept_quality[0]);
@@ -63,14 +63,14 @@ class request {
 					$accept = self::default_accept;
 				}
 				
-				if (false !== strpos($accept, '*')) {
-					$accept_bits = explode('/', $accept);
-					if ('*' == $accept_bits[0]) {
+				if (false !== strpos($accept, "*")) {
+					$accept_bits = explode("/", $accept);
+					if ("*" == $accept_bits[0]) {
 						$accept_bits[0] = $accept_bits[1];
-					} elseif ('*' == $accept_bits[1]) {
+					} elseif ("*" == $accept_bits[1]) {
 						$accept_bits[1] = $accept_bits[0];
 					}
-					$accept = implode('/', $accept_bits);
+					$accept = implode("/", $accept_bits);
 				}
 			} else {
 				$quality = 0.0;

@@ -1,5 +1,4 @@
 <?php namespace kintest;
-declare(encoding='UTF-8');
 
 class index_controller extends \kin\app\controller {
 

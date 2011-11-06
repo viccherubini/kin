@@ -2,9 +2,8 @@
 
 class helper {
 
-	private $root_url = '';
-	
-	private $settings = null;
+	public $root_url = "";
+	public $settings = null;
 
 	public function __construct() {
 	
@@ -20,16 +19,16 @@ class helper {
 	
 	
 	
-	public function css($css_file, $media='screen', $local_file=true) {
+	public function css($css_file, $media="screen", $local_file=true) {
 		if ($local_file) {
-			$css_file = $this->root_url.$this->settings->css_path.$this->append_extension($css_file, '.css');
+			$css_file = $this->root_url.$this->settings->css_path.$this->append_extension($css_file, ".css");
 		}
 		return(sprintf('<link type="text/css" rel="stylesheet" href="%s" media="%s">%s', $css_file, $media, PHP_EOL));
 	}
 	
 	public function js($js_file, $local_file=true) {
 		if ($local_file) {
-			$js_file = $this->root_url.$this->settings->js_path.$this->append_extension($js_file, '.js');
+			$js_file = $this->root_url.$this->settings->js_path.$this->append_extension($js_file, ".js");
 		}
 		return(sprintf('<script src="%s" type="text/javascript"></script>%s', $js_file, PHP_EOL));
 	}
@@ -52,12 +51,12 @@ class helper {
 		
 		$root_url = $this->root_url;
 		if (!$this->settings->rewrite) {
-			$root_url .= 'index.php/';
+			$root_url .= "index.php/";
 		}
 		
-		$url = $root_url.implode('/', $argv);
+		$url = $root_url.implode("/", $argv);
 		if (!empty($http_parameters)) {
-			$url .= '?'.$http_parameters;
+			$url .= "?".$http_parameters;
 		}
 		return($url);
 	}
@@ -80,7 +79,7 @@ class helper {
 	}
 
 	private function is_secure() {
-		return('on' === strtolower(filter_input(INPUT_SERVER, 'HTTPS')));
+		return("on" === strtolower(filter_input(INPUT_SERVER, "HTTPS")));
 	}
 
 }

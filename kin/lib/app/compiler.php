@@ -1,14 +1,13 @@
 <?php namespace kin\app;
-
-require_once(__DIR__.'/../exceptions/unrecoverable.php');
+require_once(__DIR__."/../exceptions/unrecoverable.php");
 
 class compiler {
 
-	private $class = '';
-	private $file = '';
-	private $path = '';
+	public $class = "";
+	public $file = "";
+	public $path = "";
 
-	private $controller = null;
+	public $controller = null;
 	
 	public function __construct() {
 	
@@ -49,7 +48,7 @@ class compiler {
 	}
 	
 	public function set_path($path) {
-		$this->path = rtrim($path, '/').'/';
+		$this->path = rtrim($path, "/")."/";
 		return($this);
 	}
 
