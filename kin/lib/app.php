@@ -1,5 +1,4 @@
 <?php namespace kin;
-
 require_once(__DIR__."/http/request.php");
 require_once(__DIR__."/http/response.php");
 
@@ -14,19 +13,19 @@ require_once(__DIR__."/view.php");
 
 class app {
 
+	public $controller = null;
 	public $helper = null;
 	public $request = null;
 	public $response = null;
+	public $route = null;
 	public $settings = null;
+	public $view = null;
 
 	public $start_time = 0.0;
 	
-	public $controller = null;
-	public $route = null;
-	public $view = null;
-
 	public $routes = array();
 	public $exception_routes = array();
+	
 	
 	public function __construct() {
 		$this->start_time = microtime(true);
