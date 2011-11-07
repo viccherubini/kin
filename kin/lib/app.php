@@ -66,8 +66,7 @@ class app {
 				->set_headers($this->controller->get_headers())
 				->set_content_type($this->view->get_content_type())
 				->set_response_code($this->controller->get_response_code())
-				->set_content($this->view->get_rendering())
-				->set_start_time($this->start_time);
+				->set_content($this->view->get_rendering());
 		} catch (\Exception $e) {
 			$response_code = (int)$e->getCode();
 			if (0 === $response_code) {
@@ -136,6 +135,7 @@ class app {
 	
 	private function build_response() {
 		$this->response = new http\response;
+		$this->response->set_start_time($this->start_time);
 		return($this);
 	}
 	
