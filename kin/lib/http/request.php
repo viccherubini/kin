@@ -2,49 +2,21 @@
 
 class request {
 
-	private $path = "/";
-	private $method = "GET";
+	public $path = "/";
+	public $method = "GET";
 
-	private $acceptable_types = array();
-	private $renderable_types = array();
-	
-	private $stream_contents = array();
+	public $acceptable_types = array();
+	public $renderable_types = array();
 	
 	const accept_any = "*/*";
 	const default_accept = "text/html";
 	const default_type = "html";
 
 	public function __construct() {
-		$stream_data = file_get_contents("php://input");
-		if (!empty($stream_data)) {
-			parse_str($stream_data, $this->stream_contents);
-		}
-	}
-	
-	
-	
-	public function get($key, $default=null) {
-		return($this->find_array_value_by_key($key, $_GET, $default));
-	}
-	
-	public function post($key, $default=null) {
-		return($this->find_array_value_by_key($key, $_POST, $default));
 	}
 
-	public function put($key, $default=null) {
-		return($this->find_array_value_by_key($key, $this->stream_contents, $default));
-	}
-	
-	public function delete($key, $default=null) {
-		return($this->find_array_value_by_key($key, $this->stream_contents, $default));
-	}
-	
-	public function server($key, $default=null) {
-		return($this->find_array_value_by_key($key, $_SERVER, $default));
-	}
-	
-	
-	
+
+
 	public function set_accept_header($accept_header) {
 		$accept_header = strtolower(str_replace(" ", "", $accept_header));
 		$acceptable_types = explode(",", $accept_header);
@@ -123,16 +95,6 @@ class request {
 	
 	public function get_path() {
 		return($this->path);
-	}
-	
-	public function get_stream_contents() {
-		return($this->stream_contents);
-	}
-	
-	
-
-	private function find_array_value_by_key($key, $array, $default) {
-		return(array_key_exists($key, $array) ? $array[$key] : $default);
 	}
 	
 }

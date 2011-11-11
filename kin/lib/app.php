@@ -157,8 +157,7 @@ class app {
 			->set_path($this->settings->controllers_path)
 			->compile();
 		$this->controller = $compiler->get_controller()
-			->attach_helper($this->helper)
-			->attach_request($this->request);
+			->attach_helper($this->helper);
 		return($this);
 	}
 	

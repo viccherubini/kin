@@ -4,6 +4,11 @@ class controller {
 	
 	public $helper = null;
 	
+	public $raw_request = "";
+	public $request_parsers = array();
+	public $request = array();
+	
+	// Data for the response
 	public $headers = array();
 	public $payload = array();
 	
@@ -11,13 +16,12 @@ class controller {
 	public $response_code = self::response_200;
 	public $view = "";
 
-	public $request = null;
-	
 	const response_200 = 200;
 	const response_201 = 201;
 	const response_301 = 301;
 	const response_302 = 302;
 	const response_400 = 400;
+	const response_401 = 401;
 	const response_403 = 403;
 	const response_404 = 404;
 	const response_405 = 405;
@@ -25,8 +29,15 @@ class controller {
 	const response_500 = 500;
 	const response_501 = 501;
 	
+	
 	public function __construct() {
 		$this->payload = array();
+		$this->raw_request = file_get_contents("php://input");
+		
+		$this->attach_request_parser("application/x-www-form-urlencoded", function($raw_request) {
+			$request = array(); parse_str($raw_request, $request);
+			return($request);
+		});
 	}
 	
 	public function __destruct() {
@@ -52,8 +63,39 @@ class controller {
 		return($this);
 	}
 	
-	public function attach_request(\kin\http\request $request) {
-		$this->request = $request;
+	
+	
+	public function attach_request_parser($content_type, \Closure $parser) {
+		$this->request_parsers[$content_type] = $parser;
+		return($this);
+	}
+	
+	public function get($key="", $default="") {
+		if (empty($key)) {
+			return($_GET);
+		} else {
+			return($this->find_array_value_by_key($key, $_GET, $default));
+		}
+	}
+	
+	public function request($key="", $default="") {
+		if (empty($key)) {
+			return($this->request);
+		} else {
+			return($this->find_array_value_by_key($key, $this->request, $default));
+		}
+	}
+	
+	public function parse_request() {
+		$hits = array();
+		$content_type = strtolower(filter_input(INPUT_SERVER, "CONTENT_TYPE"));
+		
+		if (preg_match("#^([a-z0-9\-]+/[a-z0-9\-]+).*$#i", $content_type, $hits)) {
+			if (array_key_exists($hits[1], $this->request_parsers)) {
+				$this->request = call_user_func($this->request_parsers[$content_type],
+					$this->raw_request);
+			}
+		}
 		return($this);
 	}
 	
@@ -136,4 +178,10 @@ class controller {
 		return($this->view);
 	}
 	
+
+	
+	private function find_array_value_by_key($key, $array, $default) {
+		return(array_key_exists($key, $array) ? $array[$key] : $default);
+	}
+
 }

@@ -29,6 +29,7 @@ class dispatcher {
 		
 		$action = $this->build_action();
 		return($this->check_action_is_public($action)
+			->parse_request()
 			->dispatch_controller_init()
 			->dispatch_action($action));
 	}
@@ -85,6 +86,11 @@ class dispatcher {
 			throw new \kin\exception\unrecoverable("The controller action, {$this->action}, is not a member of the controller class {$this->class}.");
 		}
 		return($action);
+	}
+	
+	private function parse_request() {
+		$this->controller->parse_request();
+		return($this);
 	}
 	
 	private function dispatch_controller_init() {
