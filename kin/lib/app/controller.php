@@ -92,7 +92,7 @@ class controller {
 		
 		if (preg_match("#^([a-z0-9\-]+/[a-z0-9\-]+).*$#i", $content_type, $hits)) {
 			if (array_key_exists($hits[1], $this->request_parsers)) {
-				$this->request = call_user_func($this->request_parsers[$content_type],
+				$this->request = call_user_func($this->request_parsers[$hits[1]],
 					$this->raw_request);
 			}
 		}
