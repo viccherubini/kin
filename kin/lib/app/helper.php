@@ -1,23 +1,17 @@
-<?php namespace kin\app;
+<?php namespace kin;
 
 class helper {
 
 	public $root_url = "";
 	public $settings = null;
 
-	public function __construct() {
-	
-	}
-	
-	
-	
+	public function __construct() { }
+
 	public function attach_settings(settings $settings) {
 		$this->settings = $settings;
 		$this->compile_root_url();
 		return($this);
 	}
-	
-	
 	
 	public function css($css_file, $media="screen", $local_file=true) {
 		if ($local_file) {

@@ -20,12 +20,9 @@ class app {
 	public $route = null;
 	public $settings = null;
 	public $view = null;
-
 	public $start_time = 0.0;
-	
 	public $routes = array();
 	public $exception_routes = array();
-	
 	
 	public function __construct() {
 		$this->start_time = microtime(true);
@@ -34,23 +31,19 @@ class app {
 			->build_response();
 	}
 	
-	
-	
 	public function attach_all_routes(array $routes, array $exception_routes) {
 		$this->routes = $routes;
 		$this->exception_routes = $exception_routes;
 		return($this);
 	}
 	
-	public function attach_settings(app\settings $settings) {
+	public function attach_settings(settings $settings) {
 		$this->settings = $settings;
 		$this->settings->compile();
 		
 		$this->helper->attach_settings($this->settings);
 		return($this);
 	}
-	
-	
 	
 	public function run() {
 		try {
@@ -80,8 +73,6 @@ class app {
 		return($this->response->respond());
 	}
 	
-	
-	
 	public function get_controller() {
 		return($this->controller);
 	}
@@ -99,9 +90,10 @@ class app {
 	}
 	
 	
+
 	private function check_settings() {
 		if (is_null($this->settings)) {
-			throw new \kin\exception\unrecoverable("A \\kin\\settings object must be attached to the app object before it can run.");
+			throw new unrecoverable("A \\kin\\settings object must be attached to the app object before it can run.");
 		}
 		return($this);
 	}
@@ -124,23 +116,23 @@ class app {
 	}
 
 	private function build_helper() {
-		$this->helper = new app\helper;
+		$this->helper = new helper;
 		return($this);
 	}
 	
 	private function build_request() {
-		$this->request = new http\request;
+		$this->request = new request;
 		return($this);
 	}
 	
 	private function build_response() {
-		$this->response = new http\response;
+		$this->response = new response;
 		$this->response->set_start_time($this->start_time);
 		return($this);
 	}
 	
 	private function build_and_execute_router() {
-		$router = new app\router;
+		$router = new router;
 		$router->set_path($this->request->get_path())
 			->set_request_method($this->request->get_method())
 			->set_routes($this->routes)
@@ -151,7 +143,7 @@ class app {
 	}
 	
 	private function build_and_execute_compiler() {
-		$compiler = new app\compiler;
+		$compiler = new compiler;
 		$compiler->set_class($this->route->get_class())
 			->set_file($this->route->get_controller())
 			->set_path($this->settings->controllers_path)
@@ -162,7 +154,7 @@ class app {
 	}
 	
 	private function build_and_execute_dispatcher() {
-		$dispatcher = new app\dispatcher;
+		$dispatcher = new dispatcher;
 		$dispatcher->attach_controller($this->controller)
 			->set_action($this->route->get_action())
 			->set_arguments($this->route->get_arguments())

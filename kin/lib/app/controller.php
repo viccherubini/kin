@@ -1,17 +1,13 @@
-<?php namespace kin\app;
+<?php namespace kin;
 
 class controller {
 	
 	public $helper = null;
-	
 	public $raw_request = "";
 	public $request_parsers = array();
 	public $request = array();
-	
-	// Data for the response
 	public $headers = array();
 	public $payload = array();
-	
 	public $content_type = "";
 	public $response_code = self::response_200;
 	public $view = "";
@@ -28,7 +24,6 @@ class controller {
 	const response_409 = 409;
 	const response_500 = 500;
 	const response_501 = 501;
-	
 	
 	public function __construct() {
 		$this->payload = array();
@@ -56,14 +51,10 @@ class controller {
 		return(null);
 	}
 	
-	
-	
 	public function attach_helper(helper $helper) {
 		$this->helper = $helper;
 		return($this);
 	}
-	
-	
 	
 	public function attach_request_parser($content_type, \Closure $parser) {
 		$this->request_parsers[$content_type] = $parser;
@@ -99,8 +90,6 @@ class controller {
 		return($this);
 	}
 	
-	
-	
 	public function add_header($header, $value) {
 		$header = strtolower(trim($header));
 		if ("content-type" !== $header) {
@@ -130,8 +119,6 @@ class controller {
 		return($this);
 	}
 	
-	
-	
 	public function has_content_type() {
 		return(!empty($this->content_type));
 	}
@@ -139,8 +126,6 @@ class controller {
 	public function has_view() {
 		return(!empty($this->view));
 	}
-	
-	
 	
 	public function set_content_type($content_type) {
 		$this->content_type = strtolower($content_type);
@@ -151,8 +136,6 @@ class controller {
 		$this->response_code = (int)$response_code;
 		return($this);
 	}
-	
-	
 	
 	public function get_helper() {
 		return($this->helper);
@@ -179,7 +162,7 @@ class controller {
 	}
 	
 
-	
+
 	private function find_array_value_by_key($key, $array, $default) {
 		return(array_key_exists($key, $array) ? $array[$key] : $default);
 	}

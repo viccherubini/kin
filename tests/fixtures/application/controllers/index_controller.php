@@ -1,10 +1,10 @@
-<?php namespace kintest;
+<?php namespace kin;
 
-class index_controller extends \kin\app\controller {
+class index_controller extends \kin\controller {
 
 	public function action_get_index() {
-		$this->set_content_type('');
-		$this->render('response');
+		$this->set_content_type("");
+		$this->render("response");
 	}
 
 }

@@ -1,9 +1,4 @@
-<?php namespace kintest\app;
-declare(encoding='UTF-8');
-
-use \kin\app\router as router,
-	\kintest\testcase as testcase;
-
+<?php namespace kin;
 require_once(__DIR__.'/../../testcase.php');
 require_once(__DIR__.'/../../../kin/lib/app/router.php');
 
@@ -12,19 +7,19 @@ class router_test extends testcase {
 	private $empty_route = null;
 	
 	public function setUp() {
-		$this->empty_route = $this->getMock('kin\app\route', array(), array(), '', false);
+		$this->empty_route = $this->getMock('kin\route', array(), array(), '', false);
 	}
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_set_routes__requires_at_least_one_route() {
 		$router = new router;
-		$router->set_routes(array(0, 'twelve', new \stdClass));
+		$router->set_routes(array(0, 'twelve', new \StdClass));
 	}
 	
 	public function test_set_routes__filters_invalid_routes() {
-		$routes = array(0, 'twelve', new \stdClass, $this->empty_route);
+		$routes = array(0, 'twelve', new \StdClass, $this->empty_route);
 		$expected_routes = array($this->empty_route);
 		
 		$router = new router;
@@ -36,15 +31,15 @@ class router_test extends testcase {
 	
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_set_exception_routes__requires_at_least_one_route() {
 		$router = new router;
-		$router->set_exception_routes(array(0, 'twelve', new \stdClass));
+		$router->set_exception_routes(array(0, 'twelve', new \StdClass));
 	}
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_set_exception_routes__requires_at_least_one_404_route() {
 		$router = new router;
@@ -54,7 +49,7 @@ class router_test extends testcase {
 	
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_route__requires_at_least_one_route() {
 		$router = new router;
@@ -64,7 +59,7 @@ class router_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_route__requires_at_least_one_exception_route() {
 		$router = new router;
@@ -74,7 +69,7 @@ class router_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_route__requires_at_least_one_exception_404_route() {
 		$router = new router;
@@ -87,7 +82,7 @@ class router_test extends testcase {
 	public function test_route__finds_exception_404_route_if_path_empty() {
 		$exception_controller = 'exception_controller';
 		
-		$exception_404_route = $this->getMock('kin\app\route', array('get_controller'), array(), '', false);
+		$exception_404_route = $this->getMock('kin\route', array('get_controller'), array(), '', false);
 		$exception_404_route->expects($this->once())
 			->method('get_controller')
 			->will($this->returnValue($exception_controller));
@@ -105,7 +100,7 @@ class router_test extends testcase {
 	public function test_route__finds_exception_404_route_if_request_method_empty() {
 		$exception_controller = 'exception_controller';
 		
-		$exception_404_route = $this->getMock('kin\app\route', array('get_controller'), array(), '', false);
+		$exception_404_route = $this->getMock('kin\route', array('get_controller'), array(), '', false);
 		$exception_404_route->expects($this->once())
 			->method('get_controller')
 			->will($this->returnValue($exception_controller));
@@ -123,12 +118,12 @@ class router_test extends testcase {
 	public function test_route__finds_exception_404_route_if_no_routes_match() {
 		$exception_controller = 'exception_controller';
 		
-		$exception_404_route = $this->getMock('kin\app\route', array('get_controller'), array(), '', false);
+		$exception_404_route = $this->getMock('kin\route', array('get_controller'), array(), '', false);
 		$exception_404_route->expects($this->once())
 			->method('get_controller')
 			->will($this->returnValue($exception_controller));
 		
-		$unmatchable_route = $this->getMock('kin\app\route', array('get_method', 'get_compiled_route'), array(), '', false);
+		$unmatchable_route = $this->getMock('kin\route', array('get_method', 'get_compiled_route'), array(), '', false);
 		$unmatchable_route->expects($this->once())
 			->method('get_method')
 			->will($this->returnValue('PUT'));
@@ -152,7 +147,7 @@ class router_test extends testcase {
 		
 		$exception_404_route = $this->empty_route;
 		
-		$matchable_route = $this->getMock('kin\app\route', array('get_method', 'get_compiled_route', 'get_controller', 'set_arguments'), array(), '', false);
+		$matchable_route = $this->getMock('kin\route', array('get_method', 'get_compiled_route', 'get_controller', 'set_arguments'), array(), '', false);
 		$matchable_route->expects($this->any())
 			->method('get_method')
 			->will($this->returnValue('GET'));
@@ -183,7 +178,7 @@ class router_test extends testcase {
 		
 		$exception_404_route = $this->empty_route;
 		
-		$matchable_route = $this->getMock('kin\app\route', array('get_method', 'get_compiled_route', 'set_arguments'), array(), '', false);
+		$matchable_route = $this->getMock('kin\route', array('get_method', 'get_compiled_route', 'set_arguments'), array(), '', false);
 		$matchable_route->expects($this->any())
 			->method('get_method')
 			->will($this->returnValue('GET'));

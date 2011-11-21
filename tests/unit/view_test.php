@@ -1,8 +1,4 @@
-<?php namespace kintest;
-declare(encoding='UTF-8');
-
-use \kin\view as view;
-
+<?php namespace kin;
 require_once('vfsStream/vfsStream.php');
 
 require_once(__DIR__.'/../testcase.php');

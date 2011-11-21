@@ -4,29 +4,21 @@ require_once(__DIR__."/exceptions/unrecoverable.php");
 class view {
 
 	public $helper = null;
-
 	public $content_type = "";
 	public $file = "";
 	public $path = "";
 	public $rendering = "";
-	
 	public $acceptable_types = array();
 	public $payload = array();
 	
 	const ext = "php";
 
-	public function __construct() {
-		
-	}
+	public function __construct() { }
 
-
-
-	public function attach_helper(app\helper $helper) {
+	public function attach_helper(helper $helper) {
 		$this->helper = $helper;
 		return($this);
 	}
-	
-	
 	
 	public function render() {
 		$found_view = false;
@@ -43,7 +35,7 @@ class view {
 		}
 		
 		if (!$found_view) {
-			throw new \kin\exception\unrecoverable("The renderer can not find any acceptable views. Please request this application with at least one acceptable type.", 406);
+			throw new unrecoverable("The renderer can not find any acceptable views. Please request this application with at least one acceptable type.", 406);
 		}
 		return($this);
 	}
@@ -51,8 +43,6 @@ class view {
 	public function safe($v) {
 		return htmlentities($v, ENT_COMPAT, "UTF-8");
 	}
-
-
 
 	public function set_acceptable_types(array $acceptable_types) {
 		$this->acceptable_types = $acceptable_types;
@@ -78,8 +68,6 @@ class view {
 		$this->path = rtrim($path, "/")."/";
 		return($this);
 	}
-	
-	
 	
 	public function get_content_type() {
 		return($this->content_type);

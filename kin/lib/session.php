@@ -1,27 +1,21 @@
 <?php namespace kin;
+require_once(__DIR__."/../exceptions/unrecoverable.php");
 
 class session {
 
 	private static $instance = null;
 
-	private $pdo = null;
-	private $save_handler = null;
+	public $pdo = null;
+	public $agent = null;
+	public $agent_hash = null;
+	public $id = null;
+	public $ip = null;
+	public $session_name = null;
+	public $started = false;
 
-	private $agent = null;
-	private $agent_hash = null;
-	private $id = null;
-	private $ip = null;
-	private $session_name = null;
+	private function __construct() { }
 
-	private $started = false;
-
-	private function __construct() {
-
-	}
-
-	private function __clone() {
-
-	}
+	private function __clone() { }
 
 	public function __set($k, $v) {
 		$_SESSION[$k] = $v;
@@ -54,7 +48,7 @@ class session {
 	}
 
 
-	public function attach_pdo(\kin\db\pdo $pdo) {
+	public function attach_pdo($pdo) {
 		$this->pdo = $pdo;
 		return($this);
 	}
@@ -227,8 +221,6 @@ class session {
 		return($this->__unset($key));
 	}
 	
-	
-	
 	public function set_agent($agent) {
 		$this->agent = trim($agent);
 		$this->set_agent_hash(sha1($agent));
@@ -245,8 +237,6 @@ class session {
 		return($this);
 	}
 
-
-
 	public function get_agent() {
 		return($this->agent);
 	}
@@ -258,8 +248,8 @@ class session {
 	
 
 	private function check_pdo() {
-		if (!($this->pdo instanceof \kin\db\pdo)) {
-			throw new \Exception("A \\kin\\db\\pdo object is not attached properly.");
+		if (!($this->pdo instanceof \PDO)) {
+			throw new unrecoverable("A \\PDO object is not attached properly.");
 		}
 		return(true);
 	}

@@ -1,4 +1,4 @@
-<?php namespace kin\app;
+<?php namespace kin;
 require_once(__DIR__."/../exceptions/unrecoverable.php");
 
 class settings {
@@ -67,7 +67,7 @@ class settings {
 	
 	public function compile() {
 		if (empty($this->settings["app_path"])) {
-			throw new \kin\exception\unrecoverable("The settings can not begin compilation, an app_path is not set.");
+			throw new unrecoverable("The settings can not begin compilation, an app_path is not set.");
 		}
 		
 		$script_name = dirname(filter_input(INPUT_SERVER, "SCRIPT_NAME"));
@@ -107,8 +107,6 @@ class settings {
 		}
 		return($this);
 	}
-	
-	
 	
 	public function get_settings() {
 		return($this->settings);

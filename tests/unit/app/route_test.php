@@ -1,37 +1,32 @@
-<?php namespace kintest\app;
-declare(encoding='UTF-8');
-
-use \kin\app\route as route,
-	\kintest\testcase as testcase;
-
+<?php namespace kin;
 require_once(__DIR__.'/../../testcase.php');
 require_once(__DIR__.'/../../../kin/lib/app/route.php');
 
 class route_test extends testcase {
 
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test___construct__method_must_be_one_of_get_post_put_or_delete() {
 		$route = new route('OPTIONS', '/', 'controller.php', 'controller', 'action');
 	}
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test___construct__route_can_not_be_empty() {
 		$route = new route(route::get, '', 'controller.php', 'controller', 'action');
 	}
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test___construct__route_must_start_with_forward_slash() {
 		$route = new route(route::get, 'abc/def/123', 'controller.php', 'controller', 'action');
 	}
 
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 * @dataProvider provider_invalid_route
 	 */
 	public function test___construct__route_must_be_valid($invalid_route) {
@@ -57,6 +52,7 @@ class route_test extends testcase {
 	}
 	
 	
+
 	public function provider_invalid_route() {
 		return array(
 			array('//'),

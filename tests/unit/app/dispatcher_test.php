@@ -1,9 +1,4 @@
-<?php namespace kintest\app;
-declare(encoding='UTF-8');
-
-use \kin\app\dispatcher as dispatcher,
-	\kintest\testcase as testcase;
-
+<?php namespace kin;
 require_once(__DIR__.'/../../testcase.php');
 require_once(__DIR__.'/../../../kin/lib/app/dispatcher.php');
 
@@ -18,7 +13,7 @@ class dispatcher_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_dispatch__requires_controller() {
 		$dispatcher = new dispatcher;
@@ -28,10 +23,10 @@ class dispatcher_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_dispatch__requires_action() {
-		$controller = $this->getMock('kin\app\controller');
+		$controller = $this->getMock('kin\controller');
 		
 		$dispatcher = new dispatcher;
 		$dispatcher->attach_controller($controller);
@@ -40,10 +35,10 @@ class dispatcher_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_dispatch__requires_action_to_exist_in_controller() {
-		$controller = $this->getMock('kin\app\controller');
+		$controller = $this->getMock('kin\controller');
 		
 		$dispatcher = new dispatcher;
 		$dispatcher->attach_controller($controller)
@@ -53,7 +48,7 @@ class dispatcher_test extends testcase {
 	}
 	
 	public function test_dispatch__executes_init_method() {
-		$controller = $this->getMock('kin\app\controller', array('action_process', 'init'));
+		$controller = $this->getMock('kin\controller', array('action_process', 'init'));
 		$controller->expects($this->any())
 			->method('action_process')
 			->will($this->returnValue(true));
@@ -72,10 +67,10 @@ class dispatcher_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_dispatch__catches_all_uncaught_controller_exceptions() {
-		$controller = $this->getMock('kin\app\controller', array('action_process'));
+		$controller = $this->getMock('kin\controller', array('action_process'));
 		$controller->expects($this->once())
 			->method('action_process')
 			->will($this->throwException(new \Exception('Unit Testing Exception')));
@@ -88,7 +83,7 @@ class dispatcher_test extends testcase {
 	}
 	
 	public function test_dispatch__action_returns_false_when_shut_down_fails_to_execute() {
-		$controller = $this->getMock('kin\app\controller', array('action_process', 'shut_down'));
+		$controller = $this->getMock('kin\controller', array('action_process', 'shut_down'));
 		$controller->expects($this->once())
 			->method('action_process')
 			->will($this->returnArgument(0));
@@ -105,7 +100,7 @@ class dispatcher_test extends testcase {
 	}
 	
 	public function test_dispatch__action_returns_true_when_action_successfully_executes() {
-		$controller = $this->getMock('kin\app\controller', array('action_process'));
+		$controller = $this->getMock('kin\controller', array('action_process'));
 		$controller->expects($this->once())
 			->method('action_process')
 			->will($this->returnArgument(0));

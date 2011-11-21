@@ -1,9 +1,4 @@
-<?php namespace kintest\app;
-declare(encoding='UTF-8');
-
-use \kin\app\settings as settings,
-	\kintest\testcase as testcase;
-
+<?php namespace kin;
 require_once(__DIR__.'/../../testcase.php');
 require_once(__DIR__.'/../../../kin/lib/app/settings.php');
 
@@ -16,8 +11,6 @@ class settings_test extends testcase {
 		
 		$this->assertEquals($app_path.'/', $settings->app_path);
 	}
-
-
 
 	public function test___set__can_only_change_predefined_settings() {
 		$property = uniqid('kin_');
@@ -46,10 +39,8 @@ class settings_test extends testcase {
 		$this->assertEquals($app_path, $settings->app_path);
 	}
 	
-	
-	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_compile__requires_app_path() {
 		$settings = new settings;
@@ -113,8 +104,6 @@ class settings_test extends testcase {
 		$this->assertNotEmpty($settings->url);
 		$this->assertContains('https://localhost/', $settings->url);
 	}
-	
-	
 	
 	public function test_add_custom__custom_variable_can_not_exist_in_settings() {
 		$settings = new settings;
