@@ -1,5 +1,5 @@
 <?php namespace kin;
-require_once(__DIR__."/../exceptions/unrecoverable.php");
+require_once(__DIR__."/exceptions/unrecoverable.php");
 
 class session {
 

@@ -1,9 +1,4 @@
-<?php namespace kintest\app;
-declare(encoding='UTF-8');
-
-use \kin\app\compiler as compiler,
-	\kintest\testcase as testcase;
-
+<?php namespace kin;
 require_once('vfsStream/vfsStream.php');
 
 require_once(__DIR__.'/../../testcase.php');
@@ -15,7 +10,7 @@ class compiler_test extends testcase {
 	private $path = 'controllers';
 
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_compile__requires_class() {
 		$compiler = new compiler;
@@ -24,7 +19,7 @@ class compiler_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_compile__requires_file() {
 		$compiler = new compiler;
@@ -34,7 +29,7 @@ class compiler_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_compile__requires_file_to_exist() {
 		$compiler = new compiler;
@@ -46,7 +41,7 @@ class compiler_test extends testcase {
 	}
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_compile__requires_class_to_exist() {
 		$file = $this->get_file();
