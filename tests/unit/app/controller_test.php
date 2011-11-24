@@ -1,7 +1,4 @@
-<?php namespace kintest\app;
-use \kin\app\controller as controller,
-	\kintest\testcase as testcase;
-
+<?php namespace kin;
 require_once(__DIR__."/../../testcase.php");
 require_once(__DIR__."/../../../kin/lib/app/controller.php");
 
@@ -17,8 +14,6 @@ class controller_test extends testcase {
 		$this->assertEquals($value, $payload["field"]);
 	}
 	
-	
-	
 	public function test___get__returns_from_payload() {
 		$value = uniqid();
 		
@@ -27,8 +22,6 @@ class controller_test extends testcase {
 		
 		$this->assertEquals($value, $controller->field);
 	}
-	
-	
 	
 	public function test_add_header__header_cannot_be_content_type() {
 		$content_type = "text/html";
@@ -52,16 +45,12 @@ class controller_test extends testcase {
 		$this->assertEquals($header_lowercase, key($headers));
 	}
 	
-	
-	
 	public function test_has_content_type__is_true_when_content_type_set() {
 		$controller = new controller;
 		$controller->set_content_type("text/xml");
 		
 		$this->assertTrue($controller->has_content_type());
 	}
-	
-	
 	
 	public function test_redirect__adds_location_header() {
 		$controller = new controller;
@@ -90,8 +79,6 @@ class controller_test extends testcase {
 		
 		$this->assertEquals(controller::response_302, $controller->get_response_code());
 	}
-	
-	
 	
 	public function test_register__adds_to_payload() {
 		$field = "password";

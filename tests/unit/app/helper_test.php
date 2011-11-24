@@ -1,9 +1,4 @@
-<?php namespace kintest\app;
-declare(encoding='UTF-8');
-
-use \kin\app\helper as helper,
-	\kintest\testcase as testcase;
-
+<?php namespace kin;
 require_once(__DIR__.'/../../testcase.php');
 require_once(__DIR__.'/../../../kin/lib/app/helper.php');
 
@@ -20,7 +15,7 @@ class helper_test extends testcase {
 	
 	
 	public function test_css__appends_extension_only_if_local_file() {
-		$settings = $this->getMock('\kin\app\settings');
+		$settings = $this->getMock('kin\settings');
 		$settings->force_ssl = false;
 		$settings->css_path = 'assets/css/';
 		$settings->url = 'http://localhost/';
@@ -49,7 +44,7 @@ class helper_test extends testcase {
 	}
 	
 	public function test_css__appends_root_url_if_local_file() {
-		$settings = $this->getMock('\kin\app\settings');
+		$settings = $this->getMock('kin\settings');
 		$settings->force_ssl = false;
 		$settings->css_path = 'assets/css/';
 		$settings->url = 'http://leftnode.com/';
@@ -69,7 +64,7 @@ class helper_test extends testcase {
 	}
 	
 	public function test_css__forces_ssl_url_if_local_file() {
-		$settings = $this->getMock('\kin\app\settings');
+		$settings = $this->getMock('kin\settings');
 		$settings->force_ssl = true;
 		$settings->css_path = 'assets/css/';
 		$settings->url = 'http://leftnode.com/';
@@ -92,7 +87,7 @@ class helper_test extends testcase {
 	
 	
 	public function test_js_appends_extension_only_if_local_file() {
-		$settings = $this->getMock('\kin\app\settings');
+		$settings = $this->getMock('kin\settings');
 		$settings->force_ssl = false;
 		$settings->js_path = 'assets/js/';
 		$settings->url = 'http://localhost/';
@@ -121,7 +116,7 @@ class helper_test extends testcase {
 	}
 	
 	public function test_js__appends_root_url_if_local_file() {
-		$settings = $this->getMock('\kin\app\settings');
+		$settings = $this->getMock('kin\settings');
 		$settings->force_ssl = false;
 		$settings->js_path = 'assets/js/';
 		$settings->url = 'http://leftnode.com/';
@@ -141,7 +136,7 @@ class helper_test extends testcase {
 	}
 	
 	public function test_js__forces_ssl_url_if_local_file() {
-		$settings = $this->getMock('\kin\app\settings');
+		$settings = $this->getMock('kin\settings');
 		$settings->force_ssl = true;
 		$settings->js_path = 'assets/js/';
 		$settings->url = 'http://leftnode.com/';
@@ -164,7 +159,7 @@ class helper_test extends testcase {
 	
 	
 	public function test_img__appends_root_url_if_local_file() {
-		$settings = $this->getMock('\kin\app\settings');
+		$settings = $this->getMock('kin\settings');
 		$settings->force_ssl = false;
 		$settings->images_path = 'assets/images/';
 		$settings->url = 'http://leftnode.com/';
@@ -184,7 +179,7 @@ class helper_test extends testcase {
 	}
 	
 	public function test_img__forces_ssl_url_if_local_file() {
-		$settings = $this->getMock('\kin\app\settings');
+		$settings = $this->getMock('kin\settings');
 		$settings->force_ssl = true;
 		$settings->images_path = 'assets/images/';
 		$settings->url = 'http://leftnode.com/';
@@ -205,7 +200,7 @@ class helper_test extends testcase {
 	}
 	
 	public function test_img__adds_alt_text() {
-		$settings = $this->getMock('\kin\app\settings');
+		$settings = $this->getMock('kin\settings');
 		$settings->force_ssl = false;
 		$settings->images_path = 'assets/images/';
 		$settings->url = 'http://leftnode.com/';
@@ -226,7 +221,7 @@ class helper_test extends testcase {
 	}
 	
 	public function test_img__adds_additional_attributes() {
-		$settings = $this->getMock('\kin\app\settings');
+		$settings = $this->getMock('kin\settings');
 		$settings->force_ssl = false;
 		$settings->images_path = 'assets/images/';
 		$settings->url = 'http://leftnode.com/';
@@ -249,7 +244,7 @@ class helper_test extends testcase {
 
 
 	public function test_url__creates_url_from_parameters() {
-		$settings = $this->getMock('\kin\app\settings');
+		$settings = $this->getMock('kin\settings');
 		$settings->force_ssl = false;
 		$settings->url = 'http://leftnode.com/';
 		$settings->rewrite = false;
@@ -263,7 +258,7 @@ class helper_test extends testcase {
 	}
 	
 	public function test_url__appends_http_parameters() {
-		$settings = $this->getMock('\kin\app\settings');
+		$settings = $this->getMock('kin\settings');
 		$settings->force_ssl = false;
 		$settings->url = 'http://leftnode.com/';
 		$settings->rewrite = false;
@@ -281,7 +276,7 @@ class helper_test extends testcase {
 	}
 	
 	public function test_url__force_ssl_makes_url_secure() {
-		$settings = $this->getMock('\kin\app\settings');
+		$settings = $this->getMock('kin\settings');
 		$settings->force_ssl = true;
 		$settings->url = 'http://leftnode.com/';
 		$settings->secure_url = 'https://leftnode.com/';
@@ -297,7 +292,7 @@ class helper_test extends testcase {
 	
 	public function test_url__allows_rewrites() {
 		// This allows __set() to not be overwritten by PHPUnit
-		$settings = $this->getMockForAbstractClass('\kin\app\settings');
+		$settings = $this->getMockForAbstractClass('kin\settings');
 		$settings->force_ssl = false;
 		$settings->url = 'http://leftnode.com/';
 		$settings->rewrite = true;

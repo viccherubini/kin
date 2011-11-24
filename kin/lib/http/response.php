@@ -1,22 +1,14 @@
-<?php namespace kin\http;
+<?php namespace kin;
 
 class response {
 
 	public $start_time = 0.0;
 	public $response_code = 200;
-	
 	public $content_type = "";
-	
 	public $headers = array();
 	public $content = null;
-	
-	
 
-	public function __construct() {
-		
-	}
-	
-	
+	public function __construct() { }
 	
 	public function respond() {
 		header_remove("Content-Type");
@@ -46,8 +38,6 @@ class response {
 		return($this->content);
 	}
 	
-	
-	
 	public function set_content($content) {
 		$this->content = $content;
 		return($this);
@@ -72,7 +62,6 @@ class response {
 		$this->start_time = (float)$start_time;
 		return($this);
 	}
-	
 	
 	public function get_content_type() {
 		return($this->content_type);

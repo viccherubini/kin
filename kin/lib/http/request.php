@@ -1,10 +1,9 @@
-<?php namespace kin\http;
+<?php namespace kin;
 
 class request {
 
 	public $path = "/";
 	public $method = "GET";
-
 	public $acceptable_types = array();
 	public $renderable_types = array();
 	
@@ -12,10 +11,7 @@ class request {
 	const default_accept = "text/html";
 	const default_type = "html";
 
-	public function __construct() {
-	}
-
-
+	public function __construct() { }
 
 	public function set_accept_header($accept_header) {
 		$accept_header = strtolower(str_replace(" ", "", $accept_header));
@@ -65,9 +61,7 @@ class request {
 		
 		return($this);
 	}
-	
-	
-	
+
 	public function set_method($method) {
 		$method = trim($method);
 		if (!empty($method)) {
@@ -82,8 +76,6 @@ class request {
 		}
 		return($this);
 	}
-
-
 
 	public function get_acceptable_types() {
 		return($this->acceptable_types);

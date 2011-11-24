@@ -1,8 +1,4 @@
-<?php namespace kintest;
-declare(encoding='UTF-8');
-
-use \kin\view as view;
-
+<?php namespace kin;
 require_once('vfsStream/vfsStream.php');
 
 require_once(__DIR__.'/../testcase.php');
@@ -14,7 +10,7 @@ class view_test extends testcase {
 	private $path = 'views';
 	
 	/**
-	 * @expectedException \kin\exception\unrecoverable
+	 * @expectedException \kin\unrecoverable
 	 */
 	public function test_render__requires_file_to_exist() {
 		$view = new view;
@@ -60,7 +56,6 @@ class view_test extends testcase {
 		
 		$this->assertEquals($expected_path, $view->get_path());
 	}
-	
 	
 	
 	

@@ -1,26 +1,17 @@
-<?php namespace kin\app;
+<?php namespace kin;
 require_once(__DIR__.'/../exceptions/unrecoverable.php');
 
 class router {
 
-	// Data passed in from the request
-	public $path = '';
-	public $request_method = '';
-	
-	// All of the routes
+	public $path = "";
+	public $request_method = "";
 	public $routes = array();
 	public $exception_routes = array();
-	
-	// The matched route
 	public $route = null;
 	
 	const route_404 = 404;
 	
-	public function __construct() {
-	
-	}
-
-
+	public function __construct() { }
 
 	public function route() {
 		$this->check_routes()
@@ -41,8 +32,6 @@ class router {
 		}
 		return(true);
 	}
-
-
 	
 	public function set_routes(array $routes) {
 		$this->routes = $this->filter_out_invalid_routes($routes);
@@ -64,9 +53,7 @@ class router {
 		$this->request_method = strtoupper($request_method);
 		return($this);
 	}
-	
-	
-	
+
 	public function get_arguments() {
 		return $this->arguments;
 	}
@@ -83,27 +70,27 @@ class router {
 	
 	private function filter_out_invalid_routes($routes) {
 		return array_filter($routes, function($r) {
-			return($r instanceof \kin\app\route);
+			return($r instanceof \kin\route);
 		});
 	}
 	
 	private function check_routes() {
 		if (0 === count($this->routes)) {
-			throw new \kin\exception\unrecoverable("The router requires at least one \kin\\route object set before it can route properly.");
+			throw new unrecoverable("The router requires at least one \\kin\\route object set before it can route properly.");
 		}
 		return($this);
 	}
 	
 	private function check_exception_routes() {
 		if (0 === count($this->exception_routes)) {
-			throw new \kin\exception\unrecoverable("The router requires at least one \kin\\route object set as an exception route before it can route properly.");
+			throw new unrecoverable("The router requires at least one \\kin\\route object set as an exception route before it can route properly.");
 		}
 		return($this);
 	}
 	
 	private function check_exception_route_404_exists() {
 		if (!array_key_exists(self::route_404, $this->exception_routes)) {
-			throw new \kin\exception\unrecoverable("The router requires at least one \kin\\route object set as a 404 exception route before it can route properly.");
+			throw new unrecoverable("The router requires at least one \\kin\\route object set as a 404 exception route before it can route properly.");
 		}
 		return($this);
 	}

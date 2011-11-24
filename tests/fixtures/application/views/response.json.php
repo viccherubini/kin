@@ -1,1 +1,1 @@
-<?php echo(json_encode($payload['models'])); ?>
+<?php echo(json_encode($models)); ?>

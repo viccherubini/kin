@@ -1,4 +1,4 @@
-<?php namespace kin\app;
+<?php namespace kin;
 require_once(__DIR__."/../exceptions/unrecoverable.php");
 
 class compiler {
@@ -6,14 +6,9 @@ class compiler {
 	public $class = "";
 	public $file = "";
 	public $path = "";
-
 	public $controller = null;
 	
-	public function __construct() {
-	
-	}
-
-
+	public function __construct() { }
 
 	public function compile() {
 		$this->check_class()
@@ -21,12 +16,12 @@ class compiler {
 		
 		$file_path = $this->path.$this->file;
 		if (!is_file($file_path)) {
-			throw new \kin\exception\unrecoverable("The compiler can not find the controller file, {$file_path}. Compilation can not continue.");
+			throw new unrecoverable("The compiler can not find the controller file, {$file_path}. Compilation can not continue.");
 		}
 		
 		require_once($file_path);
 		if (!class_exists($this->class, false)) {
-			throw new \kin\exception\unrecoverable("The compiler can not find the controller class, {$this->class} in the controller file, {$file_path}. Compilation can not continue.");
+			throw new unrecoverable("The compiler can not find the controller class, {$this->class} in the controller file, {$file_path}. Compilation can not continue.");
 		}
 		
 		$ref = new \ReflectionClass($this->class);
@@ -34,8 +29,6 @@ class compiler {
 		
 		return(true);
 	}
-	
-	
 	
 	public function set_class($class) {
 		$this->class = trim($class);
@@ -52,8 +45,6 @@ class compiler {
 		return($this);
 	}
 
-
-
 	public function get_controller() {
 		return($this->controller);
 	}
@@ -62,14 +53,14 @@ class compiler {
 	
 	private function check_class() {
 		if (empty($this->class)) {
-			throw new \kin\exception\unrecoverable("The compiler must have a controller class set before it can begin compilation.");
+			throw new unrecoverable("The compiler must have a controller class set before it can begin compilation.");
 		}
 		return($this);
 	}
 	
 	private function check_file() {
 		if (empty($this->file)) {
-			throw new \kin\exception\unrecoverable("The compiler must have a controller file set before it can begin compilation.");
+			throw new unrecoverable("The compiler must have a controller file set before it can begin compilation.");
 		}
 		return($this);
 	}
