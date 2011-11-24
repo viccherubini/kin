@@ -1,21 +1,15 @@
-<?php namespace kin\app;
+<?php namespace kin;
 require_once(__DIR__.'/../exceptions/unrecoverable.php');
 
 class dispatcher {
 	
 	public $init_successful = true;
-
 	public $arguments = array();
-
 	public $action = null;
 	public $class = null;
 	public $controller = null;
 
-	public function __construct() {
-		
-	}
-	
-	
+	public function __construct() { }
 	
 	public function attach_controller(controller $controller) {
 		$this->controller = $controller;
@@ -38,8 +32,6 @@ class dispatcher {
 		return($this->init_successful);
 	}
 	
-	
-	
 	public function set_action($action) {
 		$this->action = trim($action);
 		return($this);
@@ -49,32 +41,30 @@ class dispatcher {
 		$this->arguments = $arguments;
 		return($this);
 	}
-	
-	
-	
+
 	public function get_controller() {
 		return($this->controller);
 	}
 	
-	
-	
+
+
 	private function check_controller() {
 		if (is_null($this->controller)) {
-			throw new \kin\exception\unrecoverable("The dispatcher must have a controller object attached before it can begin dispatching.");
+			throw new unrecoverable("The dispatcher must have a controller object attached before it can begin dispatching.");
 		}
 		return($this);
 	}
 	
 	private function check_action() {
 		if (empty($this->action)) {
-			throw new \kin\exception\unrecoverable("The dispatcher must have a controller action set before it can begin dispatching.");
+			throw new unrecoverable("The dispatcher must have a controller action set before it can begin dispatching.");
 		}
 		return($this);
 	}
 	
 	private function check_action_is_public($action) {
 		if (!$action->isPublic()) {
-			throw new \kin\exception\unrecoverable("The controller action, {$this->action}, is not a public member of the controller class {$this->class}.");
+			throw new unrecoverable("The controller action, {$this->action}, is not a public member of the controller class {$this->class}.");
 		}
 		return($this);
 	}
@@ -83,7 +73,7 @@ class dispatcher {
 		try {
 			$action = new \ReflectionMethod($this->controller, $this->action);
 		} catch (\ReflectionException $e) {
-			throw new \kin\exception\unrecoverable("The controller action, {$this->action}, is not a member of the controller class {$this->class}.");
+			throw new unrecoverable("The controller action, {$this->action}, is not a member of the controller class {$this->class}.");
 		}
 		return($action);
 	}
@@ -110,11 +100,15 @@ class dispatcher {
 	private function dispatch_action($action) {
 		if ($this->init_successful) {
 			try {
-				return((false !== $action->invokeArgs($this->controller, $this->arguments)) &&
-					$this->dispatch_controller_shutdown());
+				$action->invokeArgs($this->controller, $this->arguments);
 			} catch (\Exception $e) {
-				throw new \kin\exception\unrecoverable("The controller action, {$this->action}, threw an exception that was not caught: ".$e->getMessage());
+				if (method_exists($this->controller, "handle_exception")) {
+					$this->controller->handle_exception($e);
+				} else {
+					throw new unrecoverable("The controller action, {$this->action}, threw an exception that was not caught: ".$e->getMessage());
+				}
 			}
+			$this->dispatch_controller_shutdown();
 		}
 		return(true);
 	}
