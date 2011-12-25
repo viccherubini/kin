@@ -17,14 +17,14 @@ class helper {
 		if ($local_file) {
 			$css_file = $this->root_url.$this->settings->css_path.$this->append_extension($css_file, ".css");
 		}
-		return(sprintf('<link type="text/css" rel="stylesheet" href="%s" media="%s">%s', $css_file, $media, PHP_EOL));
+		return(sprintf('<link type="text/css" rel="stylesheet" href="%s" media="%s">%s', $this->append_cache_hash($css_file), $media, PHP_EOL));
 	}
 	
 	public function js($js_file, $local_file=true) {
 		if ($local_file) {
 			$js_file = $this->root_url.$this->settings->js_path.$this->append_extension($js_file, ".js");
 		}
-		return(sprintf('<script src="%s" type="text/javascript"></script>%s', $js_file, PHP_EOL));
+		return(sprintf('<script src="%s" type="text/javascript"></script>%s', $this->append_cache_hash($js_file), PHP_EOL));
 	}
 	
 	public function img($img_src, $alt_text=null, $tag_attributes=null, $local_file=true) {
@@ -60,6 +60,13 @@ class helper {
 	private function append_extension($file, $ext) {
 		if (0 == preg_match('/\\'.$ext.'$/i', $file)) {
 			$file .= $ext;
+		}
+		return($file);
+	}
+	
+	private function append_cache_hash($file) {
+		if (defined("KIN_CACHE_HASH")) {
+			return(sprintf("%s?_=%s", $file, KIN_CACHE_HASH));
 		}
 		return($file);
 	}
